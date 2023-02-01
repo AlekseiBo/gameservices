@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dc42fadb9594876be3afddeec945428, type: 3}
-  m_Name: Timeout Delay 2 Secs
+  m_Script: {fileID: 11500000, guid: 612fcb7c4ec1400b8acd9954572ebbcb, type: 3}
+  m_Name: InstantiateSphere
   m_EditorClassIdentifier: 
-  duration: 2
+  prefab: {fileID: 3899998693095690977, guid: 6fefd778c453997458032504730d27cf, type: 3}
