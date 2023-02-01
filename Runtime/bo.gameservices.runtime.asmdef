@@ -1,0 +1,16 @@
+{
+    "name": "bo.gameservices.runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0d48e53350bf6c94cb596fd02e9ea1c6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
