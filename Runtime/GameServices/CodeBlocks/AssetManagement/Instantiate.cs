@@ -2,13 +2,15 @@
 using Framework;
 using GameServices.AssetManagement;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace GameServices.CodeBlocks.AssetManagement
 {
     [CreateAssetMenu(fileName = "Instantiate", menuName = "Code Blocks/Asset Management/Instantiate Asset", order = 0)]
     public class Instantiate : CodeBlock
     {
-        [SerializeField] private string address;
+        [SerializeField] private AssetReference asset;
+        [SerializeField] private bool asChild;
 
         private IAssetProvider assets;
         public override void Execute(CodeRunner runner, Action<bool> completed)
@@ -22,7 +24,9 @@ namespace GameServices.CodeBlocks.AssetManagement
         private async void InstantiateAsset()
         {
             var startTime = Time.time;
-            var gameObject = await assets.Instantiate(address);
+            var gameObject = asChild ?
+                await assets.Instantiate(asset.AssetGUID, Runner.transform) :
+                await assets.Instantiate(asset.AssetGUID);
 
             if (gameObject != null)
             {

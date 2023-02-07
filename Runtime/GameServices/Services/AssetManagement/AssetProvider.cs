@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -86,7 +84,7 @@ namespace GameServices.AssetManagement
         {
             foreach (List<AsyncOperationHandle> resourceHandles in handles.Values)
             foreach (AsyncOperationHandle handle in resourceHandles)
-                Addressables.Release(handle);
+                ReleaseHandle(handle);
 
             completedCache.Clear();
             handles.Clear();

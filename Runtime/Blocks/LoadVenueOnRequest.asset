@@ -9,7 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b551915775be4c28a1c6464e571e7051, type: 3}
-  m_Name: RegisterSampleService
+  m_Script: {fileID: 11500000, guid: 5db71f6432234028bd20e28e4f6f81a3, type: 3}
+  m_Name: LoadVenueOnRequest
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}

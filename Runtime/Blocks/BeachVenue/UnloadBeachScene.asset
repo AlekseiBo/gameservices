@@ -9,8 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ef2d91c70de4885ac5501a2f5637284, type: 3}
-  m_Name: LoadScene
+  m_Script: {fileID: 11500000, guid: bb37ab5faf9243bcbfb7936f8d15e422, type: 3}
+  m_Name: UnloadBeachScene
   m_EditorClassIdentifier: 
-  sceneName: CubeScene
-  additive: 1
+  reference:
+    m_AssetGUID: 3264797f337656044a62b1f8d699011e
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0

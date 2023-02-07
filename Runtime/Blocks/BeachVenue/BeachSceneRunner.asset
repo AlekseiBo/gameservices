@@ -10,14 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2800cbc25dd84dedb796bba7fbf652bf, type: 3}
-  m_Name: MainQueue
+  m_Name: BeachSceneRunner
   m_EditorClassIdentifier: 
   stopOnFail: 1
   blocks:
-  - {fileID: 11400000, guid: c1686a723b91c6e458791c949d0cbe65, type: 2}
+  - {fileID: 11400000, guid: 181a9e9ef6ebca64e96dead94a40ca6b, type: 2}
+  - {fileID: 11400000, guid: 89c093f0c52a89443bcb1e051f23cc78, type: 2}
   - {fileID: 11400000, guid: 444a92a523859be4ab603a7bd45308bd, type: 2}
-  - {fileID: 11400000, guid: 37f5841888e19a4469b2e470f6f856e9, type: 2}
-  - {fileID: 11400000, guid: 40c19de011529bf4eb58b2b276a4d8cb, type: 2}
-  - {fileID: 11400000, guid: c1686a723b91c6e458791c949d0cbe65, type: 2}
-  - {fileID: 11400000, guid: 185b7f63199b5854789d41dc92755ed5, type: 2}
-  - {fileID: 11400000, guid: fb396564d0627124bb761ffe0933c7a3, type: 2}
