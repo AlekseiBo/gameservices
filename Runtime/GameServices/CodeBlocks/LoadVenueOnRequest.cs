@@ -1,6 +1,7 @@
 ﻿using System;
 using Framework;
 using GameServices.AssetManagement;
+using GameServices.GameDataService;
 using GameServices.MediatorCommands;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -17,13 +18,13 @@ namespace GameServices.CodeBlocks
             base.Execute(runner, completed);
 
             assets = Services.All.Single<IAssetProvider>();
-            Mediator.Subscribe<LoadVenueCommand>(OnLoadRequest);
+            OnLoadRequest();
         }
 
-        private async void OnLoadRequest(LoadVenueCommand command)
+        private async void OnLoadRequest()
         {
-            await assets.LoadScene(command.Asset.AssetGUID, command.Mode);
-            Mediator.RemoveSubscriber<LoadVenueCommand>(OnLoadRequest);
+            var sceneAsset = GameData.Get<string>(Key.SelectedVenue);
+            await assets.LoadScene(sceneAsset);
             Completed?.Invoke(true);
         }
     }

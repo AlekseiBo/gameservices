@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Framework;
+using GameServices.GameDataService;
 using UnityEngine;
 
 namespace GameServices.StaticData
@@ -11,12 +11,12 @@ namespace GameServices.StaticData
         private const string DataEntryPath = "StaticData/GameData";
 
         private Dictionary<string, VenueStaticData> venues;
-        private Dictionary<DataKey, ScriptableObject> dataEntries;
+        private Dictionary<Key, ScriptableObject> dataEntries;
 
         public StaticDataService() => Load();
 
         public List<VenueStaticData> AllVenues() => venues.Values.ToList();
-        public Dictionary<DataKey, ScriptableObject> AllGameData() => dataEntries;
+        public Dictionary<Key, ScriptableObject> AllGameData() => dataEntries;
 
         public VenueStaticData ForVenue(string sceneAddress) =>
             venues.TryGetValue(sceneAddress, out VenueStaticData staticData)
@@ -31,13 +31,13 @@ namespace GameServices.StaticData
 
         private void LoadGameData()
         {
-            dataEntries = new Dictionary<DataKey, ScriptableObject>();
+            dataEntries = new Dictionary<Key, ScriptableObject>();
 
             var gameDataList = Resources
                 .LoadAll<ScriptableObject>(DataEntryPath);
 
             foreach (var dataEntry in gameDataList)
-                if (DataKey.TryParse<DataKey>(dataEntry.name, out var dataKey))
+                if (Key.TryParse<Key>(dataEntry.name, out var dataKey))
                     dataEntries[dataKey] = dataEntry;
         }
 

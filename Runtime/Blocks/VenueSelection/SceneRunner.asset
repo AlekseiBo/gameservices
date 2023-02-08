@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stopOnFail: 1
   blocks:
+  - {fileID: 11400000, guid: 07542e078d206e249ac7d5b5f4e236a2, type: 2}
   - {fileID: 11400000, guid: c5b1b1e9df26ee845a2e7f028f3903a2, type: 2}
