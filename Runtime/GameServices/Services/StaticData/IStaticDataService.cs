@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Framework;
+using GameServices.GameDataService;
+using UnityEngine;
 
 namespace GameServices.StaticData
 {
@@ -7,5 +9,6 @@ namespace GameServices.StaticData
     {
         VenueStaticData ForVenue(string sceneAddress);
         List<VenueStaticData> AllVenues();
+        Dictionary<DataKey, ScriptableObject> AllGameData();
     }
 }

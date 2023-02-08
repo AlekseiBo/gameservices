@@ -4,7 +4,7 @@ using GameServices.AssetManagement;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace GameServices.CodeBlocks.AssetManagement
+namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "Instantiate", menuName = "Code Blocks/Asset Management/Instantiate Asset", order = 0)]
     public class Instantiate : CodeBlock

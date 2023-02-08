@@ -3,7 +3,7 @@ using Framework;
 using GameServices.AssetManagement;
 using UnityEngine;
 
-namespace GameServices.CodeBlocks.AssetManagement
+namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "RegisterAssetProvider", menuName = "Code Blocks/Asset Management/Register Service", order = 0)]
     public class RegisterAssetProvider : CodeBlock

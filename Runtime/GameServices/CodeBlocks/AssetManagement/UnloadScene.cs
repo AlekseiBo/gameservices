@@ -4,7 +4,7 @@ using GameServices.AssetManagement;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace GameServices.CodeBlocks.AssetManagement
+namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "Unload", menuName = "Code Blocks/Asset Management/Unload Scene", order = 0)]
     public class UnloadScene : CodeBlock

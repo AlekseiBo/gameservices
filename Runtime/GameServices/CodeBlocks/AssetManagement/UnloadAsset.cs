@@ -3,7 +3,7 @@ using Framework;
 using GameServices.AssetManagement;
 using UnityEngine;
 
-namespace GameServices.CodeBlocks.AssetManagement
+namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "Unload", menuName = "Code Blocks/Asset Management/Unload Asset", order = 0)]
     public class UnloadAsset : CodeBlock

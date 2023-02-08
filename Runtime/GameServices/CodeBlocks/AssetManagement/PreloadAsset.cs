@@ -3,7 +3,7 @@ using Framework;
 using GameServices.AssetManagement;
 using UnityEngine;
 
-namespace GameServices.CodeBlocks.AssetManagement
+namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "Preload", menuName = "Code Blocks/Asset Management/Preload Asset", order = 0)]
     public class PreloadAsset : CodeBlock

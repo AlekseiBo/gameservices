@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
-namespace GameServices.CodeBlocks.AssetManagement
+namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "Load", menuName = "Code Blocks/Asset Management/Load Scene", order = 0)]
-    public class LoadScene : CodeBlock
+    public class LoadSceneAsset : CodeBlock
     {
         [SerializeField] private AssetReference reference;
         [SerializeField] private LoadSceneMode mode;

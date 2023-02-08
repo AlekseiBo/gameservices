@@ -3,7 +3,7 @@ using Framework;
 using GameServices.AssetManagement;
 using UnityEngine;
 
-namespace GameServices.CodeBlocks.AssetManagement
+namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "ReleaseCachedAssets", menuName = "Code Blocks/Asset Management/Release Cached Assets", order = 0)]
     public class ClearCache : CodeBlock

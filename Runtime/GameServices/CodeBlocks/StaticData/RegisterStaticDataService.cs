@@ -3,7 +3,7 @@ using Framework;
 using GameServices.StaticData;
 using UnityEngine;
 
-namespace GameServices.CodeBlocks.StaticData
+namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "RegisterStaticDataService", menuName = "Code Blocks/Static Data/Register Service", order = 0)]
     public class RegisterStaticDataService : CodeBlock
