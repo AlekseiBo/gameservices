@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace GameServices.StaticData
+namespace GameServices
 {
     [CreateAssetMenu(fileName = "VenueData", menuName = "Static Data/Venue Data")]
     public class VenueStaticData : ScriptableObject

@@ -1,7 +1,6 @@
 ﻿using System;
-using Framework;
-using GameServices.AssetManagement;
 using UnityEngine;
+using Toolset;
 
 namespace GameServices.CodeBlocks
 {
@@ -11,28 +10,16 @@ namespace GameServices.CodeBlocks
         [SerializeField] private string address;
 
         private IAssetProvider assets;
-        public override void Execute(CodeRunner runner, Action<bool> completed)
+        protected override void Execute()
         {
-            base.Execute(runner, completed);
-
             assets = Services.All.Single<IAssetProvider>();
             Preload();
         }
 
         private async void Preload()
         {
-            var startTime = Time.time;
             var gameObject = await assets.Load<GameObject>(address);
-
-            if (gameObject != null)
-            {
-                Debug.Log($"Successfully loaded object {gameObject.name} in {Time.time - startTime} sec");
-                Completed?.Invoke(true);
-            }
-            else
-            {
-                Completed?.Invoke(false);
-            }
+            Complete(gameObject != null);
         }
     }
 }

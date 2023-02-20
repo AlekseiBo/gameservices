@@ -1,22 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using GameServices.GameDataService;
 using UnityEngine;
 
-namespace GameServices.StaticData
+namespace GameServices
 {
-    class StaticDataService : IStaticDataService
+    class StaticDataService<TKey> : IStaticDataService<TKey> where TKey : struct, Enum
     {
         private const string VenueDataPath = "StaticData/Venues";
         private const string DataEntryPath = "StaticData/GameData";
 
         private Dictionary<string, VenueStaticData> venues;
-        private Dictionary<Key, ScriptableObject> dataEntries;
+        private Dictionary<TKey, ScriptableObject> dataEntries;
 
         public StaticDataService() => Load();
 
         public List<VenueStaticData> AllVenues() => venues.Values.ToList();
-        public Dictionary<Key, ScriptableObject> AllGameData() => dataEntries;
+        public Dictionary<TKey, ScriptableObject> AllGameData() => dataEntries;
 
         public VenueStaticData ForVenue(string sceneAddress) =>
             venues.TryGetValue(sceneAddress, out VenueStaticData staticData)
@@ -31,13 +31,13 @@ namespace GameServices.StaticData
 
         private void LoadGameData()
         {
-            dataEntries = new Dictionary<Key, ScriptableObject>();
+            dataEntries = new Dictionary<TKey, ScriptableObject>();
 
             var gameDataList = Resources
                 .LoadAll<ScriptableObject>(DataEntryPath);
 
             foreach (var dataEntry in gameDataList)
-                if (Key.TryParse<Key>(dataEntry.name, out var dataKey))
+                if (Enum.TryParse<TKey>(dataEntry.name, out var dataKey))
                     dataEntries[dataKey] = dataEntry;
         }
 

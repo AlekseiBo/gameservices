@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Framework;
+using Toolset;
 using UnityEngine;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 
-namespace GameServices.AssetManagement
+namespace GameServices
 {
     public interface IAssetProvider : IService
     {

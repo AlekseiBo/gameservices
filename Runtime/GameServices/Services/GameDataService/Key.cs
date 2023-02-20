@@ -1,10 +1,11 @@
-﻿namespace GameServices.GameDataService
+﻿namespace GameServices
 {
     public enum Key
     {
         PlayerName,
-        PlayerScore,
         SelectedVenue,
         LoadVenueRequested,
+        RelayServer,
+        MaxPlayers
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using Framework;
+using Toolset;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,10 +11,8 @@ namespace GameServices.CodeBlocks
         [SerializeField] private string sceneName;
         [SerializeField] private bool additive;
 
-        public override void Execute(CodeRunner runner, Action<bool> completed)
+        protected override void Execute()
         {
-            base.Execute(runner, completed);
-
             try
             {
                 SceneManager.LoadSceneAsync(sceneName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single)
@@ -22,13 +20,13 @@ namespace GameServices.CodeBlocks
             }
             catch (Exception)
             {
-                Completed?.Invoke(false);
+                Complete(false);
             }
         }
 
         private void OnCompleted(AsyncOperation result)
         {
-            Completed?.Invoke(result.isDone);
+                Complete(result.isDone);
         }
     }
 }

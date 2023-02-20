@@ -1,6 +1,5 @@
 ﻿using System;
-using Framework;
-using GameServices.AssetManagement;
+using Toolset;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -12,20 +11,17 @@ namespace GameServices.CodeBlocks
         [SerializeField] private AssetReference reference;
 
         private IAssetProvider assets;
-        public override void Execute(CodeRunner runner, Action<bool> completed)
-        {
-            base.Execute(runner, completed);
 
+        protected override void Execute()
+        {
             assets = Services.All.Single<IAssetProvider>();
             Unload();
         }
 
         private async void Unload()
         {
-            var startTime = Time.time;
             var unloaded = await assets.UnloadScene(reference.AssetGUID);
-            Debug.Log($"Unloading result: {unloaded} in {Time.time - startTime} sec");
-            Completed?.Invoke(unloaded);
+            Complete(unloaded);
         }
     }
 }

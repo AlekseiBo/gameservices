@@ -1,6 +1,5 @@
 ﻿using System;
-using Framework;
-using GameServices.GameDataService;
+using Toolset;
 using UnityEngine;
 
 namespace GameServices.CodeBlocks
@@ -8,18 +7,15 @@ namespace GameServices.CodeBlocks
     [CreateAssetMenu(fileName = "LoadVenueRequested", menuName = "Code Blocks/Load Venue Requested", order = 0)]
     public class LoadVenueRequested : CodeBlock
     {
-        public override void Execute(CodeRunner runner, Action<bool> completed)
+        protected override void Execute()
         {
-            base.Execute(runner, completed);
-
-            GameData.Subscribe<bool>(Key.LoadVenueRequested, OnLoadVenueRequested);
-
+            GameData<Key>.Subscribe<bool>(Key.LoadVenueRequested, OnLoadVenueRequested);
         }
 
         private void OnLoadVenueRequested(DataEntry<bool> entry)
         {
-            GameData.RemoveSubscriber<bool>(Key.LoadVenueRequested, OnLoadVenueRequested);
-            Completed?.Invoke(true);
+            GameData<Key>.RemoveSubscriber<bool>(Key.LoadVenueRequested, OnLoadVenueRequested);
+            Complete(true);
         }
     }
 }

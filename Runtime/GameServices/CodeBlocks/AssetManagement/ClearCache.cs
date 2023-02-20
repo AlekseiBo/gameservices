@@ -1,6 +1,5 @@
 ﻿using System;
-using Framework;
-using GameServices.AssetManagement;
+using Toolset;
 using UnityEngine;
 
 namespace GameServices.CodeBlocks
@@ -9,13 +8,11 @@ namespace GameServices.CodeBlocks
     public class ClearCache : CodeBlock
     {
         private IAssetProvider assets;
-        public override void Execute(CodeRunner runner, Action<bool> completed)
+        protected override void Execute()
         {
-            base.Execute(runner, completed);
-
             assets = Services.All.Single<IAssetProvider>();
             assets.ReleaseCachedAssets();
-            Completed?.Invoke(true);
+            Complete(true);
         }
     }
 }

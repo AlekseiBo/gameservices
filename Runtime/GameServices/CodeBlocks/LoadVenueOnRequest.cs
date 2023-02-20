@@ -1,11 +1,5 @@
-﻿using System;
-using Framework;
-using GameServices.AssetManagement;
-using GameServices.GameDataService;
-using GameServices.MediatorCommands;
+﻿using Toolset;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.SceneManagement;
 
 namespace GameServices.CodeBlocks
 {
@@ -13,19 +7,20 @@ namespace GameServices.CodeBlocks
     public class LoadVenueOnRequest : CodeBlock
     {
         private IAssetProvider assets;
-        public override void Execute(CodeRunner runner, Action<bool> completed)
-        {
-            base.Execute(runner, completed);
 
+        protected override void Execute()
+        {
             assets = Services.All.Single<IAssetProvider>();
             OnLoadRequest();
         }
 
         private async void OnLoadRequest()
         {
-            var sceneAsset = GameData.Get<string>(Key.SelectedVenue);
+            var sceneAsset = GameData<Key>.Get<string>(Key.SelectedVenue);
             await assets.LoadScene(sceneAsset);
-            Completed?.Invoke(true);
+
+            if (Runner != null)
+                Complete(true);
         }
     }
 }

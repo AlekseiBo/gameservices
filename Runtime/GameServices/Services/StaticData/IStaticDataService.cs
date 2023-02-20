@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using Framework;
-using GameServices.GameDataService;
+﻿using System;
+using System.Collections.Generic;
+using Toolset;
 using UnityEngine;
 
-namespace GameServices.StaticData
+namespace GameServices
 {
-    public interface IStaticDataService : IService
+    public interface IStaticDataService<TKey> : IService
     {
         VenueStaticData ForVenue(string sceneAddress);
         List<VenueStaticData> AllVenues();
-        Dictionary<Key, ScriptableObject> AllGameData();
+        Dictionary<TKey, ScriptableObject> AllGameData();
     }
 }

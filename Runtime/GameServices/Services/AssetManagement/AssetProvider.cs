@@ -2,12 +2,14 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-namespace GameServices.AssetManagement
+namespace GameServices
 {
     public class AssetProvider : IAssetProvider
     {
@@ -112,6 +114,25 @@ namespace GameServices.AssetManagement
         {
             if (handle.IsValid())
                 Addressables.Release(handle);
+        }
+
+        private static IResourceLocation GetLocation(object key)
+        {
+            foreach (IResourceLocator locator in Addressables.ResourceLocators)
+            {
+                IList<IResourceLocation> locations = new List<IResourceLocation>();
+                bool success = locator.Locate(key, typeof(SceneInstance), out locations);
+
+                if (success)
+                {
+                    Debug.Log($"Location found: {locations[0].PrimaryKey}");
+                    return locations[0];
+                }
+            }
+
+            Debug.Log("Location not found");
+
+            return null;
         }
     }
 }
