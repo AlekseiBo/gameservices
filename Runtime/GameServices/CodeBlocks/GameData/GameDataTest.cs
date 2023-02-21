@@ -15,13 +15,13 @@ namespace GameServices.CodeBlocks
 
         private IEnumerator TestRun()
         {
-            Debug.Log(GameData<Key>.Subscribe<string>(Key.PlayerName, OnPlayerNameChanged));
+            Debug.Log(GameData.Subscribe<string>(Key.PlayerName, OnPlayerNameChanged));
             yield return Utilities.WaitFor(2f);
-            GameData<Key>.Set(Key.PlayerName, "Bob");
+            GameData.Set(Key.PlayerName, "Bob");
             yield return Utilities.WaitFor(2f);
-            GameData<Key>.RemoveSubscriber<string>(Key.PlayerName, OnPlayerNameChanged);
+            GameData.RemoveSubscriber<string>(Key.PlayerName, OnPlayerNameChanged);
             yield return Utilities.WaitFor(2f);
-            GameData<Key>.Set(Key.PlayerName, "Carl");
+            GameData.Set(Key.PlayerName, "Carl");
         }
 
         private void OnPlayerNameChanged(DataEntry<string> playerName)

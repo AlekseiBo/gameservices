@@ -9,8 +9,8 @@ namespace GameServices.CodeBlocks
     {
         protected override void Execute()
         {
-            if (Services.All.Single<IStaticDataService<Key>>() == null)
-                Services.All.RegisterSingle<IStaticDataService<Key>>(new StaticDataService<Key>());
+            if (Services.All.Single<IStaticDataService>() == null)
+                Services.All.RegisterSingle<IStaticDataService>(new StaticDataService());
 
             Complete(true);
         }

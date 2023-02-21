@@ -9,12 +9,12 @@ namespace GameServices.CodeBlocks
     {
         protected override void Execute()
         {
-            GameData<Key>.Subscribe<bool>(Key.LoadVenueRequested, OnLoadVenueRequested);
+            GameData.Subscribe<bool>(Key.LoadVenueRequested, OnLoadVenueRequested);
         }
 
         private void OnLoadVenueRequested(DataEntry<bool> entry)
         {
-            GameData<Key>.RemoveSubscriber<bool>(Key.LoadVenueRequested, OnLoadVenueRequested);
+            GameData.RemoveSubscriber<bool>(Key.LoadVenueRequested, OnLoadVenueRequested);
             Complete(true);
         }
     }

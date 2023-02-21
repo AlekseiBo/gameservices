@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace GameServices
 {
-    public interface IStaticDataService<TKey> : IService
+    public interface IStaticDataService : IService
     {
         VenueStaticData ForVenue(string sceneAddress);
         List<VenueStaticData> AllVenues();
-        Dictionary<TKey, ScriptableObject> AllGameData();
+        Dictionary<T, ScriptableObject> AllGameData<T>() where T : struct, Enum;
     }
 }

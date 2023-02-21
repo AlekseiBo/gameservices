@@ -14,7 +14,7 @@ namespace GameServices
     public class LobbyProvider : ILobbyProvider
     {
         private const float HEARTBEAT_TIMEOUT = 10f;
-
+        private const string RELAY_CODE = "RELAY_CODE";
         private string playerId => AuthenticationService.Instance.PlayerId;
 
         private readonly IRelayProvider relayProvider;
@@ -33,7 +33,7 @@ namespace GameServices
         {
             var owner = GameData<Key>.Get<bool>(Key.RelayServer) ? "RELAY" : "USER";
             var lobbyName = $"{owner} {playerId}";
-            var maxPlayers = GameData<Key>.Get<int>(Key.MaxPlayers);
+            var maxPlayers = GameData.Get<int>(Key.MaxPlayers);
             var lobbyOptions = new CreateLobbyOptions { IsPrivate = isPrivate };
 
             try
@@ -54,14 +54,15 @@ namespace GameServices
 
 
 
-        public async Task<Lobby> JoinPublicLobby()
+        public async Task<Lobby> JoinPublicLobby(int attempt = 1, string venue = "")
         {
             try
             {
                 var lobbies = await ListLobbies();
-                if (lobbies.Results.Count == 0) return null;
+                if (lobbies.Results.Count < attempt) return null;
 
-                joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbies.Results[0].Id);
+                var lobbyId = lobbies.Results[attempt - 1].Id;
+                joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
                 Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId}");
                 return joinedLobby;
             }
@@ -71,6 +72,8 @@ namespace GameServices
                 return null;
             }
         }
+
+        public string GetRelayCode() => joinedLobby.Data.GetValueOrDefault(RELAY_CODE).Value;
 
         public async void LeaveConnectedLobby()
         {
@@ -113,7 +116,7 @@ namespace GameServices
                     Filters = new List<QueryFilter>
                         { new(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT) },
                     Order = new List<QueryOrder>
-                        { new(false, QueryOrder.FieldOptions.Created) }
+                        { new(true, QueryOrder.FieldOptions.Created) }
                 };
 
                 var response = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
@@ -145,7 +148,7 @@ namespace GameServices
             var lobbyOptions = new UpdateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>()
-                    { { "RELAY_CODE", new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) } }
+                    { { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) } }
             };
 
             try

@@ -15,32 +15,51 @@ namespace GameServices
         private Allocation allocation;
         private string joinCode;
 
-        public async void CreateRelayServer()
+        public async Task<bool> CreateRelayServer()
         {
             try
             {
-                var maxConnections = GameData<Key>.Get<int>(Key.MaxPlayers) - 1;
+                var maxConnections = GameData.Get<int>(Key.MaxPlayers) - 1;
                 allocation = await RelayService.Instance.CreateAllocationAsync(maxConnections);
                 joinCode = await GetJoinCode();
                 var relayServerData = new RelayServerData(allocation, "dtls");
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-                if (GameData<Key>.Get<bool>(Key.RelayServer))
+                if (GameData.Get<bool>(Key.RelayServer))
                     NetworkManager.Singleton.StartServer();
                 else
                     NetworkManager.Singleton.StartHost();
 
                 NetworkManager.Singleton.OnTransportFailure += OnTransportFailure;
                 Mediator.Publish(new RelayServerAllocated(allocation, joinCode));
-
+                return true;
             }
             catch (RelayServiceException e)
             {
                 Debug.Log(e.Message);
+                return false;
             }
         }
 
-        public async Task<string> GetJoinCode()
+        public async Task<bool> JoinRelay(string joinCode)
+        {
+            Debug.Log($"Trying to join {joinCode}");
+            try
+            {
+                var allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+                var relayServerData = new RelayServerData(allocation, "dtls");
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+                NetworkManager.Singleton.StartClient();
+                return true;
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.Log(e.Message);
+                return false;
+            }
+        }
+
+        private  async Task<string> GetJoinCode()
         {
             try
             {

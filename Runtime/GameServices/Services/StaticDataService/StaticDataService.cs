@@ -5,18 +5,16 @@ using UnityEngine;
 
 namespace GameServices
 {
-    class StaticDataService<TKey> : IStaticDataService<TKey> where TKey : struct, Enum
+    class StaticDataService : IStaticDataService
     {
         private const string VenueDataPath = "StaticData/Venues";
         private const string DataEntryPath = "StaticData/GameData";
 
         private Dictionary<string, VenueStaticData> venues;
-        private Dictionary<TKey, ScriptableObject> dataEntries;
 
         public StaticDataService() => Load();
 
         public List<VenueStaticData> AllVenues() => venues.Values.ToList();
-        public Dictionary<TKey, ScriptableObject> AllGameData() => dataEntries;
 
         public VenueStaticData ForVenue(string sceneAddress) =>
             venues.TryGetValue(sceneAddress, out VenueStaticData staticData)
@@ -26,19 +24,18 @@ namespace GameServices
         private void Load()
         {
             LoadVenues();
-            LoadGameData();
         }
 
-        private void LoadGameData()
+        public Dictionary<T, ScriptableObject> AllGameData<T>() where T : struct, Enum
         {
-            dataEntries = new Dictionary<TKey, ScriptableObject>();
-
-            var gameDataList = Resources
-                .LoadAll<ScriptableObject>(DataEntryPath);
+            var dataEntries = new Dictionary<T, ScriptableObject>();
+            var gameDataList = Resources.LoadAll<ScriptableObject>(DataEntryPath);
 
             foreach (var dataEntry in gameDataList)
-                if (Enum.TryParse<TKey>(dataEntry.name, out var dataKey))
+                if (Enum.TryParse<T>(dataEntry.name, out var dataKey))
                     dataEntries[dataKey] = dataEntry;
+
+            return dataEntries;
         }
 
         private void LoadVenues()

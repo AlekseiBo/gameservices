@@ -8,7 +8,7 @@ namespace GameServices.CodeBlocks
     {
         protected override void Execute()
         {
-            new GameData<Key>();
+            new GameData();
             Complete(true);
 
         }

@@ -16,7 +16,7 @@ namespace GameServices.CodeBlocks
 
         private async void OnLoadRequest()
         {
-            var sceneAsset = GameData<Key>.Get<string>(Key.SelectedVenue);
+            var sceneAsset = GameData.Get<string>(Key.SelectedVenue);
             await assets.LoadScene(sceneAsset);
 
             if (Runner != null)

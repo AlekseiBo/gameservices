@@ -7,13 +7,13 @@ namespace GameServices
 {
     public class GameData<TKey> where TKey : struct, Enum
     {
-        private IStaticDataService<TKey> staticData;
+        private IStaticDataService staticData;
         private static Dictionary<TKey, ScriptableObject> gameData;
 
-        public GameData()
+        protected GameData()
         {
-            staticData = Services.All.Single<IStaticDataService<TKey>>();
-            gameData = staticData.AllGameData();
+            staticData = Services.All.Single<IStaticDataService>();
+            gameData = staticData.AllGameData<TKey>();
         }
 
         public static T Get<T>(TKey key) => GetEntry<T>(key).Value;
@@ -35,5 +35,9 @@ namespace GameServices
             if (!gameData.TryGetValue(key, out var dataContainer)) return default;
             return dataContainer as DataEntry<T>;
         }
+    }
+
+    public class GameData : GameData<Key>
+    {
     }
 }

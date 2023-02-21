@@ -20,10 +20,10 @@ namespace GameServices.CodeBlocks
 
         private void SetGameDataEntries()
         {
-            GameData<Key>.Set(Key.RelayServer, CommandLineArgument(RELAY_SERVER));
+            GameData.Set(Key.RelayServer, CommandLineArgument(RELAY_SERVER));
 
             var maxPlayers = CommandLineValue(MAX_PLAYERS);
-            if (!string.IsNullOrEmpty(maxPlayers)) GameData<Key>.Set(Key.MaxPlayers, int.Parse(maxPlayers));
+            if (!string.IsNullOrEmpty(maxPlayers)) GameData.Set(Key.MaxPlayers, int.Parse(maxPlayers));
         }
 
         private void SetTargetFramesPerSecond()
