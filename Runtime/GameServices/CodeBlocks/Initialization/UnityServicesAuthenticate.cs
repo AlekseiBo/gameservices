@@ -7,8 +7,7 @@ using Unity.Services.Core;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "UnityServicesAuthenticate",
-        menuName = "Code Blocks/Initialization/Authenticate Unity Services", order = 0)]
+    [CreateAssetMenu(fileName = "UnityServicesAuthenticate", menuName = "Code Blocks/Initialization/Authenticate Unity Services", order = 0)]
     public class UnityServicesAuthenticate : CodeBlock
     {
         protected override async void Execute()

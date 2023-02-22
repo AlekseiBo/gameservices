@@ -75,29 +75,31 @@ namespace GameServices
             {
                 try
                 {
-                    await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
-                    CoroutineRunner.Stop(heartbeatCoroutine);
-                    Debug.Log($"Player {playerId} deleted lobby {joinedLobby.Name}");
-                    hostedLobby = null;
-                    joinedLobby = null;
+                    await LobbyService.Instance.DeleteLobbyAsync(hostedLobby.Id);
                 }
                 catch (LobbyServiceException e)
                 {
                     Debug.Log(e.Message);
                 }
+
+                CoroutineRunner.Stop(heartbeatCoroutine);
+                Debug.Log($"Player {playerId} deleted lobby {hostedLobby.Name}");
+                hostedLobby = null;
+                joinedLobby = null;
             }
             else if (joinedLobby != null)
             {
                 try
                 {
                     await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerId);
-                    Debug.Log($"Player {playerId} left lobby {joinedLobby.Name}");
-                    joinedLobby = null;
                 }
                 catch (LobbyServiceException e)
                 {
                     Debug.Log(e.Message);
                 }
+
+                Debug.Log($"Player {playerId} left lobby {joinedLobby.Name}");
+                joinedLobby = null;
             }
         }
 
@@ -164,6 +166,7 @@ namespace GameServices
             while (hostedLobby != null)
             {
                 LobbyService.Instance.SendHeartbeatPingAsync(hostedLobby.Id);
+                Debug.Log("HEARTBEAT SENT");
                 yield return Utilities.WaitFor(timeout);
             }
         }
