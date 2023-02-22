@@ -166,7 +166,6 @@ namespace GameServices
             while (hostedLobby != null)
             {
                 LobbyService.Instance.SendHeartbeatPingAsync(hostedLobby.Id);
-                Debug.Log("HEARTBEAT SENT");
                 yield return Utilities.WaitFor(timeout);
             }
         }
