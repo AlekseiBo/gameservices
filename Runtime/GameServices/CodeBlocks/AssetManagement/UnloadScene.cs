@@ -5,7 +5,7 @@ using UnityEngine.AddressableAssets;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "Unload", menuName = "Code Blocks/Asset Management/Unload Scene", order = 0)]
+    [CreateAssetMenu(fileName = "Unload", menuName = "Code Blocks/Assets/Unload Scene Asset", order = 0)]
     public class UnloadScene : CodeBlock
     {
         [SerializeField] private AssetReference reference;

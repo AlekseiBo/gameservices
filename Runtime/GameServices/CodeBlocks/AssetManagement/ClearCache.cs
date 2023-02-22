@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "ReleaseCachedAssets", menuName = "Code Blocks/Asset Management/Release Cached Assets", order = 0)]
+    [CreateAssetMenu(fileName = "ReleaseCachedAssets", menuName = "Code Blocks/Assets/Release Cache", order = 0)]
     public class ClearCache : CodeBlock
     {
         private IAssetProvider assets;

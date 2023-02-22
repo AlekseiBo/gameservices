@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 
 namespace GameServices
 {
@@ -7,7 +8,14 @@ namespace GameServices
     public class VenueStaticData : ScriptableObject
     {
         public string Name;
+        public string Address;
         public AssetReference AssetReference;
+        public GameObject NetworkManager;
         public Sprite Icon;
+
+        private void OnValidate()
+        {
+            if (AssetReference != null) Address = AssetReference.AssetGUID;
+        }
     }
 }

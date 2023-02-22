@@ -3,8 +3,7 @@
     public enum Key
     {
         PlayerName,
-        SelectedVenue,
-        LoadVenueRequested,
+        ActiveVenue,
         RelayServer,
         MaxPlayers
     }

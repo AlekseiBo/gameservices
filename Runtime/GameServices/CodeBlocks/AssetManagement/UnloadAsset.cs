@@ -4,7 +4,7 @@ using Toolset;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "Unload", menuName = "Code Blocks/Asset Management/Unload Asset", order = 0)]
+    [CreateAssetMenu(fileName = "Unload", menuName = "Code Blocks/Assets/Unload Asset", order = 0)]
     public class UnloadAsset : CodeBlock
     {
         [SerializeField] private string address;

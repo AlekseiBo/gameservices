@@ -5,8 +5,8 @@ namespace GameServices.Commands
 {
     public class RelayServerAllocated : IMediatorCommand
     {
-        public Allocation Allocation;
-        public string JoinCode;
+        public readonly Allocation Allocation;
+        public readonly string JoinCode;
 
         public RelayServerAllocated(Allocation allocation, string joinCode)
         {

@@ -5,7 +5,7 @@ using Toolset;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "Instantiate", menuName = "Code Blocks/Asset Management/Instantiate Asset", order = 0)]
+    [CreateAssetMenu(fileName = "Instantiate", menuName = "Code Blocks/Assets/Instantiate Asset", order = 0)]
     public class InstantiateAsset : CodeBlock
     {
         [SerializeField] private AssetReference asset;

@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "LoadScene", menuName = "Code Blocks/Load Scene", order = 0)]
-    public class LoadScene : CodeBlock
+    [CreateAssetMenu(fileName = "LoadScene", menuName = "Code Blocks/Assets/Load Scene Prefab", order = 0)]
+    public class LoadScenePrefab : CodeBlock
     {
         [SerializeField] private string sceneName;
         [SerializeField] private bool additive;

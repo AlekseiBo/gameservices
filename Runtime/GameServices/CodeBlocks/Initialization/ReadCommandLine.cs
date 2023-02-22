@@ -10,6 +10,7 @@ namespace GameServices.CodeBlocks
         private const string RELAY_SERVER = "relay-server";
         private const string FRAME_RATE = "fps";
         private const string MAX_PLAYERS = "max-players";
+        private const string VENUE_ADDRESS = "address";
 
         protected override void Execute()
         {
@@ -21,6 +22,9 @@ namespace GameServices.CodeBlocks
         private void SetGameDataEntries()
         {
             GameData.Set(Key.RelayServer, CommandLineArgument(RELAY_SERVER));
+
+            var address = CommandLineValue(VENUE_ADDRESS);
+            if (!string.IsNullOrEmpty(address)) GameData.Set(Key.ActiveVenue, address);
 
             var maxPlayers = CommandLineValue(MAX_PLAYERS);
             if (!string.IsNullOrEmpty(maxPlayers)) GameData.Set(Key.MaxPlayers, int.Parse(maxPlayers));

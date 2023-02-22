@@ -31,8 +31,9 @@ namespace GameServices
 
         public async Task<Lobby> CreateLobby(bool isPrivate = false)
         {
-            var owner = GameData<Key>.Get<bool>(Key.RelayServer) ? "RELAY" : "USER";
-            var lobbyName = $"{owner} {playerId}";
+            var owner = GameData<Key>.Get<bool>(Key.RelayServer) ? "RELAY" : "PLAYER";
+            var address = GameData.Get<string>(Key.ActiveVenue);
+            var lobbyName = $"{owner} {address}";
             var maxPlayers = GameData.Get<int>(Key.MaxPlayers);
             var lobbyOptions = new CreateLobbyOptions { IsPrivate = isPrivate };
 
@@ -54,11 +55,11 @@ namespace GameServices
 
 
 
-        public async Task<Lobby> JoinPublicLobby(int attempt = 1, string venue = "")
+        public async Task<Lobby> JoinPublicLobby(int attempt = 1, string address = "")
         {
             try
             {
-                var lobbies = await ListLobbies();
+                var lobbies = await ListLobbies(address);
                 if (lobbies.Results.Count < attempt) return null;
 
                 var lobbyId = lobbies.Results[attempt - 1].Id;
@@ -107,14 +108,17 @@ namespace GameServices
             }
         }
 
-        private async Task<QueryResponse> ListLobbies()
+        private async Task<QueryResponse> ListLobbies(string address)
         {
             try
             {
                 var queryLobbiesOptions = new QueryLobbiesOptions
                 {
                     Filters = new List<QueryFilter>
-                        { new(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT) },
+                    {
+                        new(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
+                        new(QueryFilter.FieldOptions.Name, address, QueryFilter.OpOptions.CONTAINS)
+                    },
                     Order = new List<QueryOrder>
                         { new(true, QueryOrder.FieldOptions.Created) }
                 };

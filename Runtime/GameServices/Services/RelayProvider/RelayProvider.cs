@@ -79,7 +79,7 @@ namespace GameServices
             NetworkManager.Singleton.OnTransportFailure -= OnTransportFailure;
             Debug.Log("Relay transport failure");
             await Task.Delay(5000);
-            CreateRelayServer();
+            await CreateRelayServer();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace GameServices
         public List<VenueStaticData> AllVenues() => venues.Values.ToList();
 
         public VenueStaticData ForVenue(string sceneAddress) =>
-            venues.TryGetValue(sceneAddress, out VenueStaticData staticData)
+            venues.TryGetValue(sceneAddress, out var staticData)
                 ? staticData
                 : null;
 
@@ -42,7 +42,7 @@ namespace GameServices
         {
             venues = Resources
                 .LoadAll<VenueStaticData>(VenueDataPath)
-                .ToDictionary(x => x.Name, x => x);
+                .ToDictionary(x => x.Address, x => x);
         }
     }
 }

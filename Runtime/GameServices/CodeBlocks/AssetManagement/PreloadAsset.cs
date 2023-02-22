@@ -4,7 +4,7 @@ using Toolset;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "Preload", menuName = "Code Blocks/Asset Management/Preload Asset", order = 0)]
+    [CreateAssetMenu(fileName = "Preload", menuName = "Code Blocks/Assets/Preload Asset", order = 0)]
     public class PreloadAsset : CodeBlock
     {
         [SerializeField] private string address;
