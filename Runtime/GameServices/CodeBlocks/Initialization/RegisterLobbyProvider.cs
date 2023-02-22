@@ -10,8 +10,7 @@ namespace GameServices.CodeBlocks
         protected override void Execute()
         {
             if (Services.All.Single<ILobbyProvider>() == null)
-                Services.All.RegisterSingle<ILobbyProvider>(
-                    new LobbyProvider(Runner, Services.All.Single<IRelayProvider>()));
+                Services.All.RegisterSingle<ILobbyProvider>(new LobbyProvider());
 
             Complete(true);
         }

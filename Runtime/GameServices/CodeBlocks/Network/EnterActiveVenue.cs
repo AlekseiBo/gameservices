@@ -27,7 +27,7 @@ namespace GameServices.CodeBlocks
             }
             else
             {
-                Instantiate(venueData.NetworkManager);
+                Instantiate(venueData.NetworkManager).With(e => e.name = "Network Manager");
                 EnterVenue(venueData.Address);
             }
         }

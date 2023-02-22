@@ -10,9 +10,12 @@ namespace GameServices.CodeBlocks
     {
         [SerializeField] private string sceneName;
         [SerializeField] private bool additive;
+        [SerializeField] private bool immediately;
 
         protected override void Execute()
         {
+            if (immediately) Complete(true);
+
             try
             {
                 SceneManager.LoadSceneAsync(sceneName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single)
@@ -20,13 +23,13 @@ namespace GameServices.CodeBlocks
             }
             catch (Exception)
             {
-                Complete(false);
+                if (!immediately) Complete(false);
             }
         }
 
         private void OnCompleted(AsyncOperation result)
         {
-                Complete(result.isDone);
+            if (!immediately) Complete(result.isDone);
         }
     }
 }

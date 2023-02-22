@@ -7,40 +7,55 @@ using Unity.Services.Core;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "UnityServicesAuthenticate", menuName = "Code Blocks/Initialization/Authenticate Unity Services", order = 0)]
+    [CreateAssetMenu(fileName = "UnityServicesAuthenticate",
+        menuName = "Code Blocks/Initialization/Authenticate Unity Services", order = 0)]
     public class UnityServicesAuthenticate : CodeBlock
     {
         protected override async void Execute()
         {
-            try
+            if (UnityServices.State == ServicesInitializationState.Uninitialized)
             {
-                var randomId = $"Player-{UnityEngine.Random.Range(100, 1000).ToString()}";
-                var initOptions = new InitializationOptions()
-                    .With(e => e.SetProfile(randomId));
-
-                await UnityServices.InitializeAsync(initOptions);
-
-                AuthenticationService.Instance.SignedIn += () =>
+                try
                 {
-                    Debug.Log($"Signed in with Unity Services: {AuthenticationService.Instance.PlayerId}");
-                    Complete(true);
-                };
-            }
-            catch (Exception e)
-            {
-                Runner.LogMessage(e.Message);
-                Complete(false);
+                    var randomId = $"Player-{UnityEngine.Random.Range(100, 1000).ToString()}";
+                    var initOptions = new InitializationOptions()
+                        .With(e => e.SetProfile(randomId));
+
+                    await UnityServices.InitializeAsync(initOptions);
+                }
+                catch (Exception e)
+                {
+                    Runner.LogMessage(e.Message);
+                    Complete(false);
+                    return;
+                }
             }
 
-            try
+            if (!AuthenticationService.Instance.IsSignedIn)
             {
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                AuthenticationService.Instance.SignedIn += OnSignedIn;
+
+                try
+                {
+                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                }
+                catch (AuthenticationException e)
+                {
+                    Runner.LogMessage(e.Message);
+                    Complete(false);
+                }
             }
-            catch (AuthenticationException e)
+            else
             {
-                Runner.LogMessage(e.Message);
-                Complete(false);
+                Complete(true);
             }
+        }
+
+        private void OnSignedIn()
+        {
+            AuthenticationService.Instance.SignedIn -= OnSignedIn;
+            Debug.Log($"Signed in with Unity Services: {AuthenticationService.Instance.PlayerId}");
+            Complete(true);
         }
     }
 }

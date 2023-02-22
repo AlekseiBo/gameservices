@@ -17,17 +17,10 @@ namespace GameServices
         private const string RELAY_CODE = "RELAY_CODE";
         private string playerId => AuthenticationService.Instance.PlayerId;
 
-        private readonly IRelayProvider relayProvider;
-        private readonly MonoBehaviour runner;
+        private CoroutineRunner coroutine;
         private Coroutine heartbeatCoroutine;
         private Lobby hostedLobby;
         private Lobby joinedLobby;
-
-        public LobbyProvider(MonoBehaviour runner, IRelayProvider relayProvider)
-        {
-            this.runner = runner;
-            this.relayProvider = relayProvider;
-        }
 
         public async Task<Lobby> CreateLobby(bool isPrivate = false)
         {
@@ -40,7 +33,7 @@ namespace GameServices
             try
             {
                 hostedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, lobbyOptions);
-                heartbeatCoroutine = this.runner.StartCoroutine(RunHeartbeat(HEARTBEAT_TIMEOUT));
+                heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat(HEARTBEAT_TIMEOUT));
                 joinedLobby = hostedLobby;
                 Debug.Log($"Lobby created: {hostedLobby.Name}");
                 Mediator.Subscribe<RelayServerAllocated>(OnRelayServerAllocated);
@@ -83,10 +76,10 @@ namespace GameServices
                 try
                 {
                     await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+                    CoroutineRunner.Stop(heartbeatCoroutine);
+                    Debug.Log($"Player {playerId} deleted lobby {joinedLobby.Name}");
                     hostedLobby = null;
                     joinedLobby = null;
-                    runner.StopCoroutine(heartbeatCoroutine);
-                    Debug.Log($"Player {playerId} deleted lobby {joinedLobby.Name}");
                 }
                 catch (LobbyServiceException e)
                 {
@@ -98,8 +91,8 @@ namespace GameServices
                 try
                 {
                     await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerId);
-                    joinedLobby = null;
                     Debug.Log($"Player {playerId} left lobby {joinedLobby.Name}");
+                    joinedLobby = null;
                 }
                 catch (LobbyServiceException e)
                 {

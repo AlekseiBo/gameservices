@@ -7,6 +7,8 @@ namespace GameServices
 {
     public class GameData<TKey> where TKey : struct, Enum
     {
+        public static bool isInitialized;
+
         private IStaticDataService staticData;
         private static Dictionary<TKey, ScriptableObject> gameData;
 
@@ -14,6 +16,7 @@ namespace GameServices
         {
             staticData = Services.All.Single<IStaticDataService>();
             gameData = staticData.AllGameData<TKey>();
+            isInitialized = true;
         }
 
         public static T Get<T>(TKey key) => GetEntry<T>(key).Value;
