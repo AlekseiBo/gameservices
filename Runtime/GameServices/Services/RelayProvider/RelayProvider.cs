@@ -4,6 +4,7 @@ using Toolset;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Multiplay;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
@@ -74,12 +75,11 @@ namespace GameServices
         }
 
 
-        private async void OnTransportFailure()
+        private void OnTransportFailure()
         {
             NetworkManager.Singleton.OnTransportFailure -= OnTransportFailure;
-            Debug.Log("Relay transport failure");
-            await Task.Delay(5000);
-            await CreateRelayServer();
+            Debug.LogError("Relay transport failure");
+            if (GameData.Get<bool>(Key.RelayServer)) Application.Quit();
         }
     }
 }
