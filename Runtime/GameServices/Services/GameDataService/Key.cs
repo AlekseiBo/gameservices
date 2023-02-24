@@ -2,7 +2,7 @@
 {
     public enum Key
     {
-        PlayerName,
+        PlayerHost,
         ActiveVenue,
         RelayServer,
         MaxPlayers

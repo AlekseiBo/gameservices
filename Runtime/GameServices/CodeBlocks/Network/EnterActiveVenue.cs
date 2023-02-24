@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Toolset;
 using UnityEngine;
 
@@ -39,16 +40,14 @@ namespace GameServices.CodeBlocks
 
             while (!connected && attempt <= attempts)
             {
-                var joinedLobby = await lobbyProvider.JoinPublicLobby(attempt, address);
-                if (joinedLobby == null || GameData.Get<bool>(Key.RelayServer))
+                if (GameData.Get<bool>(Key.RelayServer) || GameData.Get<bool>(Key.PlayerHost))
                 {
-                    var hostedLobby = await lobbyProvider.CreateLobby();
-                    connected = hostedLobby != null && await relayProvider.CreateRelayServer();
+                    connected = await CreatLobby();
                 }
                 else
                 {
-                    var code = lobbyProvider.GetRelayCode();
-                    connected = await relayProvider.JoinRelay(code);
+                    var joinedLobby = await lobbyProvider.JoinPublicLobby(attempt, address);
+                    connected = joinedLobby == null ? await CreatLobby() : await JoinLobby();
                 }
 
                 Runner.LogMessage($"Entering lobby attempt {attempt} result: {connected}");
@@ -56,6 +55,18 @@ namespace GameServices.CodeBlocks
             }
 
             Complete(connected);
+        }
+
+        private async Task<bool> JoinLobby()
+        {
+            var code = lobbyProvider.GetRelayCode();
+            return await relayProvider.JoinRelay(code);
+        }
+
+        private async Task<bool> CreatLobby()
+        {
+            var hostedLobby = await lobbyProvider.CreateLobby();
+            return hostedLobby != null && await relayProvider.CreateRelayServer();
         }
     }
 }
