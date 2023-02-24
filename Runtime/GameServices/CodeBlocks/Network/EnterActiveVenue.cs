@@ -50,6 +50,7 @@ namespace GameServices.CodeBlocks
                     connected = joinedLobby == null ? await CreatLobby() : await JoinLobby();
                 }
 
+                await Task.Delay(1000);
                 Runner.LogMessage($"Entering lobby attempt {attempt} result: {connected}");
                 attempt++;
             }
