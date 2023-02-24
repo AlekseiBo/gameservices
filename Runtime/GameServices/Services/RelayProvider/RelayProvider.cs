@@ -24,12 +24,8 @@ namespace GameServices
                 joinCode = await GetJoinCode();
                 var relayServerData = new RelayServerData(allocation, "dtls");
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-
-                if (GameData.Get<bool>(Key.RelayServer))
-                    NetworkManager.Singleton.StartServer();
-                else
-                    NetworkManager.Singleton.StartHost();
-
+                NetworkManager.Singleton.StartHost();
+                NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
                 NetworkManager.Singleton.OnTransportFailure += OnTransportFailure;
                 Mediator.Publish(new RelayServerAllocated(allocation, joinCode));
                 return true;
@@ -73,9 +69,18 @@ namespace GameServices
             }
         }
 
+        private void OnClientDisconnect(ulong clientId)
+        {
+            Debug.LogError($"Client {clientId} disconnected");
+            if (clientId == 0 && GameData.Get<bool>(Key.RelayServer))
+            {
+                OnTransportFailure();
+            }
+        }
 
         private void OnTransportFailure()
         {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
             NetworkManager.Singleton.OnTransportFailure -= OnTransportFailure;
             Debug.LogError("Relay transport failure");
             if (GameData.Get<bool>(Key.RelayServer)) Application.Quit();
