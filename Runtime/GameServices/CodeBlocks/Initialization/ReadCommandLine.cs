@@ -4,7 +4,8 @@ using Toolset;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "ReadCommandLine", menuName = "Code Blocks/Initialization/Read Command Line", order = 0)]
+    [CreateAssetMenu(fileName = "ReadCommandLine", menuName = "Code Blocks/Initialization/Read Command Line",
+        order = 0)]
     public class ReadCommandLine : CodeBlock
     {
         private const string RELAY_SERVER = "relay-server";
@@ -21,6 +22,9 @@ namespace GameServices.CodeBlocks
 
         private void SetGameDataEntries()
         {
+#if UNITY_EDITOR
+            return;
+#endif
             GameData.Set(Key.RelayServer, CommandLineArgument(RELAY_SERVER));
 
             var address = CommandLineValue(VENUE_ADDRESS);
