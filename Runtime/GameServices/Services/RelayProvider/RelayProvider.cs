@@ -113,10 +113,10 @@ namespace GameServices
 
             while (!token.IsCancellationRequested)
             {
-                if (joinCode != await GetJoinCode())
-                    OnFailure();
+                //if (joinCode != await GetJoinCode())
 
                 await Task.Delay(delayTimeout, token);
+                OnFailure();
             }
         }
     }

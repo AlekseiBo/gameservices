@@ -140,11 +140,11 @@ namespace GameServices
         {
             Debug.Log($"Updating relay server data");
 
-            var updateOptions = new UpdatePlayerOptions
-            {
-                AllocationId = server.Allocation.AllocationId.ToString(),
-                ConnectionInfo = server.JoinCode
-            };
+            // var updateOptions = new UpdatePlayerOptions
+            // {
+            //     AllocationId = server.Allocation.AllocationId.ToString(),
+            //     ConnectionInfo = server.JoinCode
+            // };
 
             var lobbyOptions = new UpdateLobbyOptions
             {
@@ -154,8 +154,11 @@ namespace GameServices
 
             try
             {
-                await LobbyService.Instance.UpdatePlayerAsync(hostedLobby.Id, playerId, updateOptions);
+                //await LobbyService.Instance.UpdatePlayerAsync(hostedLobby.Id, playerId, updateOptions);
+                Debug.Log($"Old lobby: {hostedLobby.Id}, host: {hostedLobby.HostId}");
                 hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
+                Debug.Log($"New lobby: {hostedLobby.Id}, host: {hostedLobby.HostId}");
+
             }
             catch (LobbyServiceException e)
             {
