@@ -138,7 +138,7 @@ namespace GameServices
 
         private async void OnRelayServerAllocated(RelayServerAllocated server)
         {
-            Debug.Log($"Updating relay server data");
+            Debug.Log($"Updating relay server join code");
 
             // var updateOptions = new UpdatePlayerOptions
             // {
@@ -155,10 +155,7 @@ namespace GameServices
             try
             {
                 //await LobbyService.Instance.UpdatePlayerAsync(hostedLobby.Id, playerId, updateOptions);
-                Debug.Log($"Old lobby: {hostedLobby.Id}, host: {hostedLobby.HostId}");
                 hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
-                Debug.Log($"New lobby: {hostedLobby.Id}, host: {hostedLobby.HostId}");
-
             }
             catch (LobbyServiceException e)
             {
