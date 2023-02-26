@@ -25,30 +25,27 @@ namespace GameServices
             try
             {
                 var network = NetworkManager.Singleton;
-                var host = !GameData.Get<bool>(Key.RelayServer);
+                var relay = GameData.Get<bool>(Key.RelayServer);
                 var maxConnections = GameData.Get<int>(Key.MaxPlayers) - 1;
                 allocation = await RelayService.Instance.CreateAllocationAsync(maxConnections);
                 joinCode = await GetJoinCode();
                 var relayServerData = new RelayServerData(allocation, "dtls");
                 network.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+                var started = relay ? network.StartServer() : network.StartHost();
 
-                var started = host ? network.StartHost() : network.StartServer();
-                if (started)
+                if (!started) return false;
+
+                if (relay)
                 {
-                    if (!host)
-                    {
-                        tokenSource?.Cancel();
-                        tokenSource = new CancellationTokenSource();
-                        var token = tokenSource.Token;
-                        RunHeartbeat(HEARTBEAT_TIMEOUT, token);
-                    }
-
-                    network.OnTransportFailure += OnFailure;
-                    Mediator.Publish(new RelayServerAllocated(allocation, joinCode));
-                    return true;
+                    tokenSource?.Cancel();
+                    tokenSource = new CancellationTokenSource();
+                    var token = tokenSource.Token;
+                    RunHeartbeat(HEARTBEAT_TIMEOUT, token);
                 }
 
-                return false;
+                network.OnTransportFailure += OnFailure;
+                Mediator.Publish(new RelayServerAllocated(allocation, joinCode));
+                return true;
 
             }
             catch (RelayServiceException e)
@@ -113,10 +110,9 @@ namespace GameServices
 
             while (!token.IsCancellationRequested)
             {
-                //if (joinCode != await GetJoinCode())
-
                 await Task.Delay(delayTimeout, token);
-                OnFailure();
+                if (joinCode != await GetJoinCode())
+                    OnFailure();
             }
         }
     }
