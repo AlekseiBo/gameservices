@@ -5,7 +5,8 @@ namespace GameServices
 {
     public interface IRelayProvider : IService
     {
-        Task<bool> CreateRelayServer();
-        Task<bool> JoinRelay(string joinCode);
+        Task<bool> CreateServer();
+        Task<bool> JoinServer(string joinCode);
+        void StopServer();
     }
 }

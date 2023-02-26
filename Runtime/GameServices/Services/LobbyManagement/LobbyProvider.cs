@@ -138,6 +138,8 @@ namespace GameServices
 
         private async void OnRelayServerAllocated(RelayServerAllocated server)
         {
+            Debug.Log($"Updating relay server data");
+
             var updateOptions = new UpdatePlayerOptions
             {
                 AllocationId = server.Allocation.AllocationId.ToString(),
@@ -158,6 +160,7 @@ namespace GameServices
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
+                Application.Quit();
             }
         }
 

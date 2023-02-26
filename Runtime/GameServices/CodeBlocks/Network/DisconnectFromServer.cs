@@ -11,7 +11,9 @@ namespace GameServices.CodeBlocks
         {
             if (NetworkManager.Singleton != null)
             {
-                NetworkManager.Singleton.Shutdown();
+                var relay = Services.All.Single<IRelayProvider>();
+                relay.StopServer();
+
                 Destroy(NetworkManager.Singleton.gameObject);
             }
 

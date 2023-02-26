@@ -62,13 +62,13 @@ namespace GameServices.CodeBlocks
         private async Task<bool> JoinLobby()
         {
             var code = lobbyProvider.GetRelayCode();
-            return await relayProvider.JoinRelay(code);
+            return await relayProvider.JoinServer(code);
         }
 
         private async Task<bool> CreatLobby()
         {
             var hostedLobby = await lobbyProvider.CreateLobby();
-            return hostedLobby != null && await relayProvider.CreateRelayServer();
+            return hostedLobby != null && await relayProvider.CreateServer();
         }
     }
 }
