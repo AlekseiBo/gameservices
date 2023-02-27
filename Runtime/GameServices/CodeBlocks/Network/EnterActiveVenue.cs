@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Toolset;
 using UnityEngine;
@@ -29,11 +28,26 @@ namespace GameServices.CodeBlocks
             else
             {
                 Instantiate(venueData.NetworkManager).With(e => e.name = "Network Manager");
-                EnterVenue(venueData.Address);
+
+                var code = GameData.Get<string>(Key.LobbyCode);
+                if (code != "")
+                    EnterVenue(code);
+                else
+                    EnterPublicVenue(venueData.Address);
+
             }
         }
 
-        private async void EnterVenue(string address)
+        private async void EnterVenue(string code)
+        {
+            var joinedLobby = await lobbyProvider.JoinLobby(code);
+            var relayCode = lobbyProvider.RelayCode;
+            var connected = await relayProvider.JoinServer(relayCode);
+            GameData.Set(Key.LobbyCode, "");
+            Complete(connected);
+        }
+
+        private async void EnterPublicVenue(string address)
         {
             var connected = false;
             var attempt = 1;
@@ -61,7 +75,7 @@ namespace GameServices.CodeBlocks
 
         private async Task<bool> JoinLobby()
         {
-            var code = lobbyProvider.GetRelayCode();
+            var code = lobbyProvider.RelayCode;
             return await relayProvider.JoinServer(code);
         }
 

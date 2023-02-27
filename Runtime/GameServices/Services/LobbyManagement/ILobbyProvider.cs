@@ -7,9 +7,15 @@ namespace GameServices
 {
     public interface ILobbyProvider : IService
     {
+        string RelayCode => "";
+        string LobbyCode => "";
+        string Venue => "";
+
         Task<Lobby> CreateLobby(bool isPrivate = false);
         Task<Lobby> JoinPublicLobby(int attempt = 0, string address = "");
         void LeaveConnectedLobby();
-        string GetRelayCode();
+
+        Task<string> GetLobbyVenue(string lobbyCode);
+        Task<Lobby> JoinLobby(string code);
     }
 }

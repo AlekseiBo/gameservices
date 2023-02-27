@@ -15,6 +15,12 @@ namespace GameServices
     {
         private const float HEARTBEAT_TIMEOUT = 10f;
         private const string RELAY_CODE = "RELAY_CODE";
+        private const string VENUE = "VENUE";
+
+        public string LobbyCode => joinedLobby.LobbyCode;
+        public string RelayCode => joinedLobby.Data.GetValueOrDefault(RELAY_CODE).Value;
+        public string Venue => joinedLobby.Data.GetValueOrDefault(VENUE).Value;
+
         private string playerId => AuthenticationService.Instance.PlayerId;
 
         private CoroutineRunner coroutine;
@@ -46,7 +52,20 @@ namespace GameServices
             }
         }
 
-
+        public async Task<Lobby> JoinLobby(string code)
+        {
+            try
+            {
+                joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
+                Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId}");
+                return joinedLobby;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+                return null;
+            }
+        }
 
         public async Task<Lobby> JoinPublicLobby(int attempt = 1, string address = "")
         {
@@ -67,7 +86,22 @@ namespace GameServices
             }
         }
 
-        public string GetRelayCode() => joinedLobby.Data.GetValueOrDefault(RELAY_CODE).Value;
+        public async Task<string> GetLobbyVenue(string lobbyCode)
+        {
+            try
+            {
+                var lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
+                var venue = lobby.Data.GetValueOrDefault(VENUE).Value;
+                GameData.Set(Key.LobbyCode, lobby.LobbyCode);
+                await LobbyService.Instance.RemovePlayerAsync(lobby.Id, playerId);
+                return venue;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+                return default;
+            }
+        }
 
         public async void LeaveConnectedLobby()
         {
@@ -146,16 +180,22 @@ namespace GameServices
             //     ConnectionInfo = server.JoinCode
             // };
 
+            var venue = GameData.Get<string>(Key.ActiveVenue);
             var lobbyOptions = new UpdateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>()
-                    { { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) } }
+                {
+                    { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) },
+                    { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) }
+                }
             };
 
             try
             {
                 //await LobbyService.Instance.UpdatePlayerAsync(hostedLobby.Id, playerId, updateOptions);
                 hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
+                joinedLobby = hostedLobby;
+                GameData.Set(Key.LobbyCode, LobbyCode);
             }
             catch (LobbyServiceException e)
             {

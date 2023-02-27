@@ -5,6 +5,7 @@
         PlayerHost,
         ActiveVenue,
         RelayServer,
-        MaxPlayers
+        MaxPlayers,
+        LobbyCode
     }
 }

@@ -18,7 +18,7 @@ namespace GameServices
         private const float HEARTBEAT_TIMEOUT = 30;
         private Allocation allocation;
         private string joinCode;
-        private CancellationTokenSource tokenSource;
+        // private CancellationTokenSource tokenSource;
 
         public async Task<bool> CreateServer()
         {
@@ -35,13 +35,13 @@ namespace GameServices
 
                 if (!started) return false;
 
-                if (relay)
-                {
-                    tokenSource?.Cancel();
-                    tokenSource = new CancellationTokenSource();
-                    var token = tokenSource.Token;
-                    RunHeartbeat(HEARTBEAT_TIMEOUT, token);
-                }
+                // if (relay)
+                // {
+                //     tokenSource?.Cancel();
+                //     tokenSource = new CancellationTokenSource();
+                //     var token = tokenSource.Token;
+                //     RunHeartbeat(HEARTBEAT_TIMEOUT, token);
+                // }
 
                 network.OnTransportFailure += OnFailure;
                 Mediator.Publish(new RelayServerAllocated(allocation, joinCode));
@@ -77,7 +77,7 @@ namespace GameServices
         public void StopServer()
         {
             allocation = null;
-            tokenSource?.Cancel();
+            // tokenSource?.Cancel();
             if (NetworkManager.Singleton.IsServer)
                 NetworkManager.Singleton.Shutdown();
         }
@@ -104,16 +104,16 @@ namespace GameServices
             CreateServer();
         }
 
-        private async void RunHeartbeat(float timeout, CancellationToken token)
-        {
-            var delayTimeout = (int)timeout * 1000;
-
-            while (!token.IsCancellationRequested)
-            {
-                await Task.Delay(delayTimeout, token);
-                if (joinCode != await GetJoinCode())
-                    OnFailure();
-            }
-        }
+        // private async void RunHeartbeat(float timeout, CancellationToken token)
+        // {
+        //     var delayTimeout = (int)timeout * 1000;
+        //
+        //     while (!token.IsCancellationRequested)
+        //     {
+        //         await Task.Delay(delayTimeout, token);
+        //         if (joinCode != await GetJoinCode())
+        //             OnFailure();
+        //     }
+        // }
     }
 }

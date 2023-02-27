@@ -1,6 +1,6 @@
 ﻿using Toolset;
 
-namespace GameServices.CodeBlocks
+namespace GameServices.Commands
 {
     public class VenueSelected : IMediatorCommand
     {
