@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameServices.Commands;
-using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -13,32 +12,29 @@ namespace GameServices
 {
     public class LobbyProvider : ILobbyProvider
     {
+
         private const float HEARTBEAT_TIMEOUT = 10f;
         private const string RELAY_CODE = "RELAY_CODE";
         private const string VENUE = "VENUE";
 
-        public string LobbyCode => joinedLobby.LobbyCode;
-        public string RelayCode => joinedLobby.Data.GetValueOrDefault(RELAY_CODE).Value;
-        public string Venue => joinedLobby.Data.GetValueOrDefault(VENUE).Value;
+        public string LobbyCode => joinedLobby?.LobbyCode;
+        public string RelayCode => joinedLobby?.Data.GetValueOrDefault(RELAY_CODE).Value;
+        public string Venue => joinedLobby?.Data.GetValueOrDefault(VENUE).Value;
 
-        private string playerId => AuthenticationService.Instance.PlayerId;
+        private string playerId => AuthenticationService.Instance?.PlayerId;
 
         private CoroutineRunner coroutine;
         private Coroutine heartbeatCoroutine;
         private Lobby hostedLobby;
         private Lobby joinedLobby;
 
-        public async Task<Lobby> CreateLobby(bool isPrivate = false)
+        public async Task<Lobby> CreateLobby(CreateLobbyData data)
         {
-            var owner = GameData<Key>.Get<bool>(Key.RelayServer) ? "RELAY" : "PLAYER";
-            var address = GameData.Get<string>(Key.ActiveVenue);
-            var lobbyName = $"{owner} {address}";
-            var maxPlayers = GameData.Get<int>(Key.MaxPlayers);
-            var lobbyOptions = new CreateLobbyOptions { IsPrivate = isPrivate };
+            var lobbyOptions = new CreateLobbyOptions { IsPrivate = data.IsPrivate };
 
             try
             {
-                hostedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, lobbyOptions);
+                hostedLobby = await LobbyService.Instance.CreateLobbyAsync(data.Name, data.MaxPlayers, lobbyOptions);
                 heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat(HEARTBEAT_TIMEOUT));
                 joinedLobby = hostedLobby;
                 Debug.Log($"Lobby created: {hostedLobby.Name}");
@@ -48,11 +44,30 @@ namespace GameServices
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                return null;
+                return default;
             }
         }
 
-        public async Task<Lobby> JoinLobby(string code)
+        public async Task<Lobby> JoinLobbyByVenue(string venue, int attempt = 1)
+        {
+            try
+            {
+                var lobbies = await ListLobbies(venue);
+                if (lobbies.Results.Count < attempt) return default;
+
+                var lobbyId = lobbies.Results[attempt - 1].Id;
+                joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
+                Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId}");
+                return joinedLobby;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+                return default;
+            }
+        }
+
+        public async Task<Lobby> JoinLobbyByCode(string code)
         {
             try
             {
@@ -63,47 +78,11 @@ namespace GameServices
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                return null;
-            }
-        }
-
-        public async Task<Lobby> JoinPublicLobby(int attempt = 1, string address = "")
-        {
-            try
-            {
-                var lobbies = await ListLobbies(address);
-                if (lobbies.Results.Count < attempt) return null;
-
-                var lobbyId = lobbies.Results[attempt - 1].Id;
-                joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
-                Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId}");
-                return joinedLobby;
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
-                return null;
-            }
-        }
-
-        public async Task<string> GetLobbyVenue(string lobbyCode)
-        {
-            try
-            {
-                var lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
-                var venue = lobby.Data.GetValueOrDefault(VENUE).Value;
-                GameData.Set(Key.LobbyCode, lobby.LobbyCode);
-                await LobbyService.Instance.RemovePlayerAsync(lobby.Id, playerId);
-                return venue;
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
                 return default;
             }
         }
 
-        public async void LeaveConnectedLobby()
+        public async Task LeaveConnectedLobby()
         {
             if (hostedLobby != null)
             {
@@ -137,7 +116,7 @@ namespace GameServices
             }
         }
 
-        private async Task<QueryResponse> ListLobbies(string address)
+        private async Task<QueryResponse> ListLobbies(string venue)
         {
             try
             {
@@ -146,7 +125,7 @@ namespace GameServices
                     Filters = new List<QueryFilter>
                     {
                         new(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
-                        new(QueryFilter.FieldOptions.Name, address, QueryFilter.OpOptions.CONTAINS)
+                        new(QueryFilter.FieldOptions.Name, venue, QueryFilter.OpOptions.CONTAINS)
                     },
                     Order = new List<QueryOrder>
                         { new(true, QueryOrder.FieldOptions.Created) }
@@ -155,18 +134,15 @@ namespace GameServices
                 var response = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
 
                 Debug.Log($"Current lobbies: {response.Results.Count}");
-
                 foreach (var lobby in response.Results)
-                {
                     Debug.Log($"{lobby.Name}: privates = {lobby.IsPrivate}, max players = {lobby.MaxPlayers}");
-                }
 
                 return response;
             }
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                return null;
+                return default;
             }
         }
 
@@ -174,16 +150,10 @@ namespace GameServices
         {
             Debug.Log($"Updating relay server join code");
 
-            // var updateOptions = new UpdatePlayerOptions
-            // {
-            //     AllocationId = server.Allocation.AllocationId.ToString(),
-            //     ConnectionInfo = server.JoinCode
-            // };
-
-            var venue = GameData.Get<string>(Key.ActiveVenue);
+            var venue = GameData.Get<string>(Key.CurrentVenue);
             var lobbyOptions = new UpdateLobbyOptions
             {
-                Data = new Dictionary<string, DataObject>()
+                Data = new Dictionary<string, DataObject>
                 {
                     { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) },
                     { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) }
@@ -192,10 +162,9 @@ namespace GameServices
 
             try
             {
-                //await LobbyService.Instance.UpdatePlayerAsync(hostedLobby.Id, playerId, updateOptions);
                 hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
                 joinedLobby = hostedLobby;
-                GameData.Set(Key.LobbyCode, LobbyCode);
+                GameData.Set(Key.CurrentLobbyCode, hostedLobby.LobbyCode);
             }
             catch (LobbyServiceException e)
             {

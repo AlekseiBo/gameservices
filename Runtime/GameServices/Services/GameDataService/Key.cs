@@ -2,10 +2,10 @@
 {
     public enum Key
     {
-        PlayerHost,
-        ActiveVenue,
-        RelayServer,
-        MaxPlayers,
-        LobbyCode
+        CurrentVenue,
+        CurrentLobbyCode,
+        LobbyMaxPlayers,
+        PlayerName,
+        PlayerNetState,
     }
 }

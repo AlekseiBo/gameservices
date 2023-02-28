@@ -11,11 +11,9 @@ namespace GameServices
         string LobbyCode => "";
         string Venue => "";
 
-        Task<Lobby> CreateLobby(bool isPrivate = false);
-        Task<Lobby> JoinPublicLobby(int attempt = 0, string address = "");
-        void LeaveConnectedLobby();
-
-        Task<string> GetLobbyVenue(string lobbyCode);
-        Task<Lobby> JoinLobby(string code);
+        Task<Lobby> CreateLobby(CreateLobbyData data);
+        Task<Lobby> JoinLobbyByVenue(string venue, int attempt = 1);
+        Task<Lobby> JoinLobbyByCode(string code);
+        Task LeaveConnectedLobby();
     }
 }

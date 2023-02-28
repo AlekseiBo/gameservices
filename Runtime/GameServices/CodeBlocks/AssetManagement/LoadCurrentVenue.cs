@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "LoadActiveVenue", menuName = "Code Blocks/Assets/Load Active Venue", order = 0)]
-    public class LoadActiveVenue : CodeBlock
+    [CreateAssetMenu(fileName = "Load Current Venue", menuName = "Code Blocks/Assets/Load Current Venue", order = 0)]
+    public class LoadCurrentVenue : CodeBlock
     {
         private IAssetProvider assets;
         protected override void Execute()
@@ -17,8 +17,8 @@ namespace GameServices.CodeBlocks
 
         private async void Load()
         {
-            await assets.LoadScene(GameData.Get<string>(Key.ActiveVenue));
-            Complete(true);
+            var sceneInstance = await assets.LoadScene(GameData.Get<string>(Key.CurrentVenue));
+            Complete(sceneInstance.Scene != null);
         }
     }
 }

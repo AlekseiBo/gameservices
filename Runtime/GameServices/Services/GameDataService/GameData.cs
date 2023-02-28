@@ -30,8 +30,10 @@ namespace GameServices
             return dataEntry.Value;
         }
 
-        public static void RemoveSubscriber<T>(TKey key, Action<DataEntry<T>> action) =>
-            GetEntry<T>(key).RemoveSubscriber(action);
+        public static void RemoveSubscriber<T>(TKey key, Action<DataEntry<T>> action)
+        {
+            if (action != null) GetEntry<T>(key).RemoveSubscriber(action);
+        }
 
         private static DataEntry<T> GetEntry<T>(TKey key)
         {

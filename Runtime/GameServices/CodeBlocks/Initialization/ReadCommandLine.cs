@@ -25,13 +25,14 @@ namespace GameServices.CodeBlocks
 #if UNITY_EDITOR
             return;
 #endif
-            GameData.Set(Key.RelayServer, CommandLineArgument(RELAY_SERVER));
+            if (CommandLineArgument(RELAY_SERVER))
+                GameData.Set(Key.PlayerNetState, NetState.Dedicated);
 
             var address = CommandLineValue(VENUE_ADDRESS);
-            if (!string.IsNullOrEmpty(address)) GameData.Set(Key.ActiveVenue, address);
+            if (!string.IsNullOrEmpty(address)) GameData.Set(Key.CurrentVenue, address);
 
             var maxPlayers = CommandLineValue(MAX_PLAYERS);
-            if (!string.IsNullOrEmpty(maxPlayers)) GameData.Set(Key.MaxPlayers, int.Parse(maxPlayers));
+            if (!string.IsNullOrEmpty(maxPlayers)) GameData.Set(Key.LobbyMaxPlayers, int.Parse(maxPlayers));
         }
 
         private void SetTargetFramesPerSecond()

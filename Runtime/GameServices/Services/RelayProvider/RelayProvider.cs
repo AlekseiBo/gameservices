@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using GameServices.Commands;
 using Toolset;
 using Unity.Netcode;
@@ -17,32 +14,24 @@ namespace GameServices
     {
         private const float HEARTBEAT_TIMEOUT = 30;
         private Allocation allocation;
-        private string joinCode;
-        // private CancellationTokenSource tokenSource;
+        private int maxConnections;
+        private bool isHost;
 
-        public async Task<bool> CreateServer()
+        public async Task<bool> CreateServer(int connections, bool host = false)
         {
             try
             {
                 var network = NetworkManager.Singleton;
-                var relay = GameData.Get<bool>(Key.RelayServer);
-                var maxConnections = GameData.Get<int>(Key.MaxPlayers) - 1;
-                allocation = await RelayService.Instance.CreateAllocationAsync(maxConnections);
-                joinCode = await GetJoinCode();
+                allocation = await RelayService.Instance.CreateAllocationAsync(connections);
+                var joinCode = await GetJoinCode();
                 var relayServerData = new RelayServerData(allocation, "dtls");
                 network.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-                var started = relay ? network.StartServer() : network.StartHost();
+                var started = host ? network.StartHost() : network.StartServer();
 
                 if (!started) return false;
 
-                // if (relay)
-                // {
-                //     tokenSource?.Cancel();
-                //     tokenSource = new CancellationTokenSource();
-                //     var token = tokenSource.Token;
-                //     RunHeartbeat(HEARTBEAT_TIMEOUT, token);
-                // }
-
+                maxConnections = connections;
+                isHost = host;
                 network.OnTransportFailure += OnFailure;
                 Mediator.Publish(new RelayServerAllocated(allocation, joinCode));
                 return true;
@@ -57,7 +46,7 @@ namespace GameServices
 
         public async Task<bool> JoinServer(string joinCode)
         {
-            Debug.Log($"Trying to join {joinCode}");
+            Debug.Log($"Trying to join relay server {joinCode}");
             try
             {
                 var joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
@@ -76,10 +65,15 @@ namespace GameServices
 
         public void StopServer()
         {
+            Debug.Log("Stopping relay server");
             allocation = null;
-            // tokenSource?.Cancel();
+
+            if (NetworkManager.Singleton == null) return;
+
             if (NetworkManager.Singleton.IsServer)
-                NetworkManager.Singleton.Shutdown();
+                NetworkManager.Singleton.Shutdown(true);
+
+            Object.Destroy(NetworkManager.Singleton.gameObject);
         }
 
         private async Task<string> GetJoinCode()
@@ -92,7 +86,7 @@ namespace GameServices
             catch (RelayServiceException e)
             {
                 Debug.Log(e.Message);
-                return "";
+                return default;
             }
         }
 
@@ -101,19 +95,7 @@ namespace GameServices
             NetworkManager.Singleton.OnTransportFailure -= OnFailure;
             Debug.LogError("Restarting relay server");
             StopServer();
-            CreateServer();
+            CreateServer(maxConnections, isHost);
         }
-
-        // private async void RunHeartbeat(float timeout, CancellationToken token)
-        // {
-        //     var delayTimeout = (int)timeout * 1000;
-        //
-        //     while (!token.IsCancellationRequested)
-        //     {
-        //         await Task.Delay(delayTimeout, token);
-        //         if (joinCode != await GetJoinCode())
-        //             OnFailure();
-        //     }
-        // }
     }
 }

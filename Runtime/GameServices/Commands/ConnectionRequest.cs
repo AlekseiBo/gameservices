@@ -2,7 +2,7 @@
 
 namespace GameServices.Commands
 {
-    public class VenueSelected : IMediatorCommand
+    public class ConnectionRequest : IMediatorCommand
     {
     }
 }
