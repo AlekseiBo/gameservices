@@ -66,6 +66,7 @@ namespace GameServices
         public void StopServer()
         {
             Debug.Log("Stopping relay server");
+            NetworkManager.Singleton.OnTransportFailure -= OnFailure;
             allocation = null;
 
             if (NetworkManager.Singleton == null) return;
@@ -92,7 +93,6 @@ namespace GameServices
 
         private void OnFailure()
         {
-            NetworkManager.Singleton.OnTransportFailure -= OnFailure;
             Debug.LogError("Restarting relay server");
             StopServer();
             CreateServer(maxConnections, isHost);

@@ -12,7 +12,6 @@ namespace GameServices
 {
     public class LobbyProvider : ILobbyProvider
     {
-
         private const float HEARTBEAT_TIMEOUT = 10f;
         private const string RELAY_CODE = "RELAY_CODE";
         private const string VENUE = "VENUE";
@@ -57,7 +56,7 @@ namespace GameServices
 
                 var lobbyId = lobbies.Results[attempt - 1].Id;
                 joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
-                Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId}");
+                Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId})");
                 return joinedLobby;
             }
             catch (LobbyServiceException e)
@@ -146,6 +145,23 @@ namespace GameServices
             }
         }
 
+        private async void RestartLobby()
+        {
+            Debug.Log($"Restarting the lobby");
+            await LeaveConnectedLobby();
+            var relayProvider = Services.All.Single<IRelayProvider>();
+            relayProvider.StopServer();
+
+            var asServer = GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated;
+            var owner = asServer ? "RELAY" : "PLAYER";
+            var venue = GameData.Get<string>(Key.CurrentVenue);
+            var lobbyName = $"{owner} {venue}";
+            var maxPlayers = GameData.Get<int>(Key.LobbyMaxPlayers);
+            var lobbyData = new CreateLobbyData(lobbyName, maxPlayers, false);
+            await CreateLobby(lobbyData);
+            await relayProvider.CreateServer(maxPlayers - 1, !asServer);
+        }
+
         private async void OnRelayServerAllocated(RelayServerAllocated server)
         {
             Debug.Log($"Updating relay server join code");
@@ -169,7 +185,7 @@ namespace GameServices
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                Application.Quit();
+                RestartLobby();
             }
         }
 
@@ -177,7 +193,16 @@ namespace GameServices
         {
             while (hostedLobby != null)
             {
-                LobbyService.Instance.SendHeartbeatPingAsync(hostedLobby.Id);
+                try
+                {
+                    LobbyService.Instance.SendHeartbeatPingAsync(hostedLobby.Id);
+                }
+                catch (LobbyServiceException e)
+                {
+                    Debug.Log(e.Message);
+                    RestartLobby();
+                }
+
                 yield return Utilities.WaitFor(timeout);
             }
         }
