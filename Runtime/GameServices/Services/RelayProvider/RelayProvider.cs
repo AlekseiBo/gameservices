@@ -66,10 +66,11 @@ namespace GameServices
         public void StopServer()
         {
             Debug.Log("Stopping relay server");
-            NetworkManager.Singleton.OnTransportFailure -= OnFailure;
             allocation = null;
 
             if (NetworkManager.Singleton == null) return;
+
+            NetworkManager.Singleton.OnTransportFailure -= OnFailure;
 
             if (NetworkManager.Singleton.IsServer)
                 NetworkManager.Singleton.Shutdown(true);
