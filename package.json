@@ -1,8 +1,13 @@
 {
   "name": "com.bo.gameservices",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "displayName": "Game Services",
   "unity": "2021.3",
   "description": "Game services",
-  "dependencies": {}
+  "dependencies": {
+    "com.unity.addressables": "1.0.0",
+    "com.unity.services.cloudsave": "2.0.0",
+    "com.unity.services.lobby": "1.0.0",
+    "com.unity.services.relay": "1.0.0"
+  }
 }
