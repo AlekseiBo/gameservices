@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameServices.Commands;
+using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -54,8 +55,8 @@ namespace GameServices
                 var lobbies = await ListLobbies(venue);
                 if (lobbies.Results.Count < attempt) return default;
 
-                var lobbyId = lobbies.Results[attempt - 1].Id;
-                joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
+                var lobby = lobbies.Results[attempt - 1];
+                joinedLobby = await JoinOrReconnectLobby(lobby);
                 Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId})");
                 return joinedLobby;
             }
@@ -77,7 +78,11 @@ namespace GameServices
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                return default;
+                var lobbies = await LobbyService.Instance.GetJoinedLobbiesAsync();
+                if (lobbies is { Count: > 0 })
+                    joinedLobby = await LobbyService.Instance.ReconnectToLobbyAsync(lobbies[0]);
+
+                return joinedLobby;
             }
         }
 
@@ -94,6 +99,7 @@ namespace GameServices
                     Debug.Log(e.Message);
                 }
 
+                Mediator.RemoveSubscriber<RelayServerAllocated>(OnRelayServerAllocated);
                 CoroutineRunner.Stop(heartbeatCoroutine);
                 Debug.Log($"Player {playerId} deleted lobby {hostedLobby.Name}");
                 hostedLobby = null;
@@ -112,6 +118,22 @@ namespace GameServices
 
                 Debug.Log($"Player {playerId} left lobby {joinedLobby.Name}");
                 joinedLobby = null;
+            }
+        }
+
+        private async Task<Lobby> JoinOrReconnectLobby(Lobby lobby)
+        {
+            try
+            {
+                var player = lobby.Players.Find(p => p.Id == playerId);
+                return player == null
+                    ? await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id)
+                    : await LobbyService.Instance.ReconnectToLobbyAsync(lobby.Id);
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+                return default;
             }
         }
 

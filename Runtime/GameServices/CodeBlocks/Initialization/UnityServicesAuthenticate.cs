@@ -16,11 +16,11 @@ namespace GameServices.CodeBlocks
             {
                 try
                 {
-                    var randomId = $"Player-{UnityEngine.Random.Range(100, 1000).ToString()}";
-                    var initOptions = new InitializationOptions()
-                        .With(e => e.SetProfile(randomId));
+                    // var randomId = $"Player-{UnityEngine.Random.Range(100, 1000).ToString()}";
+                    // var initOptions = new InitializationOptions()
+                    //     .With(e => e.SetProfile(randomId));
 
-                    await UnityServices.InitializeAsync(initOptions);
+                    await UnityServices.InitializeAsync();
                 }
                 catch (Exception e)
                 {
