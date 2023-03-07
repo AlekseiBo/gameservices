@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Toolset;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GameServices.Commands;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
@@ -11,7 +11,7 @@ using Unity.Services.Lobbies.Models;
 
 namespace GameServices
 {
-    public class LobbyProvider : ILobbyProvider
+    public class LobbyProvider : ILobbyProvider, IDisposable
     {
         private const float HEARTBEAT_TIMEOUT = 10f;
         private const string RELAY_CODE = "RELAY_CODE";
@@ -28,6 +28,8 @@ namespace GameServices
         private Lobby hostedLobby;
         private Lobby joinedLobby;
 
+        public void Dispose() => Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
+
         public async Task<Lobby> CreateLobby(CreateLobbyData data)
         {
             var lobbyOptions = new CreateLobbyOptions { IsPrivate = data.IsPrivate };
@@ -38,7 +40,7 @@ namespace GameServices
                 heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat(HEARTBEAT_TIMEOUT));
                 joinedLobby = hostedLobby;
                 Debug.Log($"Lobby created: {hostedLobby.Name}");
-                Mediator.Subscribe<RelayServerAllocated>(OnRelayServerAllocated);
+                Command.Subscribe<AllocateRelayServer>(OnRelayServerAllocated);
                 return hostedLobby;
             }
             catch (LobbyServiceException e)
@@ -99,7 +101,7 @@ namespace GameServices
                     Debug.Log(e.Message);
                 }
 
-                Mediator.RemoveSubscriber<RelayServerAllocated>(OnRelayServerAllocated);
+                Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
                 CoroutineRunner.Stop(heartbeatCoroutine);
                 Debug.Log($"Player {playerId} deleted lobby {hostedLobby.Name}");
                 hostedLobby = null;
@@ -184,7 +186,7 @@ namespace GameServices
             await relayProvider.CreateServer(maxPlayers - 1, !asServer);
         }
 
-        private async void OnRelayServerAllocated(RelayServerAllocated server)
+        private async void OnRelayServerAllocated(AllocateRelayServer server)
         {
             Debug.Log($"Updating relay server join code");
 

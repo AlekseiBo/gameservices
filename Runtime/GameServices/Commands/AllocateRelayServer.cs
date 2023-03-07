@@ -1,14 +1,14 @@
 ﻿using Toolset;
 using Unity.Services.Relay.Models;
 
-namespace GameServices.Commands
+namespace GameServices
 {
-    public class RelayServerAllocated : IMediatorCommand
+    public class AllocateRelayServer : IMediatorCommand
     {
         public readonly Allocation Allocation;
         public readonly string JoinCode;
 
-        public RelayServerAllocated(Allocation allocation, string joinCode)
+        public AllocateRelayServer(Allocation allocation, string joinCode)
         {
             Allocation = allocation;
             JoinCode = joinCode;

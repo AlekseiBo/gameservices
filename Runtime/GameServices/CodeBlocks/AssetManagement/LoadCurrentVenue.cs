@@ -18,6 +18,7 @@ namespace GameServices.CodeBlocks
         private async void Load()
         {
             var sceneInstance = await assets.LoadScene(GameData.Get<string>(Key.CurrentVenue));
+            Command.Publish(new ShowVenueCanvas());
             Complete(sceneInstance.Scene != null);
         }
     }

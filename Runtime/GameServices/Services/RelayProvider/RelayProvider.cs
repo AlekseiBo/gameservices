@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using GameServices.Commands;
 using Toolset;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -33,7 +32,7 @@ namespace GameServices
                 maxConnections = connections;
                 isHost = host;
                 network.OnTransportFailure += OnFailure;
-                Mediator.Publish(new RelayServerAllocated(allocation, joinCode));
+                Command.Publish(new AllocateRelayServer(allocation, joinCode));
                 return true;
 
             }
