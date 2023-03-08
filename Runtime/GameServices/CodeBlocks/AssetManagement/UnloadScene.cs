@@ -8,7 +8,7 @@ namespace GameServices.CodeBlocks
     [CreateAssetMenu(fileName = "Unload", menuName = "Code Blocks/Assets/Unload Scene Asset", order = 0)]
     public class UnloadScene : CodeBlock
     {
-        [SerializeField] private AssetReference reference;
+        [SerializeField] private AssetReferenceScene reference;
 
         private IAssetProvider assets;
 

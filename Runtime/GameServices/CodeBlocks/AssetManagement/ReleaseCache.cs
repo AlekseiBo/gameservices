@@ -7,7 +7,7 @@ namespace GameServices.CodeBlocks
     public class ReleaseCache : CodeBlock
     {
         private IAssetProvider assets;
-        protected override async void Execute()
+        protected override void Execute()
         {
             assets = Services.All.Single<IAssetProvider>();
             assets.ReleaseCachedAssets();

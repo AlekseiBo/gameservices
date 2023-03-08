@@ -8,7 +8,7 @@ namespace GameServices.CodeBlocks
     [CreateAssetMenu(fileName = "Load", menuName = "Code Blocks/Assets/Load Scene Asset", order = 0)]
     public class LoadSceneAsset : CodeBlock
     {
-        [SerializeField] private AssetReference reference;
+        [SerializeField] private AssetReferenceScene reference;
         [SerializeField] private LoadSceneMode mode;
 
         private IAssetProvider assets;

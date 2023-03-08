@@ -12,10 +12,10 @@ namespace GameServices
         private IStaticDataService staticData;
         private static Dictionary<TKey, ScriptableObject> gameData;
 
-        protected GameData()
+        protected GameData(string resourcePath)
         {
             staticData = Services.All.Single<IStaticDataService>();
-            gameData = staticData.AllGameData<TKey>();
+            gameData = staticData.AllGameData<TKey>(resourcePath);
             isInitialized = true;
         }
 
@@ -44,5 +44,8 @@ namespace GameServices
 
     public class GameData : GameData<Key>
     {
+        public GameData(string resourcePath) : base(resourcePath)
+        {
+        }
     }
 }

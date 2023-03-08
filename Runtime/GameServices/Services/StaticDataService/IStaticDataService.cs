@@ -9,6 +9,6 @@ namespace GameServices
     {
         VenueStaticData ForVenue(string sceneAddress);
         List<VenueStaticData> AllVenues();
-        Dictionary<T, ScriptableObject> AllGameData<T>() where T : struct, Enum;
+        Dictionary<T, ScriptableObject> AllGameData<T>(string resourcePath) where T : struct, Enum;
     }
 }
