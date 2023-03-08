@@ -50,6 +50,27 @@ namespace GameServices
             completedCache.Remove(address);
         }
 
+        public async Task<List<T>> LoadLabel<T>(string label, bool persistent = false) where T : class
+        {
+            var handle = Addressables.LoadResourceLocationsAsync(label);
+            await handle.Task;
+            var resultList = new List<T>();
+            var assetKey = "";
+
+            Debug.Log($"FOUND : {handle.Result.Count}");
+
+            foreach (var addressable in handle.Result)
+            {
+                if (assetKey == addressable.PrimaryKey) continue;
+
+                assetKey = addressable.PrimaryKey;
+                var asset = await Load<T>(addressable.PrimaryKey, persistent);
+                if (!resultList.Contains(asset)) resultList.Add(asset);
+            }
+
+            return resultList;
+        }
+
         public async Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single)
         {
             var handle = Addressables.LoadSceneAsync(address, mode);

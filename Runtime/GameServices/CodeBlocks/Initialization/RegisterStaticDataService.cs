@@ -7,10 +7,14 @@ namespace GameServices.CodeBlocks
     [CreateAssetMenu(fileName = "RegisterStaticDataService", menuName = "Code Blocks/Initialization/Register Static Data", order = 0)]
     public class RegisterStaticDataService : CodeBlock
     {
-        protected override void Execute()
+        protected override async void Execute()
         {
             if (Services.All.Single<IStaticDataService>() == null)
-                Services.All.RegisterSingle<IStaticDataService>(new StaticDataService());
+            {
+                var staticData = new StaticDataService();
+                await staticData.LoadData();
+                Services.All.RegisterSingle<IStaticDataService>(staticData);
+            }
 
             Complete(true);
         }

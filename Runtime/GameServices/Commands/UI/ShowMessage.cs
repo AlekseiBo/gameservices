@@ -14,7 +14,6 @@ namespace GameServices
             Title = title;
             Message = message;
             Call = action;
-
         }
     }
 }

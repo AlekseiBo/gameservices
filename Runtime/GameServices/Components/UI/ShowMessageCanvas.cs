@@ -17,12 +17,13 @@ namespace GameServices
             var data = command as ShowMessage;
             title.text = data.Title;
             message.text = data.Message;
+            button.onClick.RemoveAllListeners();
 
             if (data.Call != null)
-            {
-                button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(data.Call);
-            }
+            else
+                button.onClick.AddListener(() =>
+                    Services.All.Single<ICanvasManager>().HideCanvas(typeof(ShowMessage).ToString()));
         }
     }
 }

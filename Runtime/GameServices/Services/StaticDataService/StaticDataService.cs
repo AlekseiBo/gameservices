@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Toolset;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace GameServices
 {
     class StaticDataService : IStaticDataService
     {
-        private Dictionary<string, VenueStaticData> venues;
-        private IStaticDataService staticDataServiceImplementation;
-
-        public StaticDataService() => Load();
+        private readonly IAssetProvider assets;
+        private Dictionary<string, VenueStaticData> venues = new();
+        public StaticDataService()
+        {
+            assets = Services.All.Single<IAssetProvider>();
+        }
 
         public List<VenueStaticData> AllVenues() => venues.Values.ToList();
 
@@ -20,9 +23,9 @@ namespace GameServices
                 ? staticData
                 : null;
 
-        private void Load()
+        public async Task LoadData()
         {
-            LoadVenues();
+            await LoadVenues();
         }
 
         public Dictionary<Tkey, ScriptableObject> AllGameData<Tkey>(string resourcePath) where Tkey : struct, Enum
@@ -37,11 +40,10 @@ namespace GameServices
             return dataEntries;
         }
 
-        private void LoadVenues()
+        private async Task LoadVenues()
         {
-            venues = Resources
-                .LoadAll<VenueStaticData>("StaticData/Venues")
-                .ToDictionary(x => x.Address, x => x);
+            var venueList = await assets.LoadLabel<VenueStaticData>("venueData", true);
+            venues = venueList.ToDictionary(x => x.Address, x => x);
         }
     }
 }

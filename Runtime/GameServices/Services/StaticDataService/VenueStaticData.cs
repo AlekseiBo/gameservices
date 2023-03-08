@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Serialization;
 
 namespace GameServices
 {
@@ -9,7 +8,7 @@ namespace GameServices
     {
         public string Name;
         public string Address;
-        public AssetReference AssetReference;
+        public AssetReferenceScene AssetReference;
         public GameObject NetworkManager;
         public Sprite Icon;
 
