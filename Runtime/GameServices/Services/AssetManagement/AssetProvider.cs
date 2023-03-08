@@ -21,13 +21,13 @@ namespace GameServices
             Addressables.InitializeAsync();
         }
 
-        public async Task<T> Load<T>(string address) where T : class
+        public async Task<T> Load<T>(string address, bool persistent = false) where T : class
         {
             if (completedCache.TryGetValue(address, out var completedHandle))
                 return completedHandle.Result as T;
 
             var handle = Addressables.LoadAssetAsync<T>(address);
-            return await RunCachedOnComplete(handle, cacheKey: address);
+            return await RunCachedOnComplete(handle, cacheKey: address, persistent);
         }
 
         public void Unload(string address)
@@ -53,7 +53,7 @@ namespace GameServices
         public async Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single)
         {
             var handle = Addressables.LoadSceneAsync(address, mode);
-            return await RunCachedOnComplete(handle, cacheKey: address);
+            return await RunCachedOnComplete(handle, cacheKey: address, false);
         }
 
         public async Task<bool> UnloadScene(string address)
@@ -64,21 +64,21 @@ namespace GameServices
             return true;
         }
 
-        public async Task<GameObject> Instantiate(string address)
+        public async Task<GameObject> Instantiate(string address, bool persistent = false)
         {
-            var prefab = await Load<GameObject>(address);
+            var prefab = await Load<GameObject>(address, persistent);
             return Object.Instantiate(prefab);
         }
 
-        public async Task<GameObject> Instantiate(string address, Vector3 at)
+        public async Task<GameObject> Instantiate(string address, Vector3 at, bool persistent = false)
         {
-            var prefab = await Load<GameObject>(address);
+            var prefab = await Load<GameObject>(address, persistent);
             return Object.Instantiate(prefab, at, Quaternion.identity);
         }
 
-        public async Task<GameObject> Instantiate(string address, Transform under)
+        public async Task<GameObject> Instantiate(string address, Transform under, bool persistent = false)
         {
-            var prefab = await Load<GameObject>(address);
+            var prefab = await Load<GameObject>(address, persistent);
             return Object.Instantiate(prefab, under);
         }
 
@@ -92,10 +92,10 @@ namespace GameServices
             handles.Clear();
         }
 
-        private async Task<T> RunCachedOnComplete<T>(AsyncOperationHandle<T> handle, string cacheKey) where T : notnull
+        private async Task<T> RunCachedOnComplete<T>(AsyncOperationHandle<T> handle, string cacheKey, bool persistent) where T : notnull
         {
             handle.Completed += completeHandle => { completedCache[cacheKey] = completeHandle; };
-            AddHandle<T>(cacheKey, handle);
+            if (!persistent) AddHandle<T>(cacheKey, handle);
             return await handle.Task;
         }
 

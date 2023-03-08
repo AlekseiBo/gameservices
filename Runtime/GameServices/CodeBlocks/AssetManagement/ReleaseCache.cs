@@ -4,10 +4,10 @@ using UnityEngine;
 namespace GameServices.CodeBlocks
 {
     [CreateAssetMenu(fileName = "ReleaseCachedAssets", menuName = "Code Blocks/Assets/Release Cache", order = 0)]
-    public class ClearCache : CodeBlock
+    public class ReleaseCache : CodeBlock
     {
         private IAssetProvider assets;
-        protected override void Execute()
+        protected override async void Execute()
         {
             assets = Services.All.Single<IAssetProvider>();
             assets.ReleaseCachedAssets();
