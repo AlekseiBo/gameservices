@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Toolset;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -19,6 +20,10 @@ namespace GameServices.CodeBlocks
                 var canvasContainer =
                     await Services.All.Single<IAssetProvider>().Instantiate(prefab.AssetGUID, true);
                 canvasContainer.name = "Canvas Container";
+                Command.Publish(new LogMessage(LogType.Log, "Loading UI assets"));
+                Command.Publish(new ShowLoadingProgress(0f));
+                await Task.Delay(500);
+                CanvasManager.IsInitialized = true;
             }
 
 

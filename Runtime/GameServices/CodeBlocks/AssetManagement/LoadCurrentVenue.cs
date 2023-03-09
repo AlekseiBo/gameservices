@@ -17,6 +17,7 @@ namespace GameServices.CodeBlocks
 
         private async void Load()
         {
+            Command.Publish(new LogMessage(LogType.Log, "Loading venue assets"));
             var sceneInstance = await assets.LoadScene(GameData.Get<string>(Key.CurrentVenue));
             Command.Publish(new ShowVenueCanvas());
             Complete(sceneInstance.Scene != null);

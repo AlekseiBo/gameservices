@@ -11,6 +11,7 @@ namespace GameServices.CodeBlocks
         {
             if (Services.All.Single<IStaticDataService>() == null)
             {
+                Command.Publish(new LogMessage(LogType.Log, "Loading venues"));
                 var staticData = new StaticDataService();
                 await staticData.LoadData();
                 Services.All.RegisterSingle<IStaticDataService>(staticData);

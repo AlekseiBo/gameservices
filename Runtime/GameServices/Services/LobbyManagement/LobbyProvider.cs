@@ -215,6 +215,10 @@ namespace GameServices
 
         private IEnumerator RunHeartbeat(float timeout)
         {
+            var checkRelayServerActivity = GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated;
+            var activityTimeout = GameData.Get<float>(Key.ServerActivityTimer) * 60f;
+            var activityTimer = Time.time;
+
             while (hostedLobby != null)
             {
                 try
@@ -225,6 +229,15 @@ namespace GameServices
                 {
                     Debug.Log(e.Message);
                     RestartLobby();
+                }
+
+                if (checkRelayServerActivity)
+                {
+                    if (activityTimer + activityTimeout < Time.time)
+                    {
+                        Command.Publish(new LogMessage(LogType.Log, "Restarting lobby due to activity timer"));
+                        RestartLobby();
+                    }
                 }
 
                 yield return Utilities.WaitFor(timeout);

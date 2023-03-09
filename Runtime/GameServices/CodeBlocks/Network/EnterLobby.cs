@@ -14,6 +14,9 @@ namespace GameServices.CodeBlocks
         {
             lobby = Services.All.Single<ILobbyProvider>();
 
+            Command.Publish(new LogMessage(LogType.Log, "Connecting to lobby"));
+
+
             switch (GameData.Get<NetState>(Key.PlayerNetState))
             {
                 case NetState.Private:

@@ -12,6 +12,7 @@ namespace GameServices.CodeBlocks
         private const string FRAME_RATE = "fps";
         private const string MAX_PLAYERS = "max-players";
         private const string VENUE_ADDRESS = "address";
+        private const string SERVER_ACTIVITY = "activity-timer";
 
         protected override void Execute()
         {
@@ -29,10 +30,16 @@ namespace GameServices.CodeBlocks
                 GameData.Set(Key.PlayerNetState, NetState.Dedicated);
 
             var address = CommandLineValue(VENUE_ADDRESS);
-            if (!string.IsNullOrEmpty(address)) GameData.Set(Key.CurrentVenue, address);
+            if (!string.IsNullOrEmpty(address))
+                GameData.Set(Key.CurrentVenue, address);
 
             var maxPlayers = CommandLineValue(MAX_PLAYERS);
-            if (!string.IsNullOrEmpty(maxPlayers)) GameData.Set(Key.LobbyMaxPlayers, int.Parse(maxPlayers));
+            if (!string.IsNullOrEmpty(maxPlayers))
+                GameData.Set(Key.LobbyMaxPlayers, int.Parse(maxPlayers));
+
+            var activityTimer = CommandLineValue(SERVER_ACTIVITY);
+            if (!string.IsNullOrEmpty(activityTimer))
+                GameData.Set(Key.ServerActivityTimer, float.Parse(activityTimer));
         }
 
         private void SetTargetFramesPerSecond()

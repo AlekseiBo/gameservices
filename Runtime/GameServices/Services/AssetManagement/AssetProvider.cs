@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Toolset;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -27,6 +27,7 @@ namespace GameServices
                 return completedHandle.Result as T;
 
             var handle = Addressables.LoadAssetAsync<T>(address);
+            CoroutineRunner.Start(WatchLoadingProgress(handle));
             return await RunCachedOnComplete(handle, cacheKey: address, persistent);
         }
 
@@ -74,13 +75,16 @@ namespace GameServices
         public async Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single)
         {
             var handle = Addressables.LoadSceneAsync(address, mode);
+            CoroutineRunner.Start(WatchLoadingProgress(handle));
             return await RunCachedOnComplete(handle, cacheKey: address, false);
         }
 
         public async Task<bool> UnloadScene(string address)
         {
             if (!completedCache.TryGetValue(address, out var completedHandle)) return false;
-            await Addressables.UnloadSceneAsync(completedHandle).Task;
+            var handle = Addressables.UnloadSceneAsync(completedHandle);
+            CoroutineRunner.Start(WatchLoadingProgress(handle));
+            await handle.Task;
             Unload(address);
             return true;
         }
@@ -137,23 +141,23 @@ namespace GameServices
                 Addressables.Release(handle);
         }
 
-        private static IResourceLocation GetLocation(object key)
+        private IEnumerator WatchLoadingProgress(AsyncOperationHandle handle)
         {
-            foreach (IResourceLocator locator in Addressables.ResourceLocators)
-            {
-                IList<IResourceLocation> locations = new List<IResourceLocation>();
-                bool success = locator.Locate(key, typeof(SceneInstance), out locations);
+            if (!CanvasManager.IsInitialized) yield break;
+            var canvas = Services.All.Single<ICanvasManager>();
+            var progressData = new ShowLoadingProgress(handle.PercentComplete);
 
-                if (success)
+            while (!handle.Task.IsCompleted)
+            {
+                if (progressData.Progress != handle.PercentComplete)
                 {
-                    Debug.Log($"Location found: {locations[0].PrimaryKey}");
-                    return locations[0];
+                    progressData.Progress = handle.PercentComplete;
+                    canvas.ShowCanvas(progressData);
                 }
+                yield return Utilities.WaitFor(0.1f);
             }
 
-            Debug.Log("Location not found");
-
-            return null;
+            canvas.HideCanvas(progressData);
         }
     }
 }

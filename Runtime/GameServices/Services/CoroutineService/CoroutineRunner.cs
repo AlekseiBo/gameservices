@@ -6,7 +6,7 @@ namespace GameServices
 {
     public class CoroutineRunner
     {
-        public static bool isInitialized => runner != null;
+        public static bool IsInitialized => runner != null;
 
         private static MonoBehaviour runner;
 

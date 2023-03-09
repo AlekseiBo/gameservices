@@ -6,7 +6,7 @@ namespace GameServices.CodeBlocks
     [CreateAssetMenu(fileName = "Register Progress Service", menuName = "Code Blocks/Initialization/Register Progress Service", order = 0)]
     public class RegisterProgressService : CodeBlock
     {
-        protected override void Execute()
+        protected override async void Execute()
         {
             var saveLoadService = Services.All.Single<ISaveLoadService>();
             if (Services.All.Single<ISaveLoadService>() == null)
@@ -17,7 +17,10 @@ namespace GameServices.CodeBlocks
 
             if (Services.All.Single<IProgressProvider>() == null)
             {
-                Services.All.RegisterSingle<IProgressProvider>(new ProgressProvider(saveLoadService));
+                Command.Publish(new LogMessage(LogType.Log, "Loading progress data"));
+                var progress = new ProgressProvider(saveLoadService);
+                await progress.InitializeProgress();
+                Services.All.RegisterSingle<IProgressProvider>(progress);
             }
 
             Complete(true);

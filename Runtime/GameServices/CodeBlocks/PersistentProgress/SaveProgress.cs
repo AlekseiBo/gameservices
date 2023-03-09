@@ -9,6 +9,7 @@ namespace GameServices.CodeBlocks
         private IProgressProvider progress;
         protected override async void Execute()
         {
+            Command.Publish(new LogMessage(LogType.Log, "Saving game progress"));
             progress = Services.All.Single<IProgressProvider>();
             await progress.SaveProgress();
             Complete(true);

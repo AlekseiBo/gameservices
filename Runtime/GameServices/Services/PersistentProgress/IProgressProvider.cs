@@ -5,6 +5,7 @@ namespace GameServices
 {
     public interface IProgressProvider : IService
     {
+        Task InitializeProgress();
         ProgressData ProgressData { get; }
         void LoadProgress();
         Task SaveProgress();

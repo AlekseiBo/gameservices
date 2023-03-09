@@ -16,8 +16,10 @@ namespace GameServices
         public ProgressProvider(ISaveLoadService saveService)
         {
             this.saveService = saveService;
-            InitializeProgress();
+
         }
+
+        public async Task InitializeProgress() => progressData = await saveService.LoadProgress() ?? NewProgress();
 
         public void LoadProgress()
         {
@@ -47,8 +49,6 @@ namespace GameServices
             if (progressReader is IProgressWriter progressWriter)
                 ProgressWriters.Remove(progressWriter);
         }
-
-        private async void InitializeProgress() => progressData = await saveService.LoadProgress() ?? NewProgress();
 
         private ProgressData NewProgress() => new ProgressData();
     }

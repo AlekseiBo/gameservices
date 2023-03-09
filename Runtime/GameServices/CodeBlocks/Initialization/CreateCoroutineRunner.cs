@@ -11,7 +11,7 @@ namespace GameServices.CodeBlocks
 
         protected override void Execute()
         {
-            if (!CoroutineRunner.isInitialized)
+            if (!CoroutineRunner.IsInitialized)
                 new CoroutineRunner(Instantiate(prefab)
                     .With(e => e.name = "Coroutine Runner")
                     .GetComponent<CoroutineComponent>());
