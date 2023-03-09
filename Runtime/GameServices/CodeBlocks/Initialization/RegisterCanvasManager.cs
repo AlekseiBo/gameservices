@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Toolset;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -25,8 +24,7 @@ namespace GameServices.CodeBlocks
                 await Task.Delay(500);
                 CanvasManager.IsInitialized = true;
             }
-
-
+            
             Complete(true);
         }
     }

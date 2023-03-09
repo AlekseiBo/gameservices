@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Toolset;
 using Unity.Services.Lobbies.Models;
-using UnityEngine;
 
 namespace GameServices
 {
