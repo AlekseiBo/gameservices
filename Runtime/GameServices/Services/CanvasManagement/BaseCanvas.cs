@@ -10,8 +10,17 @@ namespace GameServices
         public bool Additive;
         public bool Distinct;
 
-        public virtual void ShowCanvas() => Canvas.enabled = true;
-        public virtual void HideCanvas() => Canvas.enabled = false;
+        public virtual void ShowCanvas()
+        {
+            Canvas.enabled = true;
+            CanvasGroup.interactable = true;
+        }
+
+        public virtual void HideCanvas()
+        {
+            Canvas.enabled = false;
+            CanvasGroup.interactable = false;
+        }
 
         public virtual void UpdateCanvas(IMediatorCommand command)
         {
