@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using Toolset;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace GameServices
@@ -33,15 +34,27 @@ namespace GameServices
             var other = with.transform.GetComponent<NetworkObject>();
             if (other != null && other.OwnerClientId != OwnerClientId)
             {
-                ChangeOwnerServerRpc(other.OwnerClientId);
+                Command.Publish(new LogMessage(LogType.Warning, "Change ownership requested"));
+
+                if (IsServer)
+                    ChangeOwnership(other.OwnerClientId);
+                else
+                    ChangeOwnerServerRpc(other.OwnerClientId);
             }
         }
 
         [ServerRpc(RequireOwnership = false)]
         private void ChangeOwnerServerRpc(ulong newClientId)
         {
+            ChangeOwnership(newClientId);
+        }
+
+        private void ChangeOwnership(ulong newClientId)
+        {
+            Command.Publish(new LogMessage(LogType.Warning, "Change ownership called on server"));
             if (NetworkManager.ConnectedClients.ContainsKey(newClientId))
             {
+                Command.Publish(new LogMessage(LogType.Warning, "Ownership changed"));
                 netObject.ChangeOwnership(newClientId);
             }
         }

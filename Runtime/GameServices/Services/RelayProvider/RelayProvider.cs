@@ -20,7 +20,7 @@ namespace GameServices
         {
             try
             {
-                var network = GetNetworkManager();
+                var network = CreateNetworkManager();
                 allocation = await RelayService.Instance.CreateAllocationAsync(connections);
                 var joinCode = await GetJoinCode();
                 var relayServerData = new RelayServerData(allocation, "dtls");
@@ -77,6 +77,20 @@ namespace GameServices
             Object.Destroy(NetworkManager.Singleton.gameObject);
         }
 
+        public NetworkManager CreateNetworkManager()
+        {
+            if (NetworkManager.Singleton != null) return NetworkManager.Singleton;
+
+            var staticData = Services.All.Single<IStaticDataService>();
+            var venueData = staticData.ForVenue(GameData.Get<string>(Key.CurrentVenue));
+
+            if (venueData == null) return null;
+
+            return Object.Instantiate(venueData.NetworkManager)
+                .With(e => e.name = "Network Manager")
+                .GetComponent<NetworkManager>();
+        }
+
         private async Task<string> GetJoinCode()
         {
             try
@@ -89,20 +103,6 @@ namespace GameServices
                 Debug.Log(e.Message);
                 return default;
             }
-        }
-
-        private NetworkManager GetNetworkManager()
-        {
-            if (NetworkManager.Singleton != null) return NetworkManager.Singleton;
-
-            var staticData = Services.All.Single<IStaticDataService>();
-            var venueData = staticData.ForVenue(GameData.Get<string>(Key.CurrentVenue));
-
-            if (venueData == null) return null;
-
-            return Object.Instantiate(venueData.NetworkManager)
-                .With(e => e.name = "Network Manager")
-                .GetComponent<NetworkManager>();
         }
 
         private void OnFailure()

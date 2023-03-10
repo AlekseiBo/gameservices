@@ -171,9 +171,14 @@ namespace GameServices
         private async void RestartLobby()
         {
             Debug.Log($"Restarting the lobby");
-            await LeaveConnectedLobby();
+
+            var progress = Services.All.Single<IProgressProvider>();
+            await progress.SaveProgress();
+
             var relayProvider = Services.All.Single<IRelayProvider>();
             relayProvider.StopServer();
+
+            await LeaveConnectedLobby();
 
             var asServer = GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated;
             var owner = asServer ? "RELAY" : "PLAYER";
@@ -182,7 +187,15 @@ namespace GameServices
             var maxPlayers = GameData.Get<int>(Key.LobbyMaxPlayers);
             var lobbyData = new CreateLobbyData(lobbyName, maxPlayers, false);
             await CreateLobby(lobbyData);
+
+            var assets = Services.All.Single<IAssetProvider>();
+            await assets.LoadScene(GameData.Get<string>(Key.CurrentVenue));
+
+            progress.LoadProgress();
+
             await relayProvider.CreateServer(maxPlayers - 1, !asServer);
+
+            Command.Publish(new LogMessage(LogType.Log, "Lobby restarted due to activity timer"));
         }
 
         private async void OnRelayServerAllocated(AllocateRelayServer server)
@@ -204,6 +217,7 @@ namespace GameServices
                 hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
                 joinedLobby = hostedLobby;
                 GameData.Set(Key.CurrentLobbyCode, hostedLobby.LobbyCode);
+                LogServerData();
             }
             catch (LobbyServiceException e)
             {
@@ -230,17 +244,47 @@ namespace GameServices
                     RestartLobby();
                 }
 
-                if (checkRelayServerActivity)
+                if (checkRelayServerActivity && activityTimer + activityTimeout < Time.time)
                 {
-                    if (activityTimer + activityTimeout < Time.time)
-                    {
-                        Command.Publish(new LogMessage(LogType.Log, "Restarting lobby due to activity timer"));
-                        RestartLobby();
-                    }
+                    activityTimer = Time.time;
+                    CheckLobbyActivity();
                 }
 
                 yield return Utilities.WaitFor(timeout);
             }
+        }
+
+        private async void CheckLobbyActivity()
+        {
+            try
+            {
+                hostedLobby = await LobbyService.Instance.GetLobbyAsync(hostedLobby.Id);
+                if (hostedLobby.Players.Count <= 1)
+                    RestartLobby();
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+                RestartLobby();
+            }
+        }
+
+        private void LogServerData()
+        {
+            var output = "<align=\"left\">";
+            output += $"Server Name: {hostedLobby.Name}\n";
+            output += $"Player ID: {playerId}\n";
+            output += $"Venue ID: {Venue}\n";
+            output += $"Lobby ID: {hostedLobby.Id}\n";
+            output += $"Lobby Code: {LobbyCode}\n";
+            output += $"Max Players: {hostedLobby.MaxPlayers}\n";
+            output += $"Is Private: {hostedLobby.IsPrivate}\n";
+            output += $"Is Locked: {hostedLobby.IsLocked}\n";
+            output += $"Relay Server Code: {RelayCode}\n";
+            output += $"Created Time: {hostedLobby.Created}\n";
+
+            Command.Publish(new ShowMessage("Server Data", output));
+            Debug.Log(output);
         }
     }
 }
