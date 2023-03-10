@@ -51,6 +51,7 @@ namespace GameServices.CodeBlocks
 
         private async void JoinRelayServer()
         {
+            GameData.Set(Key.CurrentLobbyCode, lobbyProvider.LobbyCode);
             var relayCode = lobbyProvider.RelayCode;
             var connected = await relayProvider.JoinServer(relayCode);
 

@@ -89,6 +89,8 @@ namespace GameServices
 
         public async Task LeaveConnectedLobby()
         {
+            GameData.Set(Key.CurrentLobbyCode, "");
+
             if (hostedLobby != null)
             {
                 try
