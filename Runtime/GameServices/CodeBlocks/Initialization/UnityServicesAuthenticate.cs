@@ -6,7 +6,8 @@ using Unity.Services.Core;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "UnityServicesAuthenticate", menuName = "Code Blocks/Initialization/Authenticate Unity Services", order = 0)]
+    [CreateAssetMenu(fileName = "UnityServicesAuthenticate",
+        menuName = "Code Blocks/Initialization/Authenticate Unity Services", order = 0)]
     public class UnityServicesAuthenticate : CodeBlock
     {
         protected override async void Execute()
@@ -15,11 +16,18 @@ namespace GameServices.CodeBlocks
             {
                 try
                 {
-                    // var randomId = $"Player-{UnityEngine.Random.Range(100, 1000).ToString()}";
-                    // var initOptions = new InitializationOptions()
-                    //     .With(e => e.SetProfile(randomId));
+                    //var randomId = $"Player-{UnityEngine.Random.Range(100, 1000).ToString()}";
 
-                    await UnityServices.InitializeAsync();
+                    if (GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated)
+                    {
+                        var initOptions = new InitializationOptions()
+                            .With(e => e.SetProfile("RELAY_SERVER"));
+                        await UnityServices.InitializeAsync(initOptions);
+                    }
+                    else
+                    {
+                        await UnityServices.InitializeAsync();
+                    }
                 }
                 catch (Exception e)
                 {
