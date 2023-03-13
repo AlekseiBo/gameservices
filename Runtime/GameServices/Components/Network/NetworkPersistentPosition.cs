@@ -7,18 +7,27 @@ namespace GameServices
     {
         [SerializeField] protected uint globalObjectIdHash;
 
+        private bool registered;
+
+        private void Awake()
+        {
+            var reader = this as IProgressReader;
+            LoadProgress(reader.RegisterProgress());
+            registered = true;
+        }
+
         public override void OnNetworkSpawn()
         {
-            if (!IsServer) return;
+            if (!IsServer || registered) return;
             var reader = this as IProgressReader;
             LoadProgress(reader.RegisterProgress());
         }
 
         public override void OnDestroy()
         {
-            if (!IsServer) return;
             var reader = this as IProgressReader;
             reader.UnregisterProgress();
+            registered = false;
         }
 
         public abstract void SaveProgress(ref ProgressData progress);
@@ -37,10 +46,10 @@ namespace GameServices
             var dataEntry = progressList.ForVenue(venue, globalObjectIdHash);
             if (dataEntry != null)
             {
-                var col = GetComponent<Collider>();
-                col.enabled = false;
+                var colliders = GetComponents<Collider>();
+                foreach (var col in colliders) col.enabled = false;
                 transform.position = dataEntry.Value;
-                col.enabled = true;
+                foreach (var col in colliders) col.enabled = true;
             }
         }
     }

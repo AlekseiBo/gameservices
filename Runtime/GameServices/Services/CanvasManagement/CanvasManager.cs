@@ -10,6 +10,7 @@ namespace GameServices
         public static bool IsInitialized;
         private readonly IAssetProvider assets;
         private readonly Dictionary<string, BaseCanvas> container = new();
+        private readonly Dictionary<string, IMediatorCommand> commandQueue = new();
 
         public CanvasManager() => assets = Services.All.Single<IAssetProvider>();
 
@@ -18,17 +19,15 @@ namespace GameServices
         public void ShowCanvas(IMediatorCommand command)
         {
             var commandType = command.GetType().ToString();
-            if (!container.ContainsKey(commandType)) return;
+            if (!container.TryGetValue(commandType, out var canvas) || canvas == null) return;
 
-            container[commandType].UpdateCanvas(command);
+            canvas.UpdateCanvas(command);
             ShowCanvas(commandType);
         }
 
         public void ShowCanvas(string commandType)
         {
-            if (!container.ContainsKey(commandType)) return;
-
-            var canvas = container[commandType];
+            if (!container.TryGetValue(commandType, out var canvas) || canvas == null) return;
             if (!canvas.Additive) HideAllCanvases(canvas.Distinct);
             canvas.ShowCanvas();
         }
@@ -37,9 +36,7 @@ namespace GameServices
 
         public void HideCanvas(string commandType)
         {
-            if (!container.ContainsKey(commandType)) return;
-
-            var canvas = container[commandType];
+            if (!container.TryGetValue(commandType, out var canvas) || canvas == null) return;
             canvas.HideCanvas();
         }
 
@@ -47,6 +44,7 @@ namespace GameServices
         {
             foreach (var canvas in container)
             {
+                Debug.Log(canvas.Value.gameObject.name);
                 if (canvas.Value == null) continue;
                 if (canvas.Value.Additive && !distinct) continue;
                 canvas.Value.HideCanvas();
@@ -56,24 +54,27 @@ namespace GameServices
         public async void Register(IMediatorCommand command, AssetReferenceCanvas asset, Transform parent)
         {
             var commandType = command.ToString();
-            if (!container.ContainsKey(commandType))
+            if (!container.TryGetValue(commandType, out var canvas))
             {
+                container[commandType] = null;
                 var canvasObject = await assets.Instantiate(asset.AssetGUID, parent);
-                var canvas = canvasObject.GetComponent<BaseCanvas>();
-                if (container.ContainsKey(commandType))
-                    container[commandType] = canvas;
-                else
-                    container.Add(commandType, canvas);
-            }
-            else if (container[commandType] == null)
-            {
-                var canvasObject = await assets.Instantiate(asset.AssetGUID, parent);
-                container[commandType] = canvasObject.GetComponent<BaseCanvas>();
+                canvas = canvasObject.GetComponent<BaseCanvas>();
+                container[commandType] = canvas;
+
+                if (commandQueue.Remove(commandType, out var laterCommand))
+                    command = laterCommand;
             }
 
-            container[commandType].Canvas.overrideSorting = true;
-            container[commandType].UpdateCanvas(command);
-            ShowCanvas(commandType);
+            if (canvas == null)
+            {
+                commandQueue[commandType] = command;
+            }
+            else
+            {
+                canvas.Canvas.overrideSorting = true;
+                canvas.UpdateCanvas(command);
+                ShowCanvas(commandType);
+            }
         }
     }
 }

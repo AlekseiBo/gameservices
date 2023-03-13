@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Toolset;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -6,6 +7,7 @@ using Unity.Networking.Transport.Relay;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameServices
 {
@@ -20,27 +22,27 @@ namespace GameServices
         {
             try
             {
-                var network = CreateNetworkManager();
                 allocation = await RelayService.Instance.CreateAllocationAsync(connections);
-                var joinCode = await GetJoinCode();
-                var relayServerData = new RelayServerData(allocation, "dtls");
-                network.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-                var started = host ? network.StartHost() : network.StartServer();
-
-                if (!started) return false;
-
-                maxConnections = connections;
-                isHost = host;
-                network.OnTransportFailure += OnFailure;
-                Command.Publish(new AllocateRelayServer(allocation, joinCode));
-                return true;
-
             }
             catch (RelayServiceException e)
             {
                 Debug.Log(e.Message);
                 return false;
             }
+
+            var network = CreateNetworkManager();
+            var joinCode = await GetJoinCode();
+            var relayServerData = new RelayServerData(allocation, "dtls");
+            network.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+
+            var started = host ? network.StartHost() : network.StartServer();
+            if (!started) return false;
+
+            maxConnections = connections;
+            isHost = host;
+            network.OnTransportFailure += OnFailure;
+            Command.Publish(new AllocateRelayServer(allocation, joinCode));
+            return true;
         }
 
         public async Task<bool> JoinServer(string joinCode)

@@ -25,7 +25,7 @@ namespace GameServices.CodeBlocks
             switch (GameData.Get<NetState>(Key.PlayerNetState))
             {
                 case NetState.Private:
-                    CreatRelayServer(true);
+                    CreateRelayServer(true);
                     break;
                 case NetState.Guest:
                     JoinRelayServer();
@@ -34,15 +34,15 @@ namespace GameServices.CodeBlocks
                     JoinRelayServer();
                     break;
                 case NetState.Host:
-                    CreatRelayServer(true);
+                    CreateRelayServer(true);
                     break;
                 case NetState.Dedicated:
-                    CreatRelayServer(false);
+                    CreateRelayServer(false);
                     break;
             }
         }
 
-        private async void CreatRelayServer(bool asHost)
+        private async void CreateRelayServer(bool asHost)
         {
             var connections = GameData.Get<int>(Key.LobbyMaxPlayers) - 1;
             var connected = await relayProvider.CreateServer(connections, asHost);
@@ -72,11 +72,11 @@ namespace GameServices.CodeBlocks
                 if (joinedLobby != null)
                     JoinRelayServer();
                 else
-                    CreatRelayServer(true);
+                    CreateRelayServer(true);
             }
             else
             {
-                CreatRelayServer(true);
+                CreateRelayServer(true);
             }
         }
     }

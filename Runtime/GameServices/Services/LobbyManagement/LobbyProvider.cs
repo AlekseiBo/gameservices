@@ -224,7 +224,7 @@ namespace GameServices
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                RestartLobby();
+                Command.Publish(new RestartLobby());
             }
         }
 
@@ -242,8 +242,8 @@ namespace GameServices
                 }
                 catch (LobbyServiceException e)
                 {
-                    Debug.Log(e.Message);
-                    RestartLobby();
+                    Debug.Log($"SendHeartbeatPingAsync: {e.Message}");
+                    Command.Publish(new RestartLobby());
                 }
 
                 if (checkRelayServerActivity && activityTimer + activityTimeout < Time.time)
@@ -262,19 +262,18 @@ namespace GameServices
             {
                 hostedLobby = await LobbyService.Instance.GetLobbyAsync(hostedLobby.Id);
                 if (hostedLobby.Players.Count <= 1)
-                    RestartLobby();
+                    Command.Publish(new RestartLobby());
             }
             catch (LobbyServiceException e)
             {
-                Debug.Log(e.Message);
-                RestartLobby();
+                Debug.Log($"GetLobbyAsync: {e.Message}");
+                Command.Publish(new RestartLobby());
             }
         }
 
         private void LogServerData()
         {
-            var output = "<align=\"left\">";
-            output += $"Server Name: {hostedLobby.Name}\n";
+            var output = $"Server Name: {hostedLobby.Name}\n";
             output += $"Player ID: {playerId}\n";
             output += $"Venue ID: {Venue}\n";
             output += $"Lobby ID: {hostedLobby.Id}\n";
@@ -285,7 +284,7 @@ namespace GameServices
             output += $"Relay Server Code: {RelayCode}\n";
             output += $"Created Time: {hostedLobby.Created}\n";
 
-            Command.Publish(new ShowMessage("Server Data", output));
+            Command.Publish(new ShowMessage("Server Data", "<align=\"left\">" + output));
             Debug.Log(output);
         }
     }

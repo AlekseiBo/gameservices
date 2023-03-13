@@ -28,7 +28,6 @@ namespace GameServices.CodeBlocks
                 canvasContainer.name = "Canvas Container";
                 Command.Publish(new LogMessage(LogType.Log, "Loading UI assets"));
                 Command.Publish(new ShowLoadingProgress(0f));
-                await Task.Delay(500);
                 CanvasManager.IsInitialized = true;
             }
             
