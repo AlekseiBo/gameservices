@@ -18,6 +18,13 @@ namespace GameServices.CodeBlocks
                 Services.All.RegisterSingle<ICanvasManager>(new CanvasManager());
                 var canvasContainer =
                     await Services.All.Single<IAssetProvider>().Instantiate(prefab.AssetGUID, true);
+
+                if (canvasContainer == null)
+                {
+                    Complete(false);
+                    return;
+                }
+
                 canvasContainer.name = "Canvas Container";
                 Command.Publish(new LogMessage(LogType.Log, "Loading UI assets"));
                 Command.Publish(new ShowLoadingProgress(0f));

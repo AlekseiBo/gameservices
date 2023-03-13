@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Toolset;
@@ -58,8 +59,6 @@ namespace GameServices
             var resultList = new List<T>();
             var assetKey = "";
 
-            Debug.Log($"FOUND : {handle.Result.Count}");
-
             foreach (var addressable in handle.Result)
             {
                 if (assetKey == addressable.PrimaryKey) continue;
@@ -92,19 +91,19 @@ namespace GameServices
         public async Task<GameObject> Instantiate(string address, bool persistent = false)
         {
             var prefab = await Load<GameObject>(address, persistent);
-            return Object.Instantiate(prefab);
+            return prefab == null ? null : Object.Instantiate(prefab);
         }
 
         public async Task<GameObject> Instantiate(string address, Vector3 at, bool persistent = false)
         {
             var prefab = await Load<GameObject>(address, persistent);
-            return Object.Instantiate(prefab, at, Quaternion.identity);
+            return prefab == null ? null : Object.Instantiate(prefab, at, Quaternion.identity);
         }
 
         public async Task<GameObject> Instantiate(string address, Transform under, bool persistent = false)
         {
             var prefab = await Load<GameObject>(address, persistent);
-            return Object.Instantiate(prefab, under);
+            return prefab == null ? null : Object.Instantiate(prefab, under);
         }
 
         public void ReleaseCachedAssets()
@@ -117,11 +116,20 @@ namespace GameServices
             handles.Clear();
         }
 
-        private async Task<T> RunCachedOnComplete<T>(AsyncOperationHandle<T> handle, string cacheKey, bool persistent) where T : notnull
+        private async Task<T> RunCachedOnComplete<T>(AsyncOperationHandle<T> handle, string cacheKey, bool persistent)
+            where T : notnull
         {
             handle.Completed += completeHandle => { completedCache[cacheKey] = completeHandle; };
             if (!persistent) AddHandle<T>(cacheKey, handle);
-            return await handle.Task;
+            try
+            {
+                return await handle.Task;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+                return default;
+            }
         }
 
         private void AddHandle<T>(string key, AsyncOperationHandle handle) where T : notnull
@@ -154,6 +162,7 @@ namespace GameServices
                     progressData.Progress = handle.PercentComplete;
                     canvas.ShowCanvas(progressData);
                 }
+
                 yield return Utilities.WaitFor(0.1f);
             }
 
