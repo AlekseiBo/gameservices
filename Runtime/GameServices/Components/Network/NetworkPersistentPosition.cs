@@ -11,6 +11,7 @@ namespace GameServices
 
         private void Awake()
         {
+            if (registered) return;
             var reader = this as IProgressReader;
             LoadProgress(reader.RegisterProgress());
             registered = true;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameServices
 {
-    class SaveLoadService : ISaveLoadService
+    public class SaveLoadService : ISaveLoadService
     {
         public async Task<bool> SaveProgress(ProgressData progress)
         {
@@ -16,6 +16,7 @@ namespace GameServices
                     { "PlayerPosition", JsonUtility.ToJson(progress.PlayerPosition) },
                     { "CratePosition", JsonUtility.ToJson(progress.CratePosition) },
                     { "CoinPosition", JsonUtility.ToJson(progress.CoinPosition) },
+                    { "FriendList", JsonUtility.ToJson(progress.FriendList) },
                 };
                 await CloudSaveService.Instance.Data.ForceSaveAsync(data);
                 return true;
@@ -31,7 +32,11 @@ namespace GameServices
         {
             try
             {
-                var loadingData = new HashSet<string> { "PlayerPosition", "CratePosition", "CoinPosition" };
+                var loadingData = new HashSet<string>
+                {
+                    "PlayerPosition", "CratePosition", "CoinPosition", "FriendList"
+                };
+
                 var data = await CloudSaveService.Instance.Data.LoadAsync(loadingData);
 
                 var playerPosition = data.ContainsKey("PlayerPosition")
@@ -46,12 +51,17 @@ namespace GameServices
                     ? JsonUtility.FromJson<PositionList>(data["CoinPosition"])
                     : new PositionList();
 
+                var friendList = data.ContainsKey("FriendList")
+                    ? JsonUtility.FromJson<FriendList>(data["FriendList"])
+                    : new FriendList();
+
                 Debug.Log("Progress loaded from the cloud");
                 return new ProgressData
                 {
                     PlayerPosition = playerPosition,
                     CratePosition = cratePosition,
-                    CoinPosition = coinPosition
+                    CoinPosition = coinPosition,
+                    FriendList = friendList,
                 };
             }
             catch (CloudSaveException e)

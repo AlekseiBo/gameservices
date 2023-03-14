@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using Toolset;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
@@ -12,7 +11,6 @@ namespace GameServices
 {
     public class LobbyProvider : ILobbyProvider, IDisposable
     {
-        private const float HEARTBEAT_TIMEOUT = 10f;
         private const string RELAY_CODE = "RELAY_CODE";
         private const string VENUE = "VENUE";
 
@@ -22,30 +20,38 @@ namespace GameServices
 
         private string playerId => AuthenticationService.Instance?.PlayerId;
 
-        private CoroutineRunner coroutine;
-        private Coroutine heartbeatCoroutine;
+        private readonly LobbyRoutine routine;
+        private readonly LobbyQuery query;
         private Lobby hostedLobby;
         private Lobby joinedLobby;
 
-        public void Dispose() => Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
+        public LobbyProvider()
+        {
+            routine = new LobbyRoutine();
+            query = new LobbyQuery();
+        }
+
+        public void Dispose()
+        {
+            Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
+            routine.Stop();
+        }
 
         public async Task<Lobby> CreateLobby(CreateLobbyData data)
         {
-            var lobbyOptions = new CreateLobbyOptions { IsPrivate = data.IsPrivate };
-
             try
             {
-                hostedLobby = await LobbyService.Instance.CreateLobbyAsync(data.Name, data.MaxPlayers, lobbyOptions);
-                heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat(HEARTBEAT_TIMEOUT));
+                hostedLobby = await LobbyService.Instance.CreateLobbyAsync(data.Name, data.MaxPlayers, data.Options);
+                routine.Start(hostedLobby);
                 joinedLobby = hostedLobby;
-                Debug.Log($"Lobby created: {hostedLobby.Name}");
                 Command.Subscribe<AllocateRelayServer>(OnRelayServerAllocated);
+                Debug.Log($"Lobby created: {hostedLobby.Name}");
                 return hostedLobby;
             }
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                return default;
+                return null;
             }
         }
 
@@ -53,7 +59,7 @@ namespace GameServices
         {
             try
             {
-                var lobbies = await ListLobbies(venue);
+                var lobbies = await query.ByVenue(venue);
                 if (lobbies.Results.Count < attempt) return default;
 
                 var lobby = lobbies.Results[attempt - 1];
@@ -103,7 +109,7 @@ namespace GameServices
                 }
 
                 Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
-                CoroutineRunner.Stop(heartbeatCoroutine);
+                routine.Stop();
                 Debug.Log($"Player {playerId} deleted lobby {hostedLobby.Name}");
                 hostedLobby = null;
                 joinedLobby = null;
@@ -140,65 +146,7 @@ namespace GameServices
             }
         }
 
-        private async Task<QueryResponse> ListLobbies(string venue)
-        {
-            try
-            {
-                var queryLobbiesOptions = new QueryLobbiesOptions
-                {
-                    Filters = new List<QueryFilter>
-                    {
-                        new(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
-                        new(QueryFilter.FieldOptions.Name, venue, QueryFilter.OpOptions.CONTAINS)
-                    },
-                    Order = new List<QueryOrder>
-                        { new(true, QueryOrder.FieldOptions.Created) }
-                };
 
-                var response = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
-
-                Debug.Log($"Current lobbies: {response.Results.Count}");
-                foreach (var lobby in response.Results)
-                    Debug.Log($"{lobby.Name}: privates = {lobby.IsPrivate}, max players = {lobby.MaxPlayers}");
-
-                return response;
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
-                return default;
-            }
-        }
-
-        private async void RestartLobby()
-        {
-            Debug.Log($"Restarting the lobby");
-
-            var progress = Services.All.Single<IProgressProvider>();
-            await progress.SaveProgress();
-
-            var relayProvider = Services.All.Single<IRelayProvider>();
-            relayProvider.StopServer();
-
-            await LeaveConnectedLobby();
-
-            var asServer = GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated;
-            var owner = asServer ? "RELAY" : "PLAYER";
-            var venue = GameData.Get<string>(Key.CurrentVenue);
-            var lobbyName = $"{owner} {venue}";
-            var maxPlayers = GameData.Get<int>(Key.LobbyMaxPlayers);
-            var lobbyData = new CreateLobbyData(lobbyName, maxPlayers, false);
-            await CreateLobby(lobbyData);
-
-            var assets = Services.All.Single<IAssetProvider>();
-            await assets.LoadScene(GameData.Get<string>(Key.CurrentVenue));
-
-            progress.LoadProgress();
-
-            await relayProvider.CreateServer(maxPlayers - 1, !asServer);
-
-            Command.Publish(new LogMessage(LogType.Log, "Lobby restarted due to activity timer"));
-        }
 
         private async void OnRelayServerAllocated(AllocateRelayServer server)
         {
@@ -228,49 +176,6 @@ namespace GameServices
             }
         }
 
-        private IEnumerator RunHeartbeat(float timeout)
-        {
-            var checkRelayServerActivity = GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated;
-            var activityTimeout = GameData.Get<float>(Key.ServerActivityTimer) * 60f;
-            var activityTimer = Time.time;
-
-            while (hostedLobby != null)
-            {
-                try
-                {
-                    LobbyService.Instance.SendHeartbeatPingAsync(hostedLobby.Id);
-                }
-                catch (LobbyServiceException e)
-                {
-                    Debug.Log($"SendHeartbeatPingAsync: {e.Message}");
-                    Command.Publish(new RestartLobby());
-                }
-
-                if (checkRelayServerActivity && activityTimer + activityTimeout < Time.time)
-                {
-                    activityTimer = Time.time;
-                    CheckLobbyActivity();
-                }
-
-                yield return Utilities.WaitFor(timeout);
-            }
-        }
-
-        private async void CheckLobbyActivity()
-        {
-            try
-            {
-                hostedLobby = await LobbyService.Instance.GetLobbyAsync(hostedLobby.Id);
-                if (hostedLobby.Players.Count <= 1)
-                    Command.Publish(new RestartLobby());
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log($"GetLobbyAsync: {e.Message}");
-                Command.Publish(new RestartLobby());
-            }
-        }
-
         private void LogServerData()
         {
             var output = $"Server Name: {hostedLobby.Name}\n";
@@ -287,5 +192,35 @@ namespace GameServices
             Command.Publish(new ShowMessage("Server Data", "<align=\"left\">" + output));
             Debug.Log(output);
         }
+
+        // private async void RestartLobby()
+        // {
+        //     Debug.Log($"Restarting the lobby");
+        //
+        //     var progress = Services.All.Single<IProgressProvider>();
+        //     await progress.SaveProgress();
+        //
+        //     var relayProvider = Services.All.Single<IRelayProvider>();
+        //     relayProvider.StopServer();
+        //
+        //     await LeaveConnectedLobby();
+        //
+        //     var asServer = GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated;
+        //     var owner = asServer ? "RELAY" : "PLAYER";
+        //     var venue = GameData.Get<string>(Key.CurrentVenue);
+        //     var lobbyName = $"{owner} {venue}";
+        //     var maxPlayers = GameData.Get<int>(Key.LobbyMaxPlayers);
+        //     var lobbyData = new CreateLobbyData(lobbyName, maxPlayers, false);
+        //     await CreateLobby(lobbyData);
+        //
+        //     var assets = Services.All.Single<IAssetProvider>();
+        //     await assets.LoadScene(GameData.Get<string>(Key.CurrentVenue));
+        //
+        //     progress.LoadProgress();
+        //
+        //     await relayProvider.CreateServer(maxPlayers - 1, !asServer);
+        //
+        //     Command.Publish(new LogMessage(LogType.Log, "Lobby restarted due to activity timer"));
+        // }
     }
 }

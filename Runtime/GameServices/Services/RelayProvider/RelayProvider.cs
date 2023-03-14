@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Toolset;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -13,7 +12,6 @@ namespace GameServices
 {
     public class RelayProvider : IRelayProvider
     {
-        private const float HEARTBEAT_TIMEOUT = 30;
         private Allocation allocation;
         private int maxConnections;
         private bool isHost;
