@@ -79,7 +79,6 @@ namespace GameServices
         {
             try
             {
-                Debug.Log($"Update Players Routine: Checking...");
                 currentLobby = await LobbyService.Instance.GetLobbyAsync(currentLobby.Id);
 
                 var newList = currentLobby.Players.Aggregate("", (current, player) => current + $"{player.Id},");
@@ -101,6 +100,9 @@ namespace GameServices
                 };
 
                 currentLobby = await LobbyService.Instance.UpdateLobbyAsync(currentLobby.Id, options);
+
+                if (currentLobby.Data.TryGetValue("Players", out var data))
+                    Debug.Log($"Lobby players: {data.Value}");
             }
             catch (LobbyServiceException e)
             {
