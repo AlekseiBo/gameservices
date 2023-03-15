@@ -66,7 +66,8 @@ namespace GameServices
             foreach (var lobby in response.Results)
             {
                 Debug.Log($"{lobby.Name}: privates = {lobby.IsPrivate}, max players = {lobby.MaxPlayers}");
-                Debug.Log($"Connected players: {lobby.Data["Players"].Value}");
+                if (lobby.Data.TryGetValue("Players", out var data))
+                    Debug.Log($"Connected players: {data.Value}");
             }
         }
     }
