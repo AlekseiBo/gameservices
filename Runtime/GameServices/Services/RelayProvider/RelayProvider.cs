@@ -53,6 +53,7 @@ namespace GameServices
 
                 var relayServerData = new RelayServerData(joinAllocation, "dtls");
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+                Command.Publish(new UpdatePlayerAllocation(joinAllocation.AllocationId.ToString()));
                 return NetworkManager.Singleton.StartClient();
             }
             catch (RelayServiceException e)

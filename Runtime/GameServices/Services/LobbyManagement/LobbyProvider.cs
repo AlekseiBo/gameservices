@@ -29,12 +29,15 @@ namespace GameServices
         {
             routine = new LobbyRoutine();
             query = new LobbyQuery();
+            Command.Subscribe<AllocateRelayServer>(OnRelayServerAllocated);
+            Command.Subscribe<UpdatePlayerAllocation>(OnPlayerAllocated);
         }
 
         public void Dispose()
         {
-            Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
             routine.Stop();
+            Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
+            Command.RemoveSubscriber<UpdatePlayerAllocation>(OnPlayerAllocated);
         }
 
         public async Task<Lobby> CreateLobby(CreateLobbyData data)
@@ -44,7 +47,7 @@ namespace GameServices
                 hostedLobby = await LobbyService.Instance.CreateLobbyAsync(data.Name, data.MaxPlayers, data.Options);
                 routine.Start(hostedLobby);
                 joinedLobby = hostedLobby;
-                Command.Subscribe<AllocateRelayServer>(OnRelayServerAllocated);
+                //Command.Subscribe<AllocateRelayServer>(OnRelayServerAllocated);
                 Debug.Log($"Lobby created: {hostedLobby.Name}");
                 return hostedLobby;
             }
@@ -108,7 +111,7 @@ namespace GameServices
                     Debug.Log(e.Message);
                 }
 
-                Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
+                //Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
                 routine.Stop();
                 Debug.Log($"Player {playerId} deleted lobby {hostedLobby.Name}");
                 hostedLobby = null;
@@ -146,19 +149,18 @@ namespace GameServices
             }
         }
 
-
-
         private async void OnRelayServerAllocated(AllocateRelayServer server)
         {
             Debug.Log($"Updating relay server join code");
+
 
             var venue = GameData.Get<string>(Key.CurrentVenue);
             var lobbyOptions = new UpdateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>
                 {
-                    { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) },
-                    { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) }
+                    { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) },
+                    { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) }
                 }
             };
 
@@ -166,8 +168,12 @@ namespace GameServices
             {
                 hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
                 joinedLobby = hostedLobby;
+
                 GameData.Set(Key.CurrentLobbyCode, hostedLobby.LobbyCode);
                 LogServerData();
+
+                var allocation = server.Allocation.AllocationId.ToString();
+                OnPlayerAllocated(new UpdatePlayerAllocation(allocation));
             }
             catch (LobbyServiceException e)
             {
@@ -176,10 +182,25 @@ namespace GameServices
             }
         }
 
+        private async void OnPlayerAllocated(UpdatePlayerAllocation updatePlayer)
+        {
+            var options = new UpdatePlayerOptions { AllocationId = updatePlayer.Allocation };
+
+            try
+            {
+                joinedLobby = await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, playerId, options);
+                joinedLobby.Players.ForEach(p => Debug.Log($"PlayerId: {p.Id}, Allocation: {p.AllocationId}"));
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+            }
+        }
+
         private void LogServerData()
         {
             var output = $"Server Name: {hostedLobby.Name}\n";
-            output += $"Player ID: {playerId}\n";
+            output += $"Host ID: {hostedLobby.HostId}\n";
             output += $"Venue ID: {Venue}\n";
             output += $"Lobby ID: {hostedLobby.Id}\n";
             output += $"Lobby Code: {LobbyCode}\n";
