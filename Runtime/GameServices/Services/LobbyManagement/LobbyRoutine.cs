@@ -79,6 +79,7 @@ namespace GameServices
         {
             try
             {
+                Debug.Log($"Update Players Routine: Checking...");
                 currentLobby = await LobbyService.Instance.GetLobbyAsync(currentLobby.Id);
 
                 var newList = currentLobby.Players.Aggregate("", (current, player) => current + $"{player.Id},");
@@ -109,6 +110,7 @@ namespace GameServices
 
         private async void CheckLobbyActivity()
         {
+            Debug.Log($"Lobby Activity Routine: Checking...");
             try
             {
                 currentLobby = await LobbyService.Instance.GetLobbyAsync(currentLobby.Id);
