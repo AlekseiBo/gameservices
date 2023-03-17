@@ -23,7 +23,7 @@ namespace GameServices.CodeBlocks
 
         private void SetGameDataEntries()
         {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
             return;
 #endif
             if (CommandLineArgument(RELAY_SERVER))
@@ -31,7 +31,7 @@ namespace GameServices.CodeBlocks
 
             var address = CommandLineValue(VENUE_ADDRESS);
             if (!string.IsNullOrEmpty(address))
-                GameData.Set(Key.CurrentVenue, address);
+                GameData.Set(Key.RequestedVenue, address);
 
             var maxPlayers = CommandLineValue(MAX_PLAYERS);
             if (!string.IsNullOrEmpty(maxPlayers))

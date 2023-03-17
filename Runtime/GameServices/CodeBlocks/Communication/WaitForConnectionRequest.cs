@@ -8,10 +8,15 @@ namespace GameServices.CodeBlocks
     {
         protected override void Execute()
         {
-            if (GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated)
+            var requestedVenue = GameData.Get<string>(Key.RequestedVenue);
+            if (!string.IsNullOrEmpty(requestedVenue))
+            {
                 Complete(true);
+            }
             else
+            {
                 WaitForConnection();
+            }
         }
 
         private void WaitForConnection()

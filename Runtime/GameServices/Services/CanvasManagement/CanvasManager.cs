@@ -44,7 +44,6 @@ namespace GameServices
         {
             foreach (var canvas in container)
             {
-                Debug.Log(canvas.Value.gameObject.name);
                 if (canvas.Value == null) continue;
                 if (canvas.Value.Additive && !distinct) continue;
                 canvas.Value.HideCanvas();

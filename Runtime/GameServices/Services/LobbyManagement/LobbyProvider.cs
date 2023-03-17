@@ -178,7 +178,7 @@ namespace GameServices
             catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                Command.Publish(new RestartLobby());
+                Command.Publish(new UpdateVenue(VenueAction.Exit, GameData.Get<string>(Key.CurrentVenue)));
             }
         }
 

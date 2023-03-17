@@ -48,7 +48,7 @@ namespace GameServices
                 catch (LobbyServiceException e)
                 {
                     Debug.Log($"Heartbeat Routine: {e.Message}");
-                    Command.Publish(new RestartLobby());
+                    RestartLobby();
                 }
             }
         }
@@ -117,13 +117,16 @@ namespace GameServices
             {
                 currentLobby = await LobbyService.Instance.GetLobbyAsync(currentLobby.Id);
                 if (currentLobby.Players.Count <= 1)
-                    Command.Publish(new RestartLobby());
+                    RestartLobby();
             }
             catch (LobbyServiceException e)
             {
                 Debug.Log($"Lobby Activity Routine: {e.Message}");
-                Command.Publish(new RestartLobby());
+                RestartLobby();
             }
         }
+
+        private static void RestartLobby() =>
+            Command.Publish(new UpdateVenue(VenueAction.Exit, GameData.Get<string>(Key.CurrentVenue)));
     }
 }

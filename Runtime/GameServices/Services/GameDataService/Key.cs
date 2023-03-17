@@ -8,5 +8,6 @@
         PlayerName,
         PlayerNetState,
         ServerActivityTimer,
+        RequestedVenue,
     }
 }

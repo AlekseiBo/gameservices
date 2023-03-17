@@ -18,6 +18,8 @@ namespace GameServices
 
         public async Task<bool> CreateServer(int connections, bool host = false)
         {
+            if (allocation != null) return true;
+
             try
             {
                 allocation = await RelayService.Instance.CreateAllocationAsync(connections);
@@ -51,10 +53,11 @@ namespace GameServices
                 var joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
                 if (joinAllocation == null) return false;
 
+                var network = CreateNetworkManager();
                 var relayServerData = new RelayServerData(joinAllocation, "dtls");
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+                network.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
                 Command.Publish(new UpdatePlayerAllocation(joinAllocation.AllocationId.ToString()));
-                return NetworkManager.Singleton.StartClient();
+                return network.StartClient();
             }
             catch (RelayServiceException e)
             {

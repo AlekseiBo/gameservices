@@ -17,16 +17,11 @@ namespace GameServices.CodeBlocks
                 {
                     //var randomId = $"Player-{UnityEngine.Random.Range(100, 1000).ToString()}";
 
-                    if (GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated)
-                    {
-                        var initOptions = new InitializationOptions()
-                            .With(e => e.SetProfile("RELAY_SERVER"));
-                        await UnityServices.InitializeAsync(initOptions);
-                    }
-                    else
-                    {
-                        await UnityServices.InitializeAsync();
-                    }
+                    var netState = GameData.Get<NetState>(Key.PlayerNetState);
+                    var initOptions = new InitializationOptions()
+                        .With(e => e.SetProfile("RELAY_SERVER"), netState == NetState.Dedicated);
+
+                    await UnityServices.InitializeAsync(initOptions);
                 }
                 catch (Exception e)
                 {
