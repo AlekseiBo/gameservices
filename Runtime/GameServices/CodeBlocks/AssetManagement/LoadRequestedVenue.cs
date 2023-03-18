@@ -1,5 +1,6 @@
 ﻿using Toolset;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GameServices.CodeBlocks
 {
@@ -22,7 +23,7 @@ namespace GameServices.CodeBlocks
 
             if (!string.IsNullOrEmpty(newVenue))
             {
-                await assets.LoadScene(newVenue);
+                await assets.LoadScene(newVenue, LoadSceneMode.Additive);
                 Command.Publish(new ShowVenueCanvas());
                 GameData.Set(Key.CurrentVenue, newVenue);
                 GameData.Set(Key.RequestedVenue, "");

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GameServices.CodeBlocks;
 using Toolset;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -20,6 +21,12 @@ namespace GameServices
         public AssetProvider()
         {
             Addressables.InitializeAsync();
+        }
+
+        public async Task PreloadAsset()
+        {
+            var locationsList = await Addressables.LoadResourceLocationsAsync("preload").Task;
+            await Addressables.DownloadDependenciesAsync(locationsList).Task;
         }
 
         public async Task<T> Load<T>(string address, bool persistent = false) where T : class
@@ -71,9 +78,9 @@ namespace GameServices
             return resultList;
         }
 
-        public async Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single)
+        public async Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single, bool activateOnLoad = true)
         {
-            var handle = Addressables.LoadSceneAsync(address, mode);
+            var handle = Addressables.LoadSceneAsync(address, mode, activateOnLoad);
             CoroutineRunner.Start(WatchLoadingProgress(handle));
             return await RunCachedOnComplete(handle, cacheKey: address, false);
         }
@@ -155,7 +162,7 @@ namespace GameServices
             var canvas = Services.All.Single<ICanvasManager>();
             var progressData = new ShowLoadingProgress(handle.PercentComplete);
 
-            while (!handle.Task.IsCompleted)
+            while (handle.IsValid() && !handle.Task.IsCompleted)
             {
                 if (progressData.Progress != handle.PercentComplete)
                 {

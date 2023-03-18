@@ -9,10 +9,11 @@ namespace GameServices
 {
     public interface IAssetProvider : IService
     {
+        Task PreloadAsset();
         Task<T> Load<T>(string address, bool persistent = false) where T : class;
         void Unload(string address);
         Task<List<T>> LoadLabel<T>(string label, bool persistent = false) where T : class;
-        Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single);
+        Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single, bool activateOnLoad = true);
         Task<bool> UnloadScene(string address);
         Task<GameObject> Instantiate(string address, bool persistent = false);
         Task<GameObject> Instantiate(string address, Vector3 at, bool persistent = false);

@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using Toolset;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace GameServices.CodeBlocks
 {
@@ -9,6 +11,7 @@ namespace GameServices.CodeBlocks
     {
         private const int LOBBY_QUERY_TIMEOUT = 1000;
 
+        [SerializeField] private GameObject networkTracker;
         [SerializeField] private int attempts = 5;
 
         private IStaticDataService staticData;
@@ -18,6 +21,7 @@ namespace GameServices.CodeBlocks
 
         protected override void Execute()
         {
+
             lobbyProvider = Services.All.Single<ILobbyProvider>();
             relayProvider = Services.All.Single<IRelayProvider>();
             attemptCounter = 1;
@@ -46,6 +50,13 @@ namespace GameServices.CodeBlocks
         {
             var connections = GameData.Get<int>(Key.LobbyMaxPlayers) - 1;
             var connected = await relayProvider.CreateServer(connections, asHost);
+
+            Instantiate(networkTracker)
+                .With(t => t.name = "Network Tracker")
+                .With(t => t.GetComponent<NetworkObject>().Spawn(false));
+
+            await Task.Delay(500);
+
             Complete(connected);
         }
 
