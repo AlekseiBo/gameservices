@@ -9,6 +9,7 @@ namespace GameServices.CodeBlocks
     {
         [SerializeField] private AssetReferenceScene reference;
         [SerializeField] private LoadSceneMode mode;
+        [SerializeField] private bool persistent;
 
         private IAssetProvider assets;
         protected override void Execute()
@@ -20,7 +21,7 @@ namespace GameServices.CodeBlocks
         private async void Load()
         {
             Debug.Log($"Loading scene with UID: {reference.AssetGUID}");
-            await assets.LoadScene(reference.AssetGUID, mode);
+            await assets.LoadScene(reference.AssetGUID, mode, persistent);
             Complete(true);
         }
     }

@@ -23,7 +23,7 @@ namespace GameServices.CodeBlocks
 
             if (!string.IsNullOrEmpty(newVenue))
             {
-                await assets.LoadScene(newVenue, LoadSceneMode.Additive);
+                var sceneInstance = await assets.LoadScene(newVenue, LoadSceneMode.Additive);
                 Command.Publish(new ShowVenueCanvas());
                 GameData.Set(Key.CurrentVenue, newVenue);
                 GameData.Set(Key.RequestedVenue, "");

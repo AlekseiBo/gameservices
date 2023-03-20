@@ -15,8 +15,21 @@ namespace GameServices
 {
     public class AssetProvider : IAssetProvider
     {
+        private readonly Dictionary<string, SceneInstance> sceneInstances = new();
         private readonly Dictionary<string, AsyncOperationHandle> completedCache = new();
         private readonly Dictionary<string, List<AsyncOperationHandle>> handles = new();
+
+        public bool SceneInstance(string address, out SceneInstance instance)
+        {
+            if (sceneInstances.TryGetValue(address, out var sceneInstance))
+            {
+                instance = sceneInstance;
+                return true;
+            }
+
+            instance = default;
+            return false;
+        }
 
         public AssetProvider()
         {
@@ -78,11 +91,13 @@ namespace GameServices
             return resultList;
         }
 
-        public async Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single, bool activateOnLoad = true)
+        public async Task<SceneInstance> LoadScene(string address, LoadSceneMode mode = LoadSceneMode.Single, bool persistent = false)
         {
-            var handle = Addressables.LoadSceneAsync(address, mode, activateOnLoad);
+            var handle = Addressables.LoadSceneAsync(address, mode);
             CoroutineRunner.Start(WatchLoadingProgress(handle));
-            return await RunCachedOnComplete(handle, cacheKey: address, false);
+            var sceneInstance = await RunCachedOnComplete(handle, cacheKey: address, persistent);
+            sceneInstances[address] = sceneInstance;
+            return sceneInstance;
         }
 
         public async Task<bool> UnloadScene(string address)
@@ -91,6 +106,7 @@ namespace GameServices
             var handle = Addressables.UnloadSceneAsync(completedHandle);
             CoroutineRunner.Start(WatchLoadingProgress(handle));
             await handle.Task;
+            sceneInstances.Remove(address);
             Unload(address);
             return true;
         }

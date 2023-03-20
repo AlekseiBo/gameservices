@@ -53,9 +53,7 @@ namespace GameServices.CodeBlocks
 
             Instantiate(networkTracker)
                 .With(t => t.name = "Network Tracker")
-                .With(t => t.GetComponent<NetworkObject>().Spawn(false));
-
-            await Task.Delay(500);
+                .With(t => t.GetComponent<NetworkObject>().Spawn());
 
             Complete(connected);
         }

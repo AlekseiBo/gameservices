@@ -39,13 +39,13 @@ namespace GameServices.CodeBlocks
         {
             Debug.Log(GameData.Get<string>(Key.CurrentLobbyCode));
             var joinedLobby = await lobby.JoinLobbyByCode(GameData.Get<string>(Key.CurrentLobbyCode));
-            GameData.Set(Key.CurrentVenue, lobby.Venue);
+            GameData.Set(Key.RequestedVenue, lobby.Venue);
             Complete(joinedLobby != null);
         }
 
         private async void JoinWithVenue()
         {
-            var joinedLobby = await lobby.JoinLobbyByVenue(GameData.Get<string>(Key.CurrentVenue));
+            var joinedLobby = await lobby.JoinLobbyByVenue(GameData.Get<string>(Key.RequestedVenue));
 
             if (joinedLobby != null)
             {
@@ -61,7 +61,7 @@ namespace GameServices.CodeBlocks
         private async void CreateLobby(bool asServer)
         {
             var owner = asServer ? "RELAY" : "PLAYER";
-            var venue = GameData.Get<string>(Key.CurrentVenue);
+            var venue = GameData.Get<string>(Key.RequestedVenue);
             var lobbyName = $"{owner} {venue}";
             var maxPlayers = GameData.Get<int>(Key.LobbyMaxPlayers);
             var lobbyData = new CreateLobbyData(lobbyName, maxPlayers, false);

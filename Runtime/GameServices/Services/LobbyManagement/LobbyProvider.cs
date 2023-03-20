@@ -133,6 +133,32 @@ namespace GameServices
             }
         }
 
+        public async Task UpdateVenue(string venue)
+        {
+            Debug.Log($"Updating venue on change");
+
+            if (hostedLobby == null) return;
+            
+            var lobbyOptions = new UpdateLobbyOptions
+            {
+                Data = new Dictionary<string, DataObject>
+                {
+                    { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) }
+                }
+            };
+
+            try
+            {
+                hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
+                joinedLobby = hostedLobby;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+                Command.Publish(new UpdateVenue(VenueAction.Exit, GameData.Get<string>(Key.CurrentVenue)));
+            }
+        }
+
         private async Task<Lobby> JoinOrReconnectLobby(Lobby lobby)
         {
             try

@@ -23,7 +23,7 @@ namespace GameServices.CodeBlocks
 
         private void SetGameDataEntries()
         {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
             return;
 #endif
             if (CommandLineArgument(RELAY_SERVER))

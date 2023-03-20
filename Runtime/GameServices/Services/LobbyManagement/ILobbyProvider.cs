@@ -14,5 +14,6 @@ namespace GameServices
         Task<Lobby> JoinLobbyByVenue(string venue, int attempt = 1);
         Task<Lobby> JoinLobbyByCode(string code);
         Task LeaveConnectedLobby();
+        Task UpdateVenue(string venue);
     }
 }
