@@ -10,9 +10,6 @@ namespace GameServices.CodeBlocks
     [CreateAssetMenu(fileName = "Preload Assets", menuName = "Code Blocks/Initialization/Preload Assets", order = 0)]
     public class PreloadAssets : CodeBlock
     {
-        [SerializeField] private bool persistent = true;
-        [SerializeField] private List<AssetReference> assets;
-
         protected override async void Execute()
         {
             var assetProvider = Services.All.Single<IAssetProvider>();

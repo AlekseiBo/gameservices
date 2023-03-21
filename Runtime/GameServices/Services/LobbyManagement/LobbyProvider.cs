@@ -22,6 +22,7 @@ namespace GameServices
 
         private readonly LobbyRoutine routine;
         private readonly LobbyQuery query;
+        private readonly LobbyRequest request;
         private Lobby hostedLobby;
         private Lobby joinedLobby;
 
@@ -29,6 +30,8 @@ namespace GameServices
         {
             routine = new LobbyRoutine();
             query = new LobbyQuery();
+            request = new LobbyRequest();
+
             Command.Subscribe<AllocateRelayServer>(OnRelayServerAllocated);
             Command.Subscribe<UpdatePlayerAllocation>(OnPlayerAllocated);
         }
@@ -42,58 +45,40 @@ namespace GameServices
 
         public async Task<Lobby> CreateLobby(CreateLobbyData data)
         {
-            try
-            {
-                hostedLobby = await LobbyService.Instance.CreateLobbyAsync(data.Name, data.MaxPlayers, data.Options);
-                routine.Start(hostedLobby);
-                joinedLobby = hostedLobby;
-                //Command.Subscribe<AllocateRelayServer>(OnRelayServerAllocated);
-                Debug.Log($"Lobby created: {hostedLobby.Name}");
-                return hostedLobby;
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
-                return null;
-            }
+            hostedLobby = await request.CreateLobby(data);
+            if (hostedLobby == null) return null;
+
+            routine.Start(hostedLobby);
+            joinedLobby = hostedLobby;
+            Debug.Log($"Lobby created: {hostedLobby.Name}");
+            return hostedLobby;
         }
 
         public async Task<Lobby> JoinLobbyByVenue(string venue, int attempt = 1)
         {
-            try
-            {
-                var lobbies = await query.ByVenue(venue);
-                if (lobbies.Results.Count < attempt) return default;
+            var lobbies = await query.ByVenue(venue);
+            if (lobbies.Results.Count < attempt) return null;
 
-                var lobby = lobbies.Results[attempt - 1];
-                joinedLobby = await JoinOrReconnectLobby(lobby);
-                Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId})");
-                return joinedLobby;
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
-                return default;
-            }
+            var lobby = lobbies.Results[attempt - 1];
+            joinedLobby = await request.JoinOrReconnectLobby(lobby, playerId);
+            Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId})");
+            return joinedLobby;
         }
 
         public async Task<Lobby> JoinLobbyByCode(string code)
         {
-            try
+            joinedLobby = await request.JoinLobbyByCode(code);
+            if (joinedLobby == null)
             {
-                joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code);
-                Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId}");
-                return joinedLobby;
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
                 var lobbies = await LobbyService.Instance.GetJoinedLobbiesAsync();
                 if (lobbies is { Count: > 0 })
-                    joinedLobby = await LobbyService.Instance.ReconnectToLobbyAsync(lobbies[0]);
+                    joinedLobby = await request.JoinLobby(lobbies[0]);
 
                 return joinedLobby;
             }
+
+            Debug.Log($"Lobby {joinedLobby.Name} joined (Hosted by {joinedLobby.HostId}");
+            return joinedLobby;
         }
 
         public async Task LeaveConnectedLobby()
@@ -102,16 +87,7 @@ namespace GameServices
 
             if (hostedLobby != null)
             {
-                try
-                {
-                    await LobbyService.Instance.DeleteLobbyAsync(hostedLobby.Id);
-                }
-                catch (LobbyServiceException e)
-                {
-                    Debug.Log(e.Message);
-                }
-
-                //Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
+                await request.DeleteLobby(hostedLobby.Id);
                 routine.Stop();
                 Debug.Log($"Player {playerId} deleted lobby {hostedLobby.Name}");
                 hostedLobby = null;
@@ -119,15 +95,7 @@ namespace GameServices
             }
             else if (joinedLobby != null)
             {
-                try
-                {
-                    await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, playerId);
-                }
-                catch (LobbyServiceException e)
-                {
-                    Debug.Log(e.Message);
-                }
-
+                await request.LeaveLobby(joinedLobby.Id, playerId);
                 Debug.Log($"Player {playerId} left lobby {joinedLobby.Name}");
                 joinedLobby = null;
             }
@@ -138,47 +106,24 @@ namespace GameServices
             Debug.Log($"Updating venue on change");
 
             if (hostedLobby == null) return;
-            
+
             var lobbyOptions = new UpdateLobbyOptions
-            {
-                Data = new Dictionary<string, DataObject>
-                {
-                    { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) }
-                }
-            };
+            { Data = new Dictionary<string, DataObject>
+                { { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) } } };
 
-            try
+            hostedLobby = await request.UpdateLobby(hostedLobby.Id, lobbyOptions);
+            if (hostedLobby == null)
             {
-                hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
-                joinedLobby = hostedLobby;
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
                 Command.Publish(new UpdateVenue(VenueAction.Exit, GameData.Get<string>(Key.CurrentVenue)));
+                return;
             }
-        }
 
-        private async Task<Lobby> JoinOrReconnectLobby(Lobby lobby)
-        {
-            try
-            {
-                var player = lobby.Players.Find(p => p.Id == playerId);
-                return player == null
-                    ? await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id)
-                    : await LobbyService.Instance.ReconnectToLobbyAsync(lobby.Id);
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
-                return default;
-            }
+            joinedLobby = hostedLobby;
         }
 
         private async void OnRelayServerAllocated(AllocateRelayServer server)
         {
             Debug.Log($"Updating relay server join code");
-
 
             var venue = GameData.Get<string>(Key.CurrentVenue);
             var lobbyOptions = new UpdateLobbyOptions
@@ -190,37 +135,29 @@ namespace GameServices
                 }
             };
 
-            try
+            hostedLobby = await request.UpdateLobby(hostedLobby.Id, lobbyOptions);
+            if (hostedLobby == null)
             {
-                hostedLobby = await LobbyService.Instance.UpdateLobbyAsync(hostedLobby.Id, lobbyOptions);
-                joinedLobby = hostedLobby;
-
-                GameData.Set(Key.CurrentLobbyCode, hostedLobby.LobbyCode);
-                LogServerData();
-
-                var allocation = server.Allocation.AllocationId.ToString();
-                OnPlayerAllocated(new UpdatePlayerAllocation(allocation));
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
                 Command.Publish(new UpdateVenue(VenueAction.Exit, GameData.Get<string>(Key.CurrentVenue)));
+                return;
             }
+
+            joinedLobby = hostedLobby;
+
+            GameData.Set(Key.CurrentLobbyCode, hostedLobby.LobbyCode);
+            LogServerData();
+
+            var allocation = server.Allocation.AllocationId.ToString();
+            OnPlayerAllocated(new UpdatePlayerAllocation(allocation));
         }
 
         private async void OnPlayerAllocated(UpdatePlayerAllocation updatePlayer)
         {
             var options = new UpdatePlayerOptions { AllocationId = updatePlayer.Allocation };
+            joinedLobby = await request.UpdateLobbyPlayer(joinedLobby.Id, playerId, options);
+            if (joinedLobby == null) return;
 
-            try
-            {
-                joinedLobby = await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, playerId, options);
-                joinedLobby.Players.ForEach(p => Debug.Log($"PlayerId: {p.Id}, Allocation: {p.AllocationId}"));
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e.Message);
-            }
+            joinedLobby.Players.ForEach(p => Debug.Log($"PlayerId: {p.Id}, Allocation: {p.AllocationId}"));
         }
 
         private void LogServerData()

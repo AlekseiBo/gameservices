@@ -23,9 +23,7 @@ namespace GameServices.CodeBlocks
 
         private void SetGameDataEntries()
         {
-#if UNITY_EDITOR
-            return;
-#endif
+#if !UNITY_EDITOR
             if (CommandLineArgument(RELAY_SERVER))
                 GameData.Set(Key.PlayerNetState, NetState.Dedicated);
 
@@ -40,6 +38,7 @@ namespace GameServices.CodeBlocks
             var activityTimer = CommandLineValue(SERVER_ACTIVITY);
             if (!string.IsNullOrEmpty(activityTimer))
                 GameData.Set(Key.ServerActivityTimer, float.Parse(activityTimer));
+#endif
         }
 
         private void SetTargetFramesPerSecond()
