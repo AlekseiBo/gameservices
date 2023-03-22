@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Toolset;
 using Unity.Services.Lobbies;
@@ -81,28 +80,23 @@ namespace GameServices
             {
                 currentLobby = await LobbyService.Instance.GetLobbyAsync(currentLobby.Id);
 
-                var newList = currentLobby.Players.Aggregate("", (current, player) => current + $"{player.Id},");
+                var newList = currentLobby.Players.Aggregate("",
+                    (current, player) => current + $"{player.Id[..8]} ");
 
                 if (playersList == newList) return;
 
                 playersList = newList;
+                var lobbySplit = currentLobby.Name.Split(' ');
+                var newLobbyName = $"{lobbySplit[0]} {lobbySplit[1]} {playersList}";
+
                 var options = new UpdateLobbyOptions
                 {
-                    Data = new Dictionary<string, DataObject>()
-                    {
-                        {
-                            "Players", new DataObject(
-                                visibility: DataObject.VisibilityOptions.Public,
-                                value: playersList,
-                                index: DataObject.IndexOptions.S1)
-                        }
-                    }
+                    Name = newLobbyName
                 };
 
                 currentLobby = await LobbyService.Instance.UpdateLobbyAsync(currentLobby.Id, options);
 
-                if (currentLobby.Data.TryGetValue("Players", out var data))
-                    Debug.Log($"Lobby players: {data.Value}");
+                Debug.Log($"Lobby name changed: {currentLobby.Name}");
             }
             catch (LobbyServiceException e)
             {

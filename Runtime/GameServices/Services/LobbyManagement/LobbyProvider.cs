@@ -11,6 +11,7 @@ namespace GameServices
 {
     public class LobbyProvider : ILobbyProvider, IDisposable
     {
+        private const string LOBBY_CODE = "LOBBY_CODE";
         private const string RELAY_CODE = "RELAY_CODE";
         private const string VENUE = "VENUE";
 
@@ -121,6 +122,13 @@ namespace GameServices
             joinedLobby = hostedLobby;
         }
 
+        public async Task<Lobby> QueryPlayerOnline(string friendId)
+        {
+            var lobbies = await query.ByFriend(friendId);
+            if (lobbies != null && lobbies.Results.Count > 0) return lobbies.Results[0];
+            return null;
+        }
+
         private async void OnRelayServerAllocated(AllocateRelayServer server)
         {
             Debug.Log($"Updating relay server join code");
@@ -131,6 +139,7 @@ namespace GameServices
                 Data = new Dictionary<string, DataObject>
                 {
                     { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) },
+                    { LOBBY_CODE, new DataObject(DataObject.VisibilityOptions.Public, LobbyCode) },
                     { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) }
                 }
             };

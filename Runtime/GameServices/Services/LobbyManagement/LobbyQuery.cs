@@ -36,6 +36,8 @@ namespace GameServices
 
         public async Task<QueryResponse> ByFriend(string friendId)
         {
+            friendId = friendId[..8];
+
             try
             {
                 var queryLobbiesOptions = new QueryLobbiesOptions
@@ -43,10 +45,10 @@ namespace GameServices
                     Filters = new List<QueryFilter>
                     {
                         new(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
-                        new(QueryFilter.FieldOptions.S1, friendId, QueryFilter.OpOptions.CONTAINS),
+                        new(QueryFilter.FieldOptions.Name, friendId, QueryFilter.OpOptions.CONTAINS),
                     },
                     Order = new List<QueryOrder>
-                        { new(true, QueryOrder.FieldOptions.Created) }
+                        { new(false, QueryOrder.FieldOptions.Created) }
                 };
 
                 var response = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
@@ -62,12 +64,10 @@ namespace GameServices
 
         private static void LogResponse(QueryResponse response)
         {
-            Debug.Log($"Current lobbies: {response.Results.Count}");
+            Debug.Log($"Query lobby count is {response.Results.Count}");
             foreach (var lobby in response.Results)
             {
                 Debug.Log($"{lobby.Name}: privates = {lobby.IsPrivate}, max players = {lobby.MaxPlayers}");
-                if (lobby.Data.TryGetValue("Players", out var data))
-                    Debug.Log($"Connected players: {data.Value}");
             }
         }
     }

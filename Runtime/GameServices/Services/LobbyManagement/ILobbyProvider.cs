@@ -15,5 +15,6 @@ namespace GameServices
         Task<Lobby> JoinLobbyByCode(string code);
         Task LeaveConnectedLobby();
         Task UpdateVenue(string venue);
+        Task<Lobby> QueryPlayerOnline(string friendId);
     }
 }

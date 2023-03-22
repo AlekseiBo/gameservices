@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "RegisterRelayProvider", menuName = "Code Blocks/Initialization/Register Relay Provider", order = 0)]
+    [CreateAssetMenu(fileName = "Register Relay Provider", menuName = "Code Blocks/Initialization/Register Relay Provider", order = 0)]
     public class RegisterRelayProvider : CodeBlock
     {
         protected override void Execute()

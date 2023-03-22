@@ -9,6 +9,7 @@ namespace GameServices
         [SerializeField] private AssetReferenceCanvas showDialogCanvas;
         [SerializeField] private AssetReferenceCanvas logMessageCanvas;
         [SerializeField] private AssetReferenceCanvas loadingProgressCanvas;
+        [SerializeField] private AssetReferenceCanvas friendListCanvas;
         [SerializeField] private AssetReferenceCanvas selectVenueCanvas;
         [SerializeField] private AssetReferenceCanvas showVenueCanvas;
 
@@ -22,6 +23,7 @@ namespace GameServices
             Command.Subscribe<ShowDialog>(ShowDialog);
             Command.Subscribe<LogMessage>(LogMessage);
             Command.Subscribe<ShowLoadingProgress>(ShowProgress);
+            Command.Subscribe<ShowFriendList>(ShowFriendList);
             Command.Subscribe<SelectVenue>(SelectVenue);
             Command.Subscribe<ShowVenueCanvas>(ShowVenueCanvas);
         }
@@ -32,6 +34,7 @@ namespace GameServices
             Command.RemoveSubscriber<ShowDialog>(ShowDialog);
             Command.RemoveSubscriber<LogMessage>(LogMessage);
             Command.RemoveSubscriber<ShowLoadingProgress>(ShowProgress);
+            Command.RemoveSubscriber<ShowFriendList>(ShowFriendList);
             Command.RemoveSubscriber<SelectVenue>(SelectVenue);
             Command.RemoveSubscriber<ShowVenueCanvas>(ShowVenueCanvas);
         }
@@ -40,6 +43,7 @@ namespace GameServices
         private void ShowDialog(ShowDialog command) => Register(command, showDialogCanvas);
         private void LogMessage(LogMessage command) => Register(command, logMessageCanvas);
         private void ShowProgress(ShowLoadingProgress command) => Register(command, loadingProgressCanvas);
+        private void ShowFriendList(ShowFriendList command) => Register(command, friendListCanvas);
         private void ShowVenueCanvas(ShowVenueCanvas command) => Register(command, showVenueCanvas);
         private void SelectVenue(SelectVenue command) => Register(command, selectVenueCanvas);
 

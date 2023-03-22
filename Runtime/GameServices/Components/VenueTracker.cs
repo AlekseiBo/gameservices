@@ -36,6 +36,21 @@ namespace GameServices
 
                 Command.Publish(dialog);
             }
+
+            if (!trigger.Player.IsOwnedByServer && trigger.Player.IsLocalPlayer)
+            {
+                var venue = trigger.Data as VenueStaticData;
+                var venueAddress = venue.Address;
+                var dialog = new ShowDialog(
+                    "Teleport",
+                    $"Do you want to go to {venue.Name}?",
+                    "YES",
+                    () => Command.Publish(new UpdateVenue(VenueAction.Exit, venueAddress)),
+                    "NO"
+                );
+
+                Command.Publish(dialog);
+            }
         }
 
         private async void HostChangeVenue(string address)
