@@ -54,7 +54,6 @@ namespace GameServices
         {
             while (currentLobby != null)
             {
-                Debug.Log("Updating players list");
                 yield return Utilities.WaitFor(UPDATE_PLAYERS_TIMEOUT);
                 UpdatePlayersList();
                 while (updatePlayersInProgress) yield return null;
