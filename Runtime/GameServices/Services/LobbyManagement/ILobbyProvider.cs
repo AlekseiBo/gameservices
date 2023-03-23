@@ -9,6 +9,7 @@ namespace GameServices
         string RelayCode => "";
         string LobbyCode => "";
         string Venue => "";
+        Lobby JoinedLobby { get; }
 
         Task<Lobby> CreateLobby(CreateLobbyData data);
         Task<Lobby> JoinLobbyByVenue(string venue, int attempt = 1);

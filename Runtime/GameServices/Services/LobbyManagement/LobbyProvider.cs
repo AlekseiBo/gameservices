@@ -18,6 +18,7 @@ namespace GameServices
         public string LobbyCode => joinedLobby?.LobbyCode;
         public string RelayCode => joinedLobby?.Data.GetValueOrDefault(RELAY_CODE).Value;
         public string Venue => joinedLobby?.Data.GetValueOrDefault(VENUE).Value;
+        public Lobby JoinedLobby => joinedLobby;
 
         private string playerId => AuthenticationService.Instance?.PlayerId;
 
@@ -51,7 +52,7 @@ namespace GameServices
 
             routine.Start(hostedLobby);
             joinedLobby = hostedLobby;
-            Debug.Log($"Lobby created: {hostedLobby.Name}");
+            Debug.Log($"Lobby created: {hostedLobby.Name} (Venue: {Venue})");
             return hostedLobby;
         }
 
@@ -110,7 +111,7 @@ namespace GameServices
 
             var lobbyOptions = new UpdateLobbyOptions
             { Data = new Dictionary<string, DataObject>
-                { { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) } } };
+                { { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue, DataObject.IndexOptions.S1) } } };
 
             hostedLobby = await request.UpdateLobby(hostedLobby.Id, lobbyOptions);
             if (hostedLobby == null)
@@ -138,7 +139,7 @@ namespace GameServices
             {
                 Data = new Dictionary<string, DataObject>
                 {
-                    { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue) },
+                    { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue, DataObject.IndexOptions.S1) },
                     { LOBBY_CODE, new DataObject(DataObject.VisibilityOptions.Public, LobbyCode) },
                     { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) }
                 }

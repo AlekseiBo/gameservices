@@ -45,7 +45,7 @@ namespace GameServices
                     "Teleport",
                     $"Do you want to go to {venue.Name}?",
                     "YES",
-                    () => Command.Publish(new UpdateVenue(VenueAction.Exit, venueAddress)),
+                    () => ClientChangeVenue(venueAddress),
                     "NO"
                 );
 
@@ -58,6 +58,12 @@ namespace GameServices
             await Services.All.Single<ILobbyProvider>().UpdateVenue(address);
             VenueRequest(new UpdateVenue(VenueAction.Change, address));
             FindObjectOfType<NetworkTracker>().ChangeVenueClientRpc(address);
+        }
+
+        private static void ClientChangeVenue(string venueAddress)
+        {
+            GameData.Set(Key.PlayerNetState, NetState.Client);
+            Command.Publish(new UpdateVenue(VenueAction.Exit, venueAddress));
         }
 
         private void VenueRequest(UpdateVenue venueData)

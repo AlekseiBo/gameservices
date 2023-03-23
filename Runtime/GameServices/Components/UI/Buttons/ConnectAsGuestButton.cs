@@ -1,7 +1,6 @@
-﻿using GameServices;
-using Toolset;
+﻿using Toolset;
 
-namespace Scripts
+namespace GameServices
 {
     public class ConnectAsGuestButton  : BaseButton
     {

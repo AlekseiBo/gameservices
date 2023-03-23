@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace GameServices.CodeBlocks
 {
-    [CreateAssetMenu(fileName = "Wait For Connection Request", menuName = "Code Blocks/Communication/Wait For Connection Request", order = 0)]
+    [CreateAssetMenu(fileName = "Wait For Connection Request",
+        menuName = "Code Blocks/Communication/Wait For Connection Request", order = 0)]
     public class WaitForConnectionRequest : CodeBlock
     {
         protected override void Execute()
@@ -12,11 +13,18 @@ namespace GameServices.CodeBlocks
             if (!string.IsNullOrEmpty(requestedVenue))
             {
                 Complete(true);
+                return;
             }
-            else
+
+            var requestedCode = GameData.Get<string>(Key.RequestedLobbyCode);
+            var netState = GameData.Get<NetState>(Key.PlayerNetState);
+            if (!string.IsNullOrEmpty(requestedCode) && netState == NetState.Guest)
             {
-                WaitForConnection();
+                Complete(true);
+                return;
             }
+
+            WaitForConnection();
         }
 
         private void WaitForConnection()

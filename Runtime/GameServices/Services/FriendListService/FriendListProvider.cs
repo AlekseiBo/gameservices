@@ -37,16 +37,20 @@ namespace GameServices
         public async Task<string> GetPlayerCurrentLobby(string friendId)
         {
             var friendLobby = await lobby.QueryPlayerOnline(friendId);
-            return friendLobby != null && friendLobby.Data != null ?
-                friendLobby.Data.GetValueOrDefault("LOBBY_CODE").Value :
-                "";
+            return friendLobby != null && friendLobby.Data != null
+                ? friendLobby.Data.GetValueOrDefault("LOBBY_CODE").Value
+                : "";
         }
 
         public void JoinFriendLobby(string friendLobbyCode)
         {
-            GameData.Set(Key.CurrentLobbyCode, friendLobbyCode);
+            GameData.Set(Key.RequestedLobbyCode, friendLobbyCode);
             GameData.Set(Key.PlayerNetState, NetState.Guest);
-            Command.Publish(new ConnectToLobby());
+
+            if (lobby.JoinedLobby != null)
+                Command.Publish(new UpdateVenue(VenueAction.Exit, ""));
+            else
+                Command.Publish(new ConnectToLobby());
         }
 
         private void OnFriendListUpdate(UpdateFriendList data)

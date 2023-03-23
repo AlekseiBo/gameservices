@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,21 +12,22 @@ namespace GameServices
         [SerializeField] private Button checkButton;
         [SerializeField] private Button joinButton;
 
+        public string id;
+
         private FriendListCanvas canvas;
         private string name;
-        private string id;
         private string lobbyCode;
 
         private void Start()
         {
             joinButton.interactable = false;
-            checkButton.onClick.AddListener(CheckPlayerOnline);
+            checkButton.onClick.AddListener(CheckPlayer);
             joinButton.onClick.AddListener(JoinLobby);
         }
 
         private void OnDestroy()
         {
-            checkButton.onClick.RemoveListener(CheckPlayerOnline);
+            checkButton.onClick.RemoveListener(CheckPlayer);
             joinButton.onClick.RemoveListener(JoinLobby);
         }
 
@@ -37,7 +39,9 @@ namespace GameServices
             playerNameText.text = this.name;
         }
 
-        private async void CheckPlayerOnline()
+        private void CheckPlayer() => CheckPlayerOnline();
+
+        public async void CheckPlayerOnline()
         {
             checkButton.interactable = false;
             lobbyCode = await canvas.GetPlayerCurrentLobby(id);

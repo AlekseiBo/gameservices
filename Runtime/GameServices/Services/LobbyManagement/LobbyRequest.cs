@@ -11,7 +11,9 @@ namespace GameServices
         {
             try
             {
-                return await LobbyService.Instance.CreateLobbyAsync(data.Name, data.MaxPlayers, data.Options);
+                var lobby = await LobbyService.Instance.CreateLobbyAsync(data.Name, data.MaxPlayers, data.Options);
+                return lobby;
+
             }
             catch (LobbyServiceException e)
             {
@@ -53,6 +55,7 @@ namespace GameServices
         {
             try
             {
+                if (string.IsNullOrEmpty(code)) return null;
                 return await LobbyService.Instance.JoinLobbyByCodeAsync(code);
             }
             catch (LobbyServiceException e)

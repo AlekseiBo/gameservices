@@ -9,5 +9,6 @@
         PlayerNetState,
         ServerActivityTimer,
         RequestedVenue,
+        RequestedLobbyCode,
     }
 }

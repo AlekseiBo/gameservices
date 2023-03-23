@@ -17,7 +17,7 @@ namespace GameServices
                     Filters = new List<QueryFilter>
                     {
                         new(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
-                        new(QueryFilter.FieldOptions.Name, venue, QueryFilter.OpOptions.CONTAINS),
+                        new(QueryFilter.FieldOptions.S1, venue, QueryFilter.OpOptions.EQ),
                     },
                     Order = new List<QueryOrder>
                         { new(true, QueryOrder.FieldOptions.Created) }
