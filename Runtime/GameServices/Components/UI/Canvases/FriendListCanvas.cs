@@ -56,9 +56,11 @@ namespace GameServices
 
         public async Task<string> GetPlayerCurrentLobby(string friendId)
         {
+            var timeout = (int)REQUEST_TIMEOUT * 1000;
             queryInProgress = true;
-            await Task.Delay((int)REQUEST_TIMEOUT * 1000);
+            await Task.Delay(timeout);
             var result = await provider.GetPlayerCurrentLobby(friendId);
+            await Task.Delay(timeout);
             queryInProgress = false;
             return result;
         }
