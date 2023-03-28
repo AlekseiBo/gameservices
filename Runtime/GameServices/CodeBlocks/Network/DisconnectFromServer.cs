@@ -10,8 +10,8 @@ namespace GameServices.CodeBlocks
 
         protected override async void Execute()
         {
-            Services.All.Single<IRelayProvider>().StopServer();
             await Services.All.Single<ILobbyProvider>().LeaveConnectedLobby();
+            Services.All.Single<IRelayProvider>().StopServer();
             if (restartGame) Command.Publish(new RunGame());
             Complete(true);
         }
