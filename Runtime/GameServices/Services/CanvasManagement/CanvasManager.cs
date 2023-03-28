@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Toolset;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace GameServices
 {
@@ -74,6 +76,15 @@ namespace GameServices
                 canvas.UpdateCanvas(command);
                 ShowCanvas(commandType);
             }
+        }
+
+        public void CleanUp()
+        {
+            foreach (var keyValue in container.Where(keyValue => keyValue.Value != null))
+                UnityEngine.Object.Destroy(keyValue.Value.gameObject);
+
+            container.Clear();
+            commandQueue.Clear();
         }
     }
 }

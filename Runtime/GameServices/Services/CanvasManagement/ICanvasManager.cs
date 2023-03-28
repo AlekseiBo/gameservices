@@ -11,5 +11,6 @@ namespace GameServices
         void HideCanvas(string commandType);
         void HideAllCanvases(bool distinct);
         void Register(IMediatorCommand command, AssetReferenceCanvas asset, Transform parent);
+        void CleanUp();
     }
 }
