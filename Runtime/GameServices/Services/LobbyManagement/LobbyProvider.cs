@@ -164,6 +164,7 @@ namespace GameServices
 
         private async void OnPlayerAllocated(UpdatePlayerAllocation updatePlayer)
         {
+            if (joinedLobby == null) return;
             var options = new UpdatePlayerOptions { AllocationId = updatePlayer.Allocation };
             joinedLobby = await request.UpdateLobbyPlayer(joinedLobby.Id, playerId, options);
             if (joinedLobby == null) return;
