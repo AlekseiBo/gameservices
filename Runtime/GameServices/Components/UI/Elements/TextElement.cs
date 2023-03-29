@@ -24,10 +24,10 @@ namespace GameServices
 
         private void UpdateProperties()
         {
-            textComponent.font = props.font;
-            textComponent.fontMaterial = props.material;
+            if (props.font != null) textComponent.font = props.font;
+            if (props.material != null) textComponent.fontMaterial = props.material;
             textComponent.fontStyle = props.fontStyle;
-            textComponent.fontSize = props.fontSize;
+            if (props.fontSize != 0f) textComponent.fontSize = props.fontSize;
             textComponent.color = props.color;
         }
     }
