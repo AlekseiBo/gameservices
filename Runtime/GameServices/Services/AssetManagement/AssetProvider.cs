@@ -177,14 +177,13 @@ namespace GameServices
             if (!CanvasManager.IsInitialized) yield break;
             var canvas = Services.All.Single<ICanvasManager>();
             var progressData = new ShowLoadingProgress(handle.PercentComplete);
-            Command.Publish(progressData);
 
             while (handle.IsValid() && !handle.Task.IsCompleted)
             {
                 if (progressData.Progress != handle.PercentComplete)
                 {
                     progressData.Progress = handle.PercentComplete;
-                    canvas.ShowCanvas(progressData);
+                    Command.Publish(progressData);
                 }
 
                 yield return Utilities.WaitFor(0.1f);

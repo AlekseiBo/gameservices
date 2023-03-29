@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Toolset;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace GameServices
 {
@@ -59,11 +58,19 @@ namespace GameServices
             {
                 container[commandType] = null;
                 var canvasObject = await assets.Instantiate(asset.AssetGUID, parent);
-                canvas = canvasObject.GetComponent<BaseCanvas>();
-                container[commandType] = canvas;
+                if (parent == null)
+                {
+                    UnityEngine.Object.Destroy(canvasObject);
+                    container.Remove(commandType);
+                }
+                else
+                {
+                    canvas = canvasObject.GetComponent<BaseCanvas>();
+                    container[commandType] = canvas;
 
-                if (commandQueue.Remove(commandType, out var laterCommand))
-                    command = laterCommand;
+                    if (commandQueue.Remove(commandType, out var laterCommand))
+                        command = laterCommand;
+                }
             }
 
             if (canvas == null)
