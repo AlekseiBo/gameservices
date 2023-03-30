@@ -24,6 +24,8 @@ namespace GameServices
 
         private void UpdateProperties()
         {
+            if (props == null) return;
+
             if (props.font != null) textComponent.font = props.font;
             if (props.material != null) textComponent.fontMaterial = props.material;
             textComponent.fontStyle = props.fontStyle;
