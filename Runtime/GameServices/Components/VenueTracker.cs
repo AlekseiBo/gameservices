@@ -14,11 +14,7 @@ namespace GameServices
             Command.Subscribe<ActivatePlayerTrigger>(TriggerActivated);
         }
 
-        private void OnDestroy()
-        {
-            Command.RemoveSubscriber<UpdateVenue>(VenueRequest);
-            Command.RemoveSubscriber<ActivatePlayerTrigger>(TriggerActivated);
-        }
+        private void OnDestroy() => RemoveSubscribers();
 
         private void TriggerActivated(ActivatePlayerTrigger trigger)
         {
@@ -73,12 +69,19 @@ namespace GameServices
             switch (venueData.Action)
             {
                 case VenueAction.Exit:
+                    RemoveSubscribers();
                     onExit.Run();
                     break;
                 case VenueAction.Change:
                     onChange.Run();
                     break;
             }
+        }
+
+        private void RemoveSubscribers()
+        {
+            Command.RemoveSubscriber<UpdateVenue>(VenueRequest);
+            Command.RemoveSubscriber<ActivatePlayerTrigger>(TriggerActivated);
         }
     }
 }
