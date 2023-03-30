@@ -25,6 +25,7 @@ namespace GameServices
         private readonly LobbyRoutine routine;
         private readonly LobbyQuery query;
         private readonly LobbyRequest request;
+        private bool hostedLobbyIsPrivate;
         private Lobby hostedLobby;
         private Lobby joinedLobby;
 
@@ -47,12 +48,15 @@ namespace GameServices
 
         public async Task<Lobby> CreateLobby(CreateLobbyData data)
         {
+            hostedLobbyIsPrivate = data.IsPrivate;
+            data.Options.IsPrivate = true;
+
             hostedLobby = await request.CreateLobby(data);
             if (hostedLobby == null) return null;
 
             routine.Start(hostedLobby);
             joinedLobby = hostedLobby;
-            Debug.Log($"Lobby created: {hostedLobby.Name} (Venue: {Venue})");
+            Debug.Log($"Lobby created: {hostedLobby.Name} (Venue: {Venue}, IsPrivate: {hostedLobby.IsPrivate})");
 
             return hostedLobby;
         }
@@ -138,6 +142,7 @@ namespace GameServices
             var venue = GameData.Get<string>(Key.CurrentVenue);
             var lobbyOptions = new UpdateLobbyOptions
             {
+                IsPrivate = hostedLobbyIsPrivate,
                 Data = new Dictionary<string, DataObject>
                 {
                     { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue, DataObject.IndexOptions.S1) },

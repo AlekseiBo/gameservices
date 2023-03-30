@@ -11,7 +11,7 @@ namespace GameServices
         public readonly string Venue;
         public readonly int MaxPlayers;
         public readonly bool IsPrivate;
-        public readonly CreateLobbyOptions Options;
+        public CreateLobbyOptions Options;
 
         public CreateLobbyData(string name, string venue, int maxPlayers, bool isPrivate)
         {

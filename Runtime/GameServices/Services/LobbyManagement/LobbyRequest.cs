@@ -13,7 +13,6 @@ namespace GameServices
             {
                 var lobby = await LobbyService.Instance.CreateLobbyAsync(data.Name, data.MaxPlayers, data.Options);
                 return lobby;
-
             }
             catch (LobbyServiceException e)
             {
