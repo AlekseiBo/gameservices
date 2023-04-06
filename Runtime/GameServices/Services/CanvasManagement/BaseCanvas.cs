@@ -5,6 +5,8 @@ namespace GameServices
 {
     public abstract class BaseCanvas : MonoBehaviour
     {
+        public bool Visible { get; private set; }
+
         public Canvas Canvas;
         public CanvasGroup CanvasGroup;
         public bool Additive;
@@ -12,12 +14,14 @@ namespace GameServices
 
         public virtual void ShowCanvas()
         {
+            Visible = true;
             Canvas.enabled = true;
             CanvasGroup.interactable = true;
         }
 
         public virtual void HideCanvas()
         {
+            Visible = false;
             Canvas.enabled = false;
             CanvasGroup.interactable = false;
         }

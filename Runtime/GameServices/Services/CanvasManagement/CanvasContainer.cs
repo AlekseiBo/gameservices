@@ -7,21 +7,31 @@ namespace GameServices
     {
         private static CanvasContainer instance;
 
-        private ICanvasManager manager;
+        protected ICanvasManager manager;
 
         protected virtual void Awake()
         {
             DontDestroyOnLoad(gameObject);
             if (instance != null)
+            {
+                MoveCanvases();
                 Destroy(instance.gameObject);
+            }
 
             instance = this;
             manager = Services.All.Single<ICanvasManager>();
-            manager.CleanUp();
         }
 
-        protected void Register(IMediatorCommand command, AssetReferenceCanvas asset) =>
-            manager.Register(command, asset, transform);
+        protected void Register<T>(AssetReferenceCanvas asset) where T : IMediatorCommand
+        {
+            manager.Register<T>(asset, transform);
+        }
+
+        private void MoveCanvases()
+        {
+            for (var i = instance.transform.childCount - 1; i <= 0; i--)
+                instance.transform.GetChild(i).SetParent(transform);
+        }
 
     }
 }

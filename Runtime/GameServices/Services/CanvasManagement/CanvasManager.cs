@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Toolset;
 using UnityEngine;
 
@@ -20,15 +21,19 @@ namespace GameServices
         public void ShowCanvas(IMediatorCommand command)
         {
             var commandType = command.GetType().ToString();
-            if (!container.TryGetValue(commandType, out var canvas) || canvas == null) return;
+            if (!container.TryGetValue(commandType, out var canvas) || canvas == null)
+            {
+                commandQueue[commandType] = command;
+                return;
+            }
 
             canvas.UpdateCanvas(command);
-            ShowCanvas(commandType);
+            ShowCanvas(canvas);
+            commandQueue.Remove(commandType);
         }
 
-        public void ShowCanvas(string commandType)
+        private void ShowCanvas(BaseCanvas canvas)
         {
-            if (!container.TryGetValue(commandType, out var canvas) || canvas == null) return;
             if (!canvas.Additive) HideAllCanvases(canvas.Distinct);
             canvas.ShowCanvas();
         }
@@ -51,38 +56,65 @@ namespace GameServices
             }
         }
 
-        public async void Register(IMediatorCommand command, AssetReferenceCanvas asset, Transform parent)
+        public async Task Register<T>(AssetReferenceCanvas asset, Transform parent) where T : IMediatorCommand
         {
-            var commandType = command.ToString();
-            if (!container.TryGetValue(commandType, out var canvas))
-            {
-                container[commandType] = null;
-                var canvasObject = await assets.Instantiate(asset.AssetGUID, parent);
-                if (parent == null)
-                {
-                    UnityEngine.Object.Destroy(canvasObject);
-                    container.Remove(commandType);
-                }
-                else
-                {
-                    canvas = canvasObject.GetComponent<BaseCanvas>();
-                    container[commandType] = canvas;
+            var commandType = typeof(T).ToString();
+            container[commandType] = null;
 
-                    if (commandQueue.Remove(commandType, out var laterCommand))
-                        command = laterCommand;
-                }
-            }
-
-            if (canvas == null)
+            var canvasObject = await assets.Instantiate(asset.AssetGUID, parent);
+            if (parent == null)
             {
-                commandQueue[commandType] = command;
+                UnityEngine.Object.Destroy(canvasObject);
+                container.Remove(commandType);
             }
             else
             {
-                canvas.Canvas.overrideSorting = true;
-                canvas.UpdateCanvas(command);
-                ShowCanvas(commandType);
+                var newCanvas = canvasObject.GetComponent<BaseCanvas>();
+                newCanvas.Canvas.overrideSorting = true;
+                var showNewCanvas = false;
+
+                if (container.TryGetValue(commandType, out var canvas) && canvas != null)
+                {
+                    showNewCanvas = canvas.Visible;
+                    UnityEngine.Object.Destroy(canvas);
+                }
+
+                container[commandType] = newCanvas;
+
+                if (commandQueue.TryGetValue(commandType, out var command)) ShowCanvas(command);
+                else if (showNewCanvas) ShowCanvas(newCanvas);
+                else HideCanvas(commandType);
             }
+
+            // if (!container.TryGetValue(commandType, out var canvas))
+            // {
+            //     container[commandType] = null;
+            //     var canvasObject = await assets.Instantiate(asset.AssetGUID, parent);
+            //     if (parent == null)
+            //     {
+            //         UnityEngine.Object.Destroy(canvasObject);
+            //         container.Remove(commandType);
+            //     }
+            //     else
+            //     {
+            //         canvas = canvasObject.GetComponent<BaseCanvas>();
+            //         container[commandType] = canvas;
+            //
+            //         if (commandQueue.Remove(commandType, out var laterCommand))
+            //             command = laterCommand;
+            //     }
+            // }
+            //
+            // if (canvas == null)
+            // {
+            //     commandQueue[commandType] = command;
+            // }
+            // else
+            // {
+            //     canvas.Canvas.overrideSorting = true;
+            //     canvas.UpdateCanvas(command);
+            //     ShowCanvas(commandType);
+            // }
         }
 
         public void CleanUp()
