@@ -42,6 +42,7 @@ namespace GameServices
 
         public void HideCanvas(string commandType)
         {
+            commandQueue.Remove(commandType);
             if (!container.TryGetValue(commandType, out var canvas) || canvas == null) return;
             canvas.HideCanvas();
         }
