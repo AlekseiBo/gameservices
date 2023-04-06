@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Toolset;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace GameServices
 {
@@ -62,9 +63,10 @@ namespace GameServices
             var commandType = typeof(T).ToString();
             container[commandType] = null;
 
-            var canvasObject = await assets.Instantiate(asset.AssetGUID, parent);
+            var canvasObject = await assets.Instantiate(asset.AssetGUID, parent, true);
             if (parent == null)
             {
+                Addressables.ReleaseInstance(canvasObject);
                 UnityEngine.Object.Destroy(canvasObject);
                 container.Remove(commandType);
             }
@@ -77,7 +79,8 @@ namespace GameServices
                 if (container.TryGetValue(commandType, out var canvas) && canvas != null)
                 {
                     showNewCanvas = canvas.Visible;
-                    UnityEngine.Object.Destroy(canvas);
+                    Addressables.ReleaseInstance(canvas.gameObject);
+                    UnityEngine.Object.Destroy(canvas.gameObject);
                 }
 
                 container[commandType] = newCanvas;
