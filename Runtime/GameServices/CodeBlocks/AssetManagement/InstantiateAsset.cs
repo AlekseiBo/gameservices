@@ -9,6 +9,7 @@ namespace GameServices.CodeBlocks
     {
         [SerializeField] private AssetReference asset;
         [SerializeField] private bool asChild;
+        [SerializeField] private bool persistent;
 
         private IAssetProvider assets;
 
@@ -22,8 +23,8 @@ namespace GameServices.CodeBlocks
         {
             var startTime = Time.time;
             var gameObject = asChild ?
-                await assets.Instantiate(asset.AssetGUID, Runner.transform) :
-                await assets.Instantiate(asset.AssetGUID);
+                await assets.Instantiate(asset.AssetGUID, Runner.transform, persistent) :
+                await assets.Instantiate(asset.AssetGUID, persistent);
 
             if (gameObject != null)
             {
