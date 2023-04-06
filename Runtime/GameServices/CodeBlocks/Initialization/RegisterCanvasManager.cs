@@ -16,7 +16,7 @@ namespace GameServices.CodeBlocks
             {
                 Services.All.RegisterSingle<ICanvasManager>(new CanvasManager());
                 var canvasContainer =
-                    await Services.All.Single<IAssetProvider>().Instantiate(prefab.AssetGUID, true);
+                    await Services.All.Single<IAssetProvider>().Instantiate(prefab.AssetGUID);
 
                 if (canvasContainer == null)
                 {
