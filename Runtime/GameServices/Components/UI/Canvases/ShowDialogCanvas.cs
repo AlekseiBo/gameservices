@@ -35,7 +35,7 @@ namespace GameServices
             message.text = data.Message;
             firstButtonText.text = data.FirstTitle;
             secondButtonText.text = data.SecondTitle;
-
+            LayoutRebuilder.ForceRebuildLayoutImmediate(message.GetComponent<RectTransform>());
             UpdateButtonListener(firstButton, data.FirstAction ?? HideCanvas);
 
             if (data.SecondAction != null)
