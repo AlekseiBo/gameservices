@@ -11,21 +11,30 @@ namespace GameServices
     {
         private readonly IAssetProvider assets;
         private Dictionary<string, VenueStaticData> venues = new();
+        private Dictionary<string, GameObject> avatars = new();
+
         public StaticDataService()
         {
             assets = Services.All.Single<IAssetProvider>();
         }
 
         public List<VenueStaticData> AllVenues() => venues.Values.ToList();
+        public List<GameObject> AllAvatars() => avatars.Values.ToList();
 
         public VenueStaticData ForVenue(string sceneAddress) =>
             venues.TryGetValue(sceneAddress, out var staticData)
                 ? staticData
                 : null;
 
+        public GameObject ForAvatar(string name) =>
+            avatars.TryGetValue(name, out var gameObject)
+                ? gameObject
+                : null;
+
         public async Task LoadData()
         {
             await LoadVenues();
+            await LoadAvatars();
         }
 
         public Dictionary<Tkey, ScriptableObject> AllGameData<Tkey>(string resourcePath) where Tkey : struct, Enum
@@ -44,6 +53,12 @@ namespace GameServices
         {
             var venueList = await assets.LoadLabel<VenueStaticData>("venueData", true);
             venues = venueList.ToDictionary(x => x.Address, x => x);
+        }
+
+        private async Task LoadAvatars()
+        {
+            var avatarList = await assets.LoadLabel<GameObject>("avatarData", true);
+            avatars = avatarList.ToDictionary(x => x.name, x => x);
         }
     }
 }
