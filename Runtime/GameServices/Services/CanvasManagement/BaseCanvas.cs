@@ -9,11 +9,14 @@ namespace GameServices
 
         public Canvas Canvas;
         public CanvasGroup CanvasGroup;
+        [Space]
+        public ScreenOrientation Orientation = ScreenOrientation.AutoRotation;
         public bool Additive;
         public bool Distinct;
 
         public virtual void ShowCanvas()
         {
+            UpdateScreenOrientation();
             Visible = true;
             Canvas.enabled = true;
             CanvasGroup.interactable = true;
@@ -28,6 +31,12 @@ namespace GameServices
 
         public virtual void UpdateCanvas(IMediatorCommand command)
         {
+        }
+
+        private void UpdateScreenOrientation()
+        {
+            if (Orientation != ScreenOrientation.AutoRotation)
+                Screen.orientation = Orientation;
         }
 
 #if UNITY_EDITOR
