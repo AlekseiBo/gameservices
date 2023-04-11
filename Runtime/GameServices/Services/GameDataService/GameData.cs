@@ -10,7 +10,7 @@ namespace GameServices
         public static bool isInitialized;
 
         private IStaticDataService staticData;
-        protected static Dictionary<TKey, ScriptableObject> gameData;
+        private static Dictionary<TKey, ScriptableObject> gameData;
 
         protected GameData(string resourcePath)
         {
@@ -35,7 +35,7 @@ namespace GameServices
             if (action != null) GetEntry<T>(key).RemoveSubscriber(action);
         }
 
-        protected static DataEntry<T> GetEntry<T>(TKey key)
+        private static DataEntry<T> GetEntry<T>(TKey key)
         {
             if (!gameData.TryGetValue(key, out var dataContainer)) return default;
             return dataContainer as DataEntry<T>;
