@@ -164,6 +164,7 @@ namespace GameServices
 
             await Task.Delay(1);
             animator.Rebind();
+            animator.SetFloat("MotionSpeed", 1f);
         }
 
         private void DeleteAvatarParts()
