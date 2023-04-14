@@ -13,35 +13,35 @@ namespace GameServices
            NetworkVariableReadPermission.Everyone,
           NetworkVariableWritePermission.Owner);
 
-        private readonly NetworkVariable<int> playerHair = new (0,
+        private readonly NetworkVariable<int> playerHair = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
-        private readonly NetworkVariable<int> playerTop = new (0,
+        private readonly NetworkVariable<int> playerTop = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
-        private readonly NetworkVariable<int> playerBottom = new (0,
+        private readonly NetworkVariable<int> playerBottom = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
-        private readonly NetworkVariable<int> playerShoes = new (0,
+        private readonly NetworkVariable<int> playerShoes = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
-        private readonly NetworkVariable<int> skinColor = new (0,
+        private readonly NetworkVariable<int> skinColor = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
-        private readonly NetworkVariable<int> hairColor = new (0,
+        private readonly NetworkVariable<int> hairColor = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
-        private readonly NetworkVariable<int> eyeColor = new (0,
+        private readonly NetworkVariable<int> eyeColor = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
-        private readonly NetworkVariable<int> outfitColor = new (0,
+        private readonly NetworkVariable<int> outfitColor = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
