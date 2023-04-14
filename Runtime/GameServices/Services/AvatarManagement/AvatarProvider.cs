@@ -26,6 +26,11 @@ namespace GameServices
             return AvatarData.Subscribe(Avatar.Prefab, callback);
         }
 
+        public void SetPart(Avatar part, int value)
+        {
+            AvatarData.Set(part, value);
+        }
+
         public int GetPart(Avatar part)
         {
             return AvatarData.Get<int>(part);

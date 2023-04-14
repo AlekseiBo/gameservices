@@ -11,8 +11,8 @@ namespace GameServices
     {
         [SerializeField] private Transform previewTransform;
         [SerializeField] private Camera previewCamera;
-        [SerializeField] private Transform customizeCategory;
-        [SerializeField] private Transform customizePanel;
+        [SerializeField] private CategoryPanel customizePanel;
+
 
         private IAvatarProvider avatars;
         private AvatarController controller;
@@ -49,7 +49,7 @@ namespace GameServices
 
         public void ActivatePanel(int index)
         {
-            customizePanel.SetActiveChild(index);
+            customizePanel.transform.SetActiveChild(index);
         }
 
         private void InstantiateAvatar()
@@ -63,6 +63,32 @@ namespace GameServices
                 .With(a => controller = a.GetComponent<AvatarController>());
 
             SubscribeParts();
+
+            var skinColorPicker = new AvatarColorPicker(
+                Avatar.SkinColor,
+                avatars.GetPart(Avatar.SkinColor),
+                controller.SkinColors,
+                avatars.SetPart);
+
+            var hairColorPicker = new AvatarColorPicker(
+                Avatar.HairColor,
+                avatars.GetPart(Avatar.HairColor),
+                controller.HairColors,
+                avatars.SetPart);
+
+            var eyeColorPicker = new AvatarColorPicker(
+                Avatar.EyeColor,
+                avatars.GetPart(Avatar.EyeColor),
+                controller.EyeColors,
+                avatars.SetPart);
+
+            var outfitColorPicker = new AvatarColorPicker(
+                Avatar.OutfitColor,
+                avatars.GetPart(Avatar.OutfitColor),
+                controller.OutfitColors,
+                avatars.SetPart);
+
+            customizePanel.Construct(skinColorPicker, hairColorPicker, eyeColorPicker, outfitColorPicker);
         }
 
         private void SubscribeParts()

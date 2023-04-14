@@ -24,6 +24,12 @@ namespace GameServices
         [SerializeField] private List<Renderer> outfitMesh;
         [SerializeField] private List<Color> outfitColors;
 
+        public List<Color> SkinColors => skinColors;
+        public List<Color> HairColors => hairColors;
+        public List<Color> EyeColors => eyeColors;
+        public List<Color> OutfitColors => outfitColors;
+
+
         public void UpdateHair(int hair) => UpdatePart(hair, hairList);
         public void UpdateTop(int top) => UpdatePart(top, topList);
         public void UpdateBottom(int bottom) => UpdatePart(bottom, bottomList);
