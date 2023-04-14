@@ -8,9 +8,16 @@ namespace GameServices
         public UnityEngine.Avatar AnimatorAvatar;
         [Space]
         [SerializeField] private List<GameObject> hairList;
+        [SerializeField] private List<Sprite> hairIcons;
+        [Space]
         [SerializeField] private List<GameObject> topList;
+        [SerializeField] private List<Sprite> topIcons;
+        [Space]
         [SerializeField] private List<GameObject> bottomList;
+        [SerializeField] private List<Sprite> bottomIcons;
+        [Space]
         [SerializeField] private List<GameObject> shoesList;
+        [SerializeField] private List<Sprite> shoesIcons;
         [Space]
         [SerializeField] private List<Renderer> skinMesh;
         [SerializeField] private List<Color> skinColors;
@@ -23,6 +30,8 @@ namespace GameServices
         [Space]
         [SerializeField] private List<Renderer> outfitMesh;
         [SerializeField] private List<Color> outfitColors;
+
+        public List<Sprite> HairIcons => hairIcons;
 
         public List<Color> SkinColors => skinColors;
         public List<Color> HairColors => hairColors;
@@ -52,7 +61,7 @@ namespace GameServices
         {
             for (var i = 0; i < list.Count; i++)
             {
-                list[i].SetActive(i == index - 1);
+                list[i].SetActive(i == index);
             }
         }
 

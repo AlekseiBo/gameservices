@@ -64,31 +64,42 @@ namespace GameServices
 
             SubscribeParts();
 
-            var skinColorPicker = new AvatarColorPicker(
+            var hairModelPicker = new AvatarSelector<Sprite>(
+                Avatar.Hair,
+                avatars.GetPart(Avatar.Hair),
+                controller.HairIcons,
+                avatars.SetPart);
+
+            var skinColorPicker = new AvatarSelector<Color>(
                 Avatar.SkinColor,
                 avatars.GetPart(Avatar.SkinColor),
                 controller.SkinColors,
                 avatars.SetPart);
 
-            var hairColorPicker = new AvatarColorPicker(
+            var hairColorPicker = new AvatarSelector<Color>(
                 Avatar.HairColor,
                 avatars.GetPart(Avatar.HairColor),
                 controller.HairColors,
                 avatars.SetPart);
 
-            var eyeColorPicker = new AvatarColorPicker(
+            var eyeColorPicker = new AvatarSelector<Color>(
                 Avatar.EyeColor,
                 avatars.GetPart(Avatar.EyeColor),
                 controller.EyeColors,
                 avatars.SetPart);
 
-            var outfitColorPicker = new AvatarColorPicker(
+            var outfitColorPicker = new AvatarSelector<Color>(
                 Avatar.OutfitColor,
                 avatars.GetPart(Avatar.OutfitColor),
                 controller.OutfitColors,
                 avatars.SetPart);
 
-            customizePanel.Construct(skinColorPicker, hairColorPicker, eyeColorPicker, outfitColorPicker);
+            customizePanel.Construct(
+                hairModelPicker,
+                skinColorPicker,
+                hairColorPicker,
+                eyeColorPicker,
+                outfitColorPicker);
         }
 
         private void SubscribeParts()

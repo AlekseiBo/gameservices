@@ -8,16 +8,16 @@ using UnityEngine.UI;
 
 namespace GameServices
 {
-    public class PickColorPanel : MonoBehaviour
+    public class PickSpritePanel : MonoBehaviour
     {
         [SerializeField] private GameObject pickerPrefab;
         [SerializeField] private Transform paletteTransform;
 
         private Avatar part;
         private Action<Avatar, int> pickAction;
-        private readonly List<PickColorButton> buttonList = new();
+        private readonly List<PickSpriteButton> buttonList = new();
 
-        public void Construct(AvatarSelector<Color> selector)
+        public void Construct(AvatarSelector<Sprite> selector)
         {
             pickAction = selector.SetAction;
             part = selector.Part;
@@ -33,14 +33,14 @@ namespace GameServices
             pickAction?.Invoke(part, index);
         }
 
-        private void UpdatePalette(List<Color> palette)
+        private void UpdatePalette(List<Sprite> palette)
         {
             buttonList.Clear();
             paletteTransform.ClearChildren();
 
             for (var i = 0; i < palette.Count; i++)
             {
-                Instantiate(pickerPrefab, paletteTransform).GetComponent<PickColorButton>()
+                Instantiate(pickerPrefab, paletteTransform).GetComponent<PickSpriteButton>()
                     .With(p => p.Construct(this, i, palette[i]))
                     .With(p => buttonList.Add(p));
             }

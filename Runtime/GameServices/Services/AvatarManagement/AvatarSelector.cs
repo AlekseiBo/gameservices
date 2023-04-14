@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace GameServices
 {
-    public class AvatarColorPicker
+    public class AvatarSelector<T>
     {
         public readonly Avatar Part;
         public readonly int CurrentSkinColor;
-        public readonly List<Color> Palette;
+        public readonly List<T> Palette;
         public readonly Action<Avatar, int> SetAction;
 
-        public AvatarColorPicker(Avatar part, int currentSkinColor, List<Color> palette, Action<Avatar, int> setAction)
+        public AvatarSelector(Avatar part, int currentSkinColor, List<T> palette, Action<Avatar, int> setAction)
         {
             Part = part;
             CurrentSkinColor = currentSkinColor;
