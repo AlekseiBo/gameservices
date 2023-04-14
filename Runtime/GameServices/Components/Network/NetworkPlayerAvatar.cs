@@ -82,6 +82,16 @@ namespace GameServices
             else
             {
                 InstantiateAvatar(playerPrefab.Value.ToString());
+
+                controller.UpdateHair(playerHair.Value);
+                controller.UpdateTop(playerTop.Value);
+                controller.UpdateBottom(playerBottom.Value);
+                controller.UpdateShoes(playerShoes.Value);
+
+                controller.UpdateSkinColor(skinColor.Value);
+                controller.UpdateHairColor(hairColor.Value);
+                controller.UpdateEyeColor(eyeColor.Value);
+                controller.UpdateOutfitColor(outfitColor.Value);
             }
         }
 
@@ -125,7 +135,6 @@ namespace GameServices
         private void OnOwnerEyeColorChanged(DataEntry<int> part) => eyeColor.Value = part.Value;
         private void OnOwnerOutfitColorChanged(DataEntry<int> part) => outfitColor.Value = part.Value;
 
-
         private void OnHairChanged(int previous, int current) => controller.UpdateHair(current);
         private void OnTopChanged(int previous, int current) => controller.UpdateTop(current);
         private void OnBottomChanged(int previous, int current) => controller.UpdateBottom(current);
@@ -139,8 +148,6 @@ namespace GameServices
 
         private void OnPrefabChanged(FixedString32Bytes previous, FixedString32Bytes current) =>
             InstantiateAvatar(playerPrefab.Value.ToString());
-
-
 
         private async void InstantiateAvatar(string prefabName)
         {
