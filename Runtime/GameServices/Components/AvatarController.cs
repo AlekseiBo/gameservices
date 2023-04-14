@@ -52,6 +52,8 @@ namespace GameServices
 
         private void UpdateColor(List<Renderer> meshes, int color, IReadOnlyList<Color> list)
         {
+            if (color < 0) return;
+
             if (list.Count > color)
                 foreach (var mesh in meshes)
                     mesh.material.color = list[color];
@@ -59,6 +61,8 @@ namespace GameServices
 
         private void UpdatePart(int index, List<GameObject> list)
         {
+            if (index < 0) return;
+
             for (var i = 0; i < list.Count; i++)
             {
                 list[i].SetActive(i == index);
