@@ -19,16 +19,16 @@ namespace GameServices
         [SerializeField] private List<GameObject> shoesList;
         [SerializeField] private List<Sprite> shoesIcons;
         [Space]
-        [SerializeField] private List<Renderer> skinMesh;
+        [SerializeField] private List<RendererMaterial> skinMesh;
         [SerializeField] private List<Color> skinColors;
         [Space]
-        [SerializeField] private List<Renderer> hairMesh;
+        [SerializeField] private List<RendererMaterial> hairMesh;
         [SerializeField] private List<Color> hairColors;
         [Space]
-        [SerializeField] private List<Renderer> eyeMesh;
+        [SerializeField] private List<RendererMaterial> eyeMesh;
         [SerializeField] private List<Color> eyeColors;
         [Space]
-        [SerializeField] private List<Renderer> outfitMesh;
+        [SerializeField] private List<RendererMaterial> outfitMesh;
         [SerializeField] private List<Color> outfitColors;
 
         public List<Sprite> HairIcons => hairIcons;
@@ -50,13 +50,13 @@ namespace GameServices
         public void UpdateOutfitColor(int color) => UpdateColor(outfitMesh, color, outfitColors);
 
 
-        private void UpdateColor(List<Renderer> meshes, int color, IReadOnlyList<Color> list)
+        private void UpdateColor(List<RendererMaterial> meshes, int color, IReadOnlyList<Color> list)
         {
             if (color < 0) return;
 
             if (list.Count > color)
                 foreach (var mesh in meshes)
-                    mesh.material.color = list[color];
+                    mesh.SetMaterialColor(list[color]);
         }
 
         private void UpdatePart(int index, List<GameObject> list)
