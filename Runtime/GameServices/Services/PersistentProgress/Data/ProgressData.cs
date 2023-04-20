@@ -9,6 +9,7 @@ namespace GameServices
         public PositionList CratePosition;
         public PositionList CoinPosition;
         public FriendList FriendList;
+        public AvatarList AvatarList;
 
         public ProgressData()
         {
@@ -16,6 +17,7 @@ namespace GameServices
             CratePosition = new PositionList();
             CoinPosition = new PositionList();
             FriendList = new FriendList();
+            AvatarList = new AvatarList();
         }
     }
 }

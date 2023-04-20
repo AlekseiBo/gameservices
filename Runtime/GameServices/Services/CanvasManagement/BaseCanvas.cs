@@ -1,5 +1,6 @@
 ﻿using Toolset;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameServices
 {
@@ -11,12 +12,14 @@ namespace GameServices
         public CanvasGroup CanvasGroup;
         [Space]
         public ScreenOrientation Orientation = ScreenOrientation.AutoRotation;
+        public bool ForceOrientation;
         public bool Additive;
         public bool Distinct;
 
         public virtual void ShowCanvas()
         {
             UpdateScreenOrientation();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(transform.GetComponent<RectTransform>());
             Visible = true;
             Canvas.enabled = true;
             CanvasGroup.interactable = true;
@@ -35,7 +38,7 @@ namespace GameServices
 
         private void UpdateScreenOrientation()
         {
-            if (Orientation != ScreenOrientation.AutoRotation)
+            if (ForceOrientation || Orientation != ScreenOrientation.AutoRotation)
                 Screen.orientation = Orientation;
         }
 

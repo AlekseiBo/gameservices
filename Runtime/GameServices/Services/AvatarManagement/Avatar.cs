@@ -3,6 +3,7 @@
     public enum Avatar
     {
         Prefab,
+        Group,
         Hair,
         Hat,
         Top,

@@ -6,7 +6,7 @@ namespace GameServices
     {
         protected override void OnClick()
         {
-            Command.Publish(new CustomizeAvatar());
+            Command.Publish(new SelectAvatarProfile());
         }
     }
 }

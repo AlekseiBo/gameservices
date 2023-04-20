@@ -17,6 +17,7 @@ namespace GameServices
                     { "CratePosition", JsonUtility.ToJson(progress.CratePosition) },
                     { "CoinPosition", JsonUtility.ToJson(progress.CoinPosition) },
                     { "FriendList", JsonUtility.ToJson(progress.FriendList) },
+                    { "AvatarList", JsonUtility.ToJson(progress.AvatarList) },
                 };
                 await CloudSaveService.Instance.Data.ForceSaveAsync(data);
                 return true;
@@ -34,7 +35,7 @@ namespace GameServices
             {
                 var loadingData = new HashSet<string>
                 {
-                    "PlayerPosition", "CratePosition", "CoinPosition", "FriendList"
+                    "PlayerPosition", "CratePosition", "CoinPosition", "FriendList", "AvatarList"
                 };
 
                 var data = await CloudSaveService.Instance.Data.LoadAsync(loadingData);
@@ -55,6 +56,10 @@ namespace GameServices
                     ? JsonUtility.FromJson<FriendList>(data["FriendList"])
                     : new FriendList();
 
+                var avatarList = data.ContainsKey("AvatarList")
+                    ? JsonUtility.FromJson<AvatarList>(data["AvatarList"])
+                    : new AvatarList();
+
                 Debug.Log("Progress loaded from the cloud");
                 return new ProgressData
                 {
@@ -62,6 +67,7 @@ namespace GameServices
                     CratePosition = cratePosition,
                     CoinPosition = coinPosition,
                     FriendList = friendList,
+                    AvatarList = avatarList,
                 };
             }
             catch (CloudSaveException e)

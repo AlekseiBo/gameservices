@@ -24,7 +24,7 @@ namespace GameServices
 
         protected void Register<T>(AssetReferenceCanvas asset) where T : IMediatorCommand
         {
-            manager.Register<T>(asset, transform);
+            manager?.Register<T>(asset, transform);
         }
 
         private void MoveCanvases()

@@ -5,7 +5,9 @@ namespace GameServices
 {
     public class AvatarController : MonoBehaviour
     {
+        public Vector3 Preview;
         public UnityEngine.Avatar AnimatorAvatar;
+        public AvatarGroup Group;
         [Space]
         [SerializeField] private List<GameObject> hairList;
         [SerializeField] private List<Sprite> hairIcons;

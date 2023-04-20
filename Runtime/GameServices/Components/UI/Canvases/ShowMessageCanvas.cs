@@ -19,7 +19,7 @@ namespace GameServices
             var data = command as ShowMessage;
             title.text = data.Title;
             message.text = data.Message;
-            LayoutRebuilder.ForceRebuildLayoutImmediate(message.GetComponent<RectTransform>());
+            //LayoutRebuilder.ForceRebuildLayoutImmediate(message.GetComponent<RectTransform>());
             UpdateButtonListener(data.Action ?? HideCanvas);
         }
 

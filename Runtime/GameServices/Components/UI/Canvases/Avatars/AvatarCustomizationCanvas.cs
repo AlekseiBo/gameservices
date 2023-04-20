@@ -1,8 +1,5 @@
-﻿using System.Threading.Tasks;
-using Toolset;
+﻿using Toolset;
 using UnityEngine;
-using TMPro;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace GameServices
@@ -12,7 +9,6 @@ namespace GameServices
         [SerializeField] private Transform previewTransform;
         [SerializeField] private Camera previewCamera;
         [SerializeField] private CategoryPanel customizePanel;
-
 
         private IAvatarProvider avatars;
         private AvatarController controller;
@@ -43,8 +39,18 @@ namespace GameServices
             previewTransform.ClearChildren();
 
             avatars.RemoveSubscriber(Avatar.Prefab, OnOwnerPrefabChanged);
-
             UnsubscribeParts();
+        }
+
+        public void Complete(bool showProfiles)
+        {
+            avatars.SaveAvatarData();
+            HideCanvas();
+
+            if (showProfiles)
+            {
+                Command.Publish(new SelectAvatarProfile());
+            }
         }
 
         public void ActivatePanel(int index)
@@ -58,10 +64,11 @@ namespace GameServices
             previewTransform.ClearChildren();
 
             Instantiate(avatars.GetAvatar(), previewTransform).transform
-                .With(a => a.localPosition = Vector3.zero)
-                .With(a => a.localRotation = Quaternion.identity)
-                .With(a => controller = a.GetComponent<AvatarController>());
+                .With(a => controller = a.GetComponent<AvatarController>())
+                .With(a => a.localPosition = controller.Preview)
+                .With(a => a.localRotation = Quaternion.identity);
 
+            avatars.SetGroup(controller.Group);
             SubscribeParts();
 
             var hairModelPicker = new AvatarSelector<Sprite>(
