@@ -8,6 +8,7 @@ namespace GameServices
     public interface IAvatarProvider : IService
     {
         GameObject GetAvatar(string name = "");
+        void SetAvatar(string prefabName);
         void SaveAvatarData();
         List<AvatarPersistentData> LoadAvatarData();
         string GetAvatarName(Action<DataEntry<string>> callback);

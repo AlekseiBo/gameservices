@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using GameServices;
 using TMPro;
 using Toolset;
@@ -9,6 +7,7 @@ using Avatar = GameServices.Avatar;
 
 public class AvatarProfileButton : BaseButton
 {
+    public Image Selector;
     [SerializeField] private RawImage previewImage;
     [SerializeField] private TextMeshProUGUI prefabName;
 
@@ -29,6 +28,12 @@ public class AvatarProfileButton : BaseButton
     protected override void OnClick()
     {
         UpdateAvatar();
+
+        var index = transform.GetSiblingIndex();
+        for (int i = 0; i < transform.parent.childCount; i++)
+        {
+            transform.parent.GetChild(i).GetComponent<AvatarProfileButton>().Selector.enabled = i == index;
+        }
     }
 
     public void EditAvatar()
@@ -39,7 +44,10 @@ public class AvatarProfileButton : BaseButton
 
     public void RemoveAvatar()
     {
-        Services.All.Single<IProgressProvider>().ProgressData.AvatarList.Remove(data.Prefab);
+        var progress = Services.All.Single<IProgressProvider>();
+        progress.ProgressData.AvatarList.Remove(data.Prefab);
+        progress.SaveProgress();
+        Command.Publish(new SelectAvatarProfile());
     }
 
     private void UpdateAvatar()

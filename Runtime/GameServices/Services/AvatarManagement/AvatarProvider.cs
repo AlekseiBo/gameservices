@@ -24,6 +24,11 @@ namespace GameServices
             return staticData.ForAvatar(name);
         }
 
+        public void SetAvatar(string prefabName)
+        {
+            AvatarData.Set<string>(Avatar.Prefab, prefabName);
+        }
+
         public void SaveAvatarData()
         {
             var avatarData = new AvatarPersistentData

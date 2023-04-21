@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Toolset;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameServices
 {
     public class AvatarProfileCanvas : BaseCanvas
     {
+        private const string PREVIEW_SHADER = "Universal Render Pipeline/Unlit";
+
         [SerializeField] private int totalPrefabs;
         [SerializeField] private GameObject profileButtonPrefab;
         [SerializeField] private Transform gridTransform;
@@ -55,6 +56,7 @@ namespace GameServices
                 var preview = Instantiate(avatars.GetAvatar(avatarData.Prefab), previewTransform);
                 var controller = preview.GetComponent<AvatarController>();
                 UpdateController(controller, avatarData);
+                UpdateShader(preview);
                 preview.transform.localPosition = controller.Preview;
                 preview.transform.localRotation = Quaternion.identity;
 
@@ -76,6 +78,17 @@ namespace GameServices
             }
 
             previewCamera.gameObject.SetActive(false);
+        }
+
+        private void UpdateShader(GameObject preview)
+        {
+            foreach (var render in preview.GetComponentsInChildren<Renderer>())
+            {
+                foreach (var renderMaterial in render.materials)
+                {
+                    renderMaterial.shader = Shader.Find(PREVIEW_SHADER);
+                }
+            }
         }
 
         private Texture2D GetAvatarIcon()

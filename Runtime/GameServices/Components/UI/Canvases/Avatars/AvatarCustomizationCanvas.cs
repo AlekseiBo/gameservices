@@ -8,6 +8,8 @@ namespace GameServices
     {
         [SerializeField] private Transform previewTransform;
         [SerializeField] private Camera previewCamera;
+        [SerializeField] private Transform categoryPanel;
+        [SerializeField] private Transform prefabPanel;
         [SerializeField] private CategoryPanel customizePanel;
 
         private IAvatarProvider avatars;
@@ -42,20 +44,26 @@ namespace GameServices
             UnsubscribeParts();
         }
 
-        public void Complete(bool showProfiles)
+        public void Complete()
         {
             avatars.SaveAvatarData();
             HideCanvas();
 
-            if (showProfiles)
-            {
-                Command.Publish(new SelectAvatarProfile());
-            }
+            Command.Publish(new SelectAvatarProfile());
         }
 
         public void ActivatePanel(int index)
         {
+            for (var i = 0; i < categoryPanel.childCount; i++)
+                categoryPanel.GetChild(i).GetComponent<CategoryButton>().Activate(i == index);
+
             customizePanel.transform.SetActiveChild(index);
+        }
+
+        public void SelectPrefab(GameObject obj)
+        {
+            avatars.SetAvatar(obj.name);
+            InstantiateAvatar();
         }
 
         private void InstantiateAvatar()
@@ -107,6 +115,13 @@ namespace GameServices
                 hairColorPicker,
                 eyeColorPicker,
                 outfitColorPicker);
+
+            for (var i = 0; i < prefabPanel.childCount; i++)
+            {
+                var component = prefabPanel.GetChild(i).GetComponent<CategoryButton>();
+                var avatarName = avatars.GetAvatarName(null);
+                component.Activate(avatarName == component.gameObject.name);
+            }
         }
 
         private void SubscribeParts()
