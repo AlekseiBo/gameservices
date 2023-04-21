@@ -6,8 +6,8 @@ namespace GameServices
 {
     public class AvatarProfileCanvas : BaseCanvas
     {
-        private const string PREVIEW_SHADER = "Universal Render Pipeline/Unlit";
-
+        [SerializeField] private bool updatePreviewShader;
+        [SerializeField] private string previewShader = "Universal Render Pipeline/Unlit";
         [SerializeField] private int totalPrefabs;
         [SerializeField] private GameObject profileButtonPrefab;
         [SerializeField] private Transform gridTransform;
@@ -82,11 +82,13 @@ namespace GameServices
 
         private void UpdateShader(GameObject preview)
         {
+            if (!updatePreviewShader) return;
+
             foreach (var render in preview.GetComponentsInChildren<Renderer>())
             {
                 foreach (var renderMaterial in render.materials)
                 {
-                    renderMaterial.shader = Shader.Find(PREVIEW_SHADER);
+                    renderMaterial.shader = Shader.Find(previewShader);
                 }
             }
         }
