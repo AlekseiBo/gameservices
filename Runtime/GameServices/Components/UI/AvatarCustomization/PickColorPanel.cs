@@ -22,6 +22,7 @@ namespace GameServices
             pickAction = selector.SetAction;
             part = selector.Part;
             UpdatePalette(selector.Palette);
+            BaseCanvas.UpdateLayout(paletteTransform);
             PickColor(selector.CurrentSkinColor);
         }
 

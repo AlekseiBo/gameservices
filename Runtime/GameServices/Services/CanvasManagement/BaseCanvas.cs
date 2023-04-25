@@ -20,7 +20,6 @@ namespace GameServices
         public virtual void ShowCanvas()
         {
             UpdateScreenOrientation();
-            UpdateLayout();
             Visible = true;
             Canvas.enabled = true;
             CanvasGroup.interactable = true;
@@ -37,16 +36,9 @@ namespace GameServices
         {
         }
 
-        protected void UpdateLayout()
+        public static void UpdateLayout(Component layout)
         {
-            StartCoroutine(UpdateLayoutCoroutine());
-        }
-
-        private IEnumerator UpdateLayoutCoroutine()
-        {
-            yield return new WaitForEndOfFrame();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(transform.GetComponent<RectTransform>());
-
+            LayoutRebuilder.ForceRebuildLayoutImmediate(layout.GetComponent<RectTransform>());
         }
 
         private void UpdateScreenOrientation()
