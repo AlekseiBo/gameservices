@@ -58,6 +58,7 @@ namespace GameServices
                 categoryPanel.GetChild(i).GetComponent<CategoryButton>().Activate(i == index);
 
             customizePanel.transform.SetActiveChild(index);
+            UpdateLayout();
         }
 
         public void SelectPrefab(GameObject obj)

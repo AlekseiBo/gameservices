@@ -1,4 +1,5 @@
-﻿using Toolset;
+﻿using System.Collections;
+using Toolset;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,6 +35,18 @@ namespace GameServices
 
         public virtual void UpdateCanvas(IMediatorCommand command)
         {
+        }
+
+        public void UpdateLayout()
+        {
+            StartCoroutine(UpdateLayoutCoroutine());
+        }
+
+        private IEnumerator UpdateLayoutCoroutine()
+        {
+            yield return new WaitForEndOfFrame();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(transform.GetComponent<RectTransform>());
+
         }
 
         private void UpdateScreenOrientation()
