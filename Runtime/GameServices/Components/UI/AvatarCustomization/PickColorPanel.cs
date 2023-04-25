@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using TMPro;
+
 using Toolset;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameServices
 {
@@ -16,6 +14,11 @@ namespace GameServices
         private Avatar part;
         private Action<Avatar, int> pickAction;
         private readonly List<PickColorButton> buttonList = new();
+
+        private void OnEnable()
+        {
+            BaseCanvas.UpdateLayout(paletteTransform);
+        }
 
         public void Construct(AvatarSelector<Color> selector)
         {
