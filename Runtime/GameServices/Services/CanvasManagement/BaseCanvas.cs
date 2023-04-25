@@ -20,7 +20,7 @@ namespace GameServices
         public virtual void ShowCanvas()
         {
             UpdateScreenOrientation();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(transform.GetComponent<RectTransform>());
+            UpdateLayout();
             Visible = true;
             Canvas.enabled = true;
             CanvasGroup.interactable = true;
@@ -37,7 +37,7 @@ namespace GameServices
         {
         }
 
-        public void UpdateLayout()
+        protected void UpdateLayout()
         {
             StartCoroutine(UpdateLayoutCoroutine());
         }
