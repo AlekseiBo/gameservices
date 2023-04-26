@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Toolset;
 using Unity.Services.Lobbies.Models;
 
@@ -17,5 +18,6 @@ namespace GameServices
         Task LeaveConnectedLobby();
         Task UpdateVenue(string venue);
         Task<Lobby> QueryPlayerOnline(string friendId);
+        Task<Dictionary<string, int>> QueryPlayersOnline();
     }
 }

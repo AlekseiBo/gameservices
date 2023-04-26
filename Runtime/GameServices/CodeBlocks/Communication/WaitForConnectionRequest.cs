@@ -29,7 +29,7 @@ namespace GameServices.CodeBlocks
 
         private void WaitForConnection()
         {
-            Command.Publish(new SelectVenue());
+            Command.Publish(new ShowVenueSelection());
             Command.Subscribe<ConnectToLobby>(Requested);
         }
 

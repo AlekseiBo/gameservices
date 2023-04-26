@@ -8,6 +8,20 @@ namespace GameServices
 {
     internal class LobbyQuery
     {
+        public async Task<QueryResponse> AllLobbies()
+        {
+            try
+            {
+                var response = await Lobbies.Instance.QueryLobbiesAsync();
+                return response;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+                return null;
+            }
+        }
+
         public async Task<QueryResponse> ByVenue(string venue)
         {
             try
@@ -67,7 +81,7 @@ namespace GameServices
             Debug.Log($"Query lobby count is {response.Results.Count}");
             foreach (var lobby in response.Results)
             {
-                Debug.Log($"{lobby.Name}: privates = {lobby.IsPrivate}, max players = {lobby.MaxPlayers}");
+                Debug.Log($"{lobby.Name}: private = {lobby.IsPrivate}, max players = {lobby.MaxPlayers}");
             }
         }
     }

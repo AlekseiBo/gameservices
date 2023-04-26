@@ -128,6 +128,26 @@ namespace GameServices
             joinedLobby = hostedLobby;
         }
 
+        public async Task<Dictionary<string, int>> QueryPlayersOnline()
+        {
+            var lobbies = await query.AllLobbies();
+            var onlinePlayers = new Dictionary<string, int>();
+            foreach (var lobby in lobbies.Results)
+            {
+                if (!lobby.Data.TryGetValue(VENUE, out var venue)) continue;
+
+                Debug.Log(lobby.Name);
+
+                var playerCounter = lobby.Name.Split(' ').Length - 2;
+
+                if (onlinePlayers.ContainsKey(venue.Value))
+                    onlinePlayers[venue.Value] += playerCounter;
+                else
+                    onlinePlayers[venue.Value] = playerCounter;
+            }
+            return onlinePlayers;
+        }
+
         public async Task<Lobby> QueryPlayerOnline(string friendId)
         {
             var lobbies = await query.ByFriend(friendId);
