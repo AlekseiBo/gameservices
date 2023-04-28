@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Toolset;
 using UnityEngine;
 
@@ -6,14 +7,20 @@ namespace GameServices
 {
     public class AvatarProfileCanvas : BaseCanvas
     {
-        [SerializeField] private bool updatePreviewShader;
-        [SerializeField] private string previewShader = "Universal Render Pipeline/Unlit";
+        [Serializable]
+        private struct NewProfileButton
+        {
+            public AvatarGroup Group;
+            public int AvatarCounter;
+            public GameObject Prefab;
+        }
+
         [SerializeField] private int totalPrefabs;
         [SerializeField] private GameObject profileButtonPrefab;
         [SerializeField] private Transform gridTransform;
         [SerializeField] private Transform previewTransform;
         [SerializeField] private Camera previewCamera;
-        [SerializeField] private GameObject addNewButton;
+        [SerializeField] private NewProfileButton[] newProfileButton;
 
         private IAvatarProvider avatars;
         private AvatarGroup group;
@@ -47,7 +54,7 @@ namespace GameServices
             previewTransform.ClearChildren();
             previewCamera.gameObject.SetActive(true);
 
-            var counter = 0;
+            var groupCounters = new Dictionary<AvatarGroup, int>();
 
             foreach (var avatarData in avatars.LoadAvatarData())
             {
@@ -56,7 +63,6 @@ namespace GameServices
                 var preview = Instantiate(avatars.GetAvatar(avatarData.Prefab), previewTransform);
                 var controller = preview.GetComponent<AvatarController>();
                 UpdateController(controller, avatarData);
-                UpdateShader(preview);
                 preview.transform.localPosition = controller.Preview;
                 preview.transform.localRotation = Quaternion.identity;
 
@@ -64,33 +70,26 @@ namespace GameServices
                 iconsList.Add(avatarIcon);
                 DestroyImmediate(preview);
                 Instantiate(profileButtonPrefab, gridTransform).GetComponent<AvatarProfileButton>()
-                    .With(b => b.Construct(avatarData, avatarIcon));
+                    .With(b => b.Construct(avatarData, avatarIcon, group));
 
-                counter++;
+                groupCounters.Increment(avatarData.Group, 1);
             }
 
-            if (counter < totalPrefabs)
+            foreach (var button in newProfileButton)
             {
-                var avatarData = new AvatarPersistentData { Prefab = avatars.GetAvatar().name};
-                Instantiate(addNewButton, gridTransform).GetComponent<AvatarProfileButton>()
-                    .With(b => b.transform.SetAsFirstSibling())
-                    .With(b => b.Construct(avatarData));
+                if (button.Group != group && group != AvatarGroup.Any) continue;
+
+                groupCounters.TryGetValue(button.Group, out var counter);
+                if (counter < button.AvatarCounter)
+                {
+                    var avatarData = new AvatarPersistentData { Prefab = avatars.GetAvatar().name };
+                    Instantiate(button.Prefab, gridTransform).GetComponent<AvatarProfileButton>()
+                        .With(b => b.transform.SetAsFirstSibling())
+                        .With(b => b.Construct(avatarData));
+                }
             }
 
             previewCamera.gameObject.SetActive(false);
-        }
-
-        private void UpdateShader(GameObject preview)
-        {
-            if (!updatePreviewShader) return;
-
-            foreach (var render in preview.GetComponentsInChildren<Renderer>())
-            {
-                foreach (var renderMaterial in render.materials)
-                {
-                    renderMaterial.shader = Shader.Find(previewShader);
-                }
-            }
         }
 
         private Texture2D GetAvatarIcon()

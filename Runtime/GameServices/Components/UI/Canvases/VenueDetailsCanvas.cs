@@ -11,6 +11,7 @@ namespace GameServices
         [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI venueName;
         [SerializeField] private TextMeshProUGUI playerCounter;
+        [SerializeField] private TextMeshProUGUI description;
 
         private VenueStaticData venueData;
 
@@ -20,7 +21,16 @@ namespace GameServices
             venueData = data.VenueData;
             venueName.text = venueData.Name;
             playerCounter.text = $"Online: {data.PlayerCounter}";
+            description.text = venueData.Description;
             ApplyIcon(venueData.Icon);
+        }
+
+        public void SelectVenue(bool host)
+        {
+            var netState = host ? NetState.Host : NetState.Client;
+            GameData.Set(Key.PlayerNetState, netState);
+            GameData.Set(Key.RequestedVenue, venueData.Address);
+            Command.Publish(new SelectAvatarProfile(venueData.AvatarGroup));
         }
 
         private void ApplyIcon(Sprite sprite)

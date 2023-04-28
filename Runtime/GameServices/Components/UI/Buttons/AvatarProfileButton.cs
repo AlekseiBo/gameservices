@@ -12,12 +12,14 @@ public class AvatarProfileButton : BaseButton
     [SerializeField] private TextMeshProUGUI prefabName;
 
     private AvatarPersistentData data;
+    private AvatarGroup currentGroup;
 
-    public void Construct(AvatarPersistentData avatarData, Texture2D avatarIcon)
+    public void Construct(AvatarPersistentData avatarData, Texture2D avatarIcon, AvatarGroup currentGroup)
     {
         previewImage.texture = avatarIcon;
         prefabName.text = avatarData.Prefab;
         data = avatarData;
+        this.currentGroup = currentGroup;
     }
 
     public void Construct(AvatarPersistentData avatarData)
@@ -39,7 +41,7 @@ public class AvatarProfileButton : BaseButton
     public void EditAvatar()
     {
         UpdateAvatar();
-        Command.Publish(new CustomizeAvatar());
+        Command.Publish(new CustomizeAvatar(currentGroup));
     }
 
     public void RemoveAvatar()
@@ -47,7 +49,7 @@ public class AvatarProfileButton : BaseButton
         var progress = Services.All.Single<IProgressProvider>();
         progress.ProgressData.AvatarList.Remove(data.Prefab);
         progress.SaveProgress();
-        Command.Publish(new SelectAvatarProfile());
+        Command.Publish(new SelectAvatarProfile(currentGroup));
     }
 
     private void UpdateAvatar()

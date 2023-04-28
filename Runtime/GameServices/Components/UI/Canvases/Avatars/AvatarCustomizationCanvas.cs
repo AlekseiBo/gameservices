@@ -14,10 +14,12 @@ namespace GameServices
 
         private IAvatarProvider avatars;
         private AvatarController controller;
+        private AvatarGroup currentGroup;
 
         public override void UpdateCanvas(IMediatorCommand command)
         {
             var data = command as CustomizeAvatar;
+            currentGroup = data.CurrentGroup;
             LayoutRebuilder.ForceRebuildLayoutImmediate(transform.GetComponent<RectTransform>());
         }
 
@@ -49,7 +51,7 @@ namespace GameServices
             avatars.SaveAvatarData();
             HideCanvas();
 
-            Command.Publish(new SelectAvatarProfile());
+            Command.Publish(new SelectAvatarProfile(currentGroup));
         }
 
         public void ActivatePanel(int index)

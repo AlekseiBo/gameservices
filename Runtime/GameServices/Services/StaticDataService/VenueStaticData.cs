@@ -10,6 +10,8 @@ namespace GameServices
         public AssetReferenceScene AssetReference;
         public GameObject NetworkManager;
         public Sprite Icon;
+        public AvatarGroup AvatarGroup;
+        [TextArea(2, 5)] public string Description;
 
         private void OnValidate()
         {

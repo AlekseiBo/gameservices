@@ -139,11 +139,7 @@ namespace GameServices
                 Debug.Log(lobby.Name);
 
                 var playerCounter = lobby.Name.Split(' ').Length - 2;
-
-                if (onlinePlayers.ContainsKey(venue.Value))
-                    onlinePlayers[venue.Value] += playerCounter;
-                else
-                    onlinePlayers[venue.Value] = playerCounter;
+                onlinePlayers.Increment(venue.Value, playerCounter);
             }
             return onlinePlayers;
         }
