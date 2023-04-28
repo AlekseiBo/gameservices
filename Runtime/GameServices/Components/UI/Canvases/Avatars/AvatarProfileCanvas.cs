@@ -92,7 +92,7 @@ namespace GameServices
                     var avatarData = new AvatarPersistentData { Prefab = avatars.GetAvatar().name };
                     Instantiate(button.Prefab, gridTransform).GetComponent<AvatarProfileButton>()
                         .With(b => b.transform.SetAsFirstSibling())
-                        .With(b => b.Construct(avatarData));
+                        .With(b => b.Construct(avatarData, group));
                 }
             }
 

@@ -22,9 +22,10 @@ public class AvatarProfileButton : BaseButton
         this.currentGroup = currentGroup;
     }
 
-    public void Construct(AvatarPersistentData avatarData)
+    public void Construct(AvatarPersistentData avatarData, AvatarGroup currentGroup)
     {
         data = avatarData;
+        this.currentGroup = currentGroup;
     }
 
     protected override void OnClick()
