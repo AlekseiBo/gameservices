@@ -47,6 +47,13 @@ namespace GameServices
             base.HideCanvas();
         }
 
+        public void ConnectToVenue(bool host)
+        {
+            var netState = host ? NetState.Host : NetState.Client;
+            GameData.Set(Key.PlayerNetState, netState);
+            Command.Publish(new ConnectToLobby());
+        }
+
         private void FillProfileGrid()
         {
             ClearIconsList();

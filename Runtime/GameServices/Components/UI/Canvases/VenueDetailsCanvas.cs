@@ -25,10 +25,8 @@ namespace GameServices
             ApplyIcon(venueData.Icon);
         }
 
-        public void SelectVenue(bool host)
+        public void SelectVenue()
         {
-            var netState = host ? NetState.Host : NetState.Client;
-            GameData.Set(Key.PlayerNetState, netState);
             GameData.Set(Key.RequestedVenue, venueData.Address);
             Command.Publish(new SelectAvatarProfile(venueData.AvatarGroup));
         }
