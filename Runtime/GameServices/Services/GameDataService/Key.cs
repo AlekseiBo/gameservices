@@ -11,5 +11,6 @@
         RequestedVenue,
         RequestedLobbyCode,
         Token,
+        UnityId,
     }
 }
