@@ -10,5 +10,6 @@
         ServerActivityTimer,
         RequestedVenue,
         RequestedLobbyCode,
+        Token,
     }
 }
