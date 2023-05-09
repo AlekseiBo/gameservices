@@ -36,13 +36,7 @@ namespace GameServices.CodeBlocks
 
                 try
                 {
-                    var unityId = GameData.Get<string>(Key.UnityId);
-                    if (unityId != "")
-                        await AuthenticationService.Instance.SignInWithOpenIdConnectAsync(
-                            unityId,
-                            GameData.Get<string>(Key.Token));
-                    else
-                        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 }
                 catch (AuthenticationException e)
                 {
