@@ -49,8 +49,13 @@ namespace GameServices
 
         public void ConnectToVenue(bool host)
         {
-            var netState = host ? NetState.Host : NetState.Client;
-            GameData.Set(Key.PlayerNetState, netState);
+            var netState = GameData.Get<NetState>(Key.PlayerNetState);
+            if (netState is not NetState.Private and NetState.Offline)
+            {
+                netState = host ? NetState.Host : NetState.Client;
+                GameData.Set(Key.PlayerNetState, netState);
+            }
+
             Command.Publish(new ConnectToLobby());
         }
 

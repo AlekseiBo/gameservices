@@ -11,6 +11,7 @@ namespace GameServices
         public GameObject NetworkManager;
         public Sprite Icon;
         public AvatarGroup AvatarGroup;
+        public NetState NetState;
         [TextArea(2, 5)] public string Description;
 
         private void OnValidate()

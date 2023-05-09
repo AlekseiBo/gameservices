@@ -48,8 +48,8 @@ namespace GameServices
 
         public async Task<Lobby> CreateLobby(CreateLobbyData data)
         {
-            hostedLobbyIsPrivate = data.IsPrivate;
             data.Options.IsPrivate = true;
+            hostedLobbyIsPrivate = data.IsPrivate;
 
             hostedLobby = await request.CreateLobby(data);
             if (hostedLobby == null) return null;

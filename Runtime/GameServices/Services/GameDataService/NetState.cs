@@ -6,6 +6,7 @@
         Client = 1,
         Guest = 2,
         Host = 3,
-        Dedicated = 4
+        Dedicated = 4,
+        Offline = 5,
     }
 }

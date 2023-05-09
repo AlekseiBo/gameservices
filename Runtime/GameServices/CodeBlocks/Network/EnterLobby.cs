@@ -1,4 +1,5 @@
-﻿using Toolset;
+﻿using System;
+using Toolset;
 using UnityEngine;
 
 namespace GameServices.CodeBlocks
@@ -18,7 +19,7 @@ namespace GameServices.CodeBlocks
             switch (GameData.Get<NetState>(Key.PlayerNetState))
             {
                 case NetState.Private:
-                    Complete(true);
+                    CreateLobby(true, true);
                     break;
                 case NetState.Guest:
                     JoinWithCode();
@@ -27,10 +28,13 @@ namespace GameServices.CodeBlocks
                     JoinWithVenue();
                     break;
                 case NetState.Host:
-                    CreateLobby(false);
+                    CreateLobby(false, false);
                     break;
                 case NetState.Dedicated:
-                    CreateLobby(true);
+                    CreateLobby(true, false);
+                    break;
+                case NetState.Offline:
+                    Complete(true);
                     break;
             }
         }
@@ -55,17 +59,17 @@ namespace GameServices.CodeBlocks
             else
             {
                 GameData.Set(Key.PlayerNetState, NetState.Host);
-                CreateLobby(false);
+                CreateLobby(false, false);
             }
         }
 
-        private async void CreateLobby(bool asServer)
+        private async void CreateLobby(bool asServer, bool isPrivate)
         {
             var owner = asServer ? "RELAY" : "PLAYER";
             var venue = GameData.Get<string>(Key.RequestedVenue);
             var lobbyName = $"{owner} ";
             var maxPlayers = GameData.Get<int>(Key.LobbyMaxPlayers);
-            var lobbyData = new CreateLobbyData(lobbyName, venue, maxPlayers, false);
+            var lobbyData = new CreateLobbyData(lobbyName, venue, maxPlayers, isPrivate);
             var createdLobby = await lobby.CreateLobby(lobbyData);
             Complete(createdLobby != null);
         }

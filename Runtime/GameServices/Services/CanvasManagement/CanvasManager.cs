@@ -33,6 +33,12 @@ namespace GameServices
             commandQueue.Remove(commandType);
         }
 
+        public void ShowCanvas<T>() where T : BaseCanvas
+        {
+            var canvas = container.First(vp => typeof(T) == vp.Value.GetType());
+            if (canvas.Value != null) ShowCanvas(canvas.Value);
+        }
+
         private void ShowCanvas(BaseCanvas canvas)
         {
             if (!canvas.Additive) HideAllCanvases(canvas.Distinct);
@@ -41,7 +47,13 @@ namespace GameServices
 
         public void HideCanvas(IMediatorCommand command) => HideCanvas(command.GetType().ToString());
 
-        public void HideCanvas(string commandType)
+        public void HideCanvas<T>() where T : BaseCanvas
+        {
+            var canvas = container.First(vp => typeof(T) == vp.Value.GetType());
+            if (canvas.Value != null) HideCanvas(canvas.Key);
+        }
+
+        private void HideCanvas(string commandType)
         {
             commandQueue.Remove(commandType);
             if (!container.TryGetValue(commandType, out var canvas) || canvas == null) return;
@@ -89,36 +101,6 @@ namespace GameServices
                 else if (showNewCanvas) ShowCanvas(newCanvas);
                 else HideCanvas(commandType);
             }
-
-            // if (!container.TryGetValue(commandType, out var canvas))
-            // {
-            //     container[commandType] = null;
-            //     var canvasObject = await assets.Instantiate(asset.AssetGUID, parent);
-            //     if (parent == null)
-            //     {
-            //         UnityEngine.Object.Destroy(canvasObject);
-            //         container.Remove(commandType);
-            //     }
-            //     else
-            //     {
-            //         canvas = canvasObject.GetComponent<BaseCanvas>();
-            //         container[commandType] = canvas;
-            //
-            //         if (commandQueue.Remove(commandType, out var laterCommand))
-            //             command = laterCommand;
-            //     }
-            // }
-            //
-            // if (canvas == null)
-            // {
-            //     commandQueue[commandType] = command;
-            // }
-            // else
-            // {
-            //     canvas.Canvas.overrideSorting = true;
-            //     canvas.UpdateCanvas(command);
-            //     ShowCanvas(commandType);
-            // }
         }
 
         public void CleanUp()

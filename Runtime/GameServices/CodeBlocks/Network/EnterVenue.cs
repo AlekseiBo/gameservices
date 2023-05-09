@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Toolset;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace GameServices.CodeBlocks
 {
@@ -43,13 +42,16 @@ namespace GameServices.CodeBlocks
                 case NetState.Dedicated:
                     CreateRelayServer(false);
                     break;
+                case NetState.Offline:
+                    Complete(true);
+                    break;
             }
         }
 
-        private async void CreateRelayServer(bool asHost)
+        private async void CreateRelayServer(bool asPlayer)
         {
             var connections = GameData.Get<int>(Key.LobbyMaxPlayers) - 1;
-            var connected = await relayProvider.CreateServer(connections, asHost);
+            var connected = await relayProvider.CreateServer(connections, asPlayer);
 
             Instantiate(networkTracker)
                 .With(t => t.name = "Network Tracker")

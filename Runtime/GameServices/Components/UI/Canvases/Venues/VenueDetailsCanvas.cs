@@ -27,6 +27,9 @@ namespace GameServices
 
         public void SelectVenue()
         {
+            if (venueData.NetState is NetState.Private or NetState.Offline)
+                GameData.Set(Key.PlayerNetState, venueData.NetState);
+
             GameData.Set(Key.RequestedVenue, venueData.Address);
             Command.Publish(new SelectAvatarProfile(venueData.AvatarGroup));
         }
