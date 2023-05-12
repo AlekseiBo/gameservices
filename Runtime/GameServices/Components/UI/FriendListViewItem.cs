@@ -49,11 +49,13 @@ namespace GameServices
             if (!string.IsNullOrEmpty(lobbyCode))
             {
                 statusText.text = "Online";
+                statusText.color = Color.green;
                 joinButton.interactable = true;
             }
             else
             {
                 statusText.text = "Offline";
+                statusText.color = Color.red;
                 joinButton.interactable = false;
             }
 

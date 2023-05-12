@@ -10,6 +10,8 @@ namespace GameServices.CodeBlocks
         menuName = "Code Blocks/Initialization/Authenticate Unity Services", order = 0)]
     public class UnityServicesAuthenticate : CodeBlock
     {
+        [SerializeField] private string providerName = "oidc-advokate";
+
         protected override async void Execute()
         {
             if (UnityServices.State == ServicesInitializationState.Uninitialized)
@@ -36,7 +38,11 @@ namespace GameServices.CodeBlocks
 
                 try
                 {
-                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                    var idToken = GameData.Get<string>(Key.UnityToken);
+                    if (idToken != "")
+                        await AuthenticationService.Instance.SignInWithOpenIdConnectAsync(providerName, idToken);
+                    else
+                        await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 }
                 catch (AuthenticationException e)
                 {
