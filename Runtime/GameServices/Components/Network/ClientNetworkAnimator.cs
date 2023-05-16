@@ -1,6 +1,6 @@
 using Unity.Netcode.Components;
 
-namespace Scripts
+namespace GameServices
 {
         public class ClientNetworkAnimator : NetworkAnimator
         {
