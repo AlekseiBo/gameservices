@@ -21,6 +21,7 @@ namespace GameServices.CodeBlocks
                 {
                     var netState = GameData.Get<NetState>(Key.PlayerNetState);
                     var initOptions = new InitializationOptions()
+                        .With(e => e.SetProfile("EDITOR"), Application.isEditor)
                         .With(e => e.SetProfile("RELAY_SERVER"), netState == NetState.Dedicated);
 
                     await UnityServices.InitializeAsync(initOptions);
