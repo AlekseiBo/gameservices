@@ -67,8 +67,9 @@ namespace GameServices.CodeBlocks
         {
             AuthenticationService.Instance.SignedIn -= OnSignedIn;
             var playerName = GameData.Get<string>(Key.PlayerName);
+            var authServiceNameBase = AuthenticationService.Instance.PlayerName.Split('#')[0];
 
-            if (AuthenticationService.Instance.PlayerName != playerName)
+            if (authServiceNameBase != playerName)
                 await AuthenticationService.Instance.UpdatePlayerNameAsync(playerName);
 
             Debug.Log($"Signed in with Unity Services: {AuthenticationService.Instance.PlayerName} ({AuthenticationService.Instance.PlayerId})");
