@@ -56,14 +56,23 @@ namespace GameServices
                 result ? "Request sent successfully" : "Request failed"));
         }
 
-        public async void AcceptRequest(string playerId) =>
+        public async void AcceptRequest(string playerId)
+        {
             await query.AcceptRequest(playerId);
+            Command.Publish(new FriendRelationship());
+        }
 
-        public async void DeclineRequest(string playerId) =>
+        public async void DeclineRequest(string playerId)
+        {
             await query.DeclineRequest(playerId);
+            Command.Publish(new FriendRelationship());
+        }
 
-        public async void Delete(string playerId) =>
+        public async void Delete(string playerId)
+        {
             await query.Delete(playerId);
+            Command.Publish(new FriendRelationship());
+        }
 
         public async void DeleteIncomingRequest(string playerId) =>
             await query.DeleteIncomingRequest(playerId);
