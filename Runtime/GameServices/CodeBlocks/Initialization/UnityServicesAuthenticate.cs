@@ -11,6 +11,7 @@ namespace GameServices.CodeBlocks
     public class UnityServicesAuthenticate : CodeBlock
     {
         [SerializeField] private bool anonymouslyOnly;
+        [SerializeField] private bool clearToken;
         [SerializeField] private string providerName = "oidc-advokate";
 
         protected override async void Execute()
@@ -43,13 +44,13 @@ namespace GameServices.CodeBlocks
                     if (!anonymouslyOnly && idToken != "")
                     {
                         Debug.Log("Signing in with Open ID");
-                        AuthenticationService.Instance.ClearSessionToken();
+                        if (clearToken) AuthenticationService.Instance.ClearSessionToken();
                         await AuthenticationService.Instance.SignInWithOpenIdConnectAsync(providerName, idToken);
                     }
                     else
                     {
                         Debug.Log("Signing in anonymously");
-                        AuthenticationService.Instance.ClearSessionToken();
+                        if (clearToken) AuthenticationService.Instance.ClearSessionToken();
                         await AuthenticationService.Instance.SignInAnonymouslyAsync();
                     }
                 }
