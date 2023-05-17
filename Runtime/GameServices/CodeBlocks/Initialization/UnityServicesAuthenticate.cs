@@ -68,7 +68,10 @@ namespace GameServices.CodeBlocks
         {
             AuthenticationService.Instance.SignedIn -= OnSignedIn;
             var playerName = GameData.Get<string>(Key.PlayerName);
-            var authServiceNameBase = AuthenticationService.Instance.PlayerName.Split('#')[0];
+
+            var authServiceNameBase = string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName) ?
+                "" :
+                AuthenticationService.Instance.PlayerName.Split('#')[0];
 
             if (authServiceNameBase != playerName)
                 await AuthenticationService.Instance.UpdatePlayerNameAsync(playerName);
