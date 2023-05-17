@@ -43,7 +43,7 @@ namespace GameServices
         public async void SendRequest(string playerId)
         {
             var result = await query.SendRequest(playerId);
-
+            Command.Publish(new FriendRelationship());
             Command.Publish(new ShowMessage("Friend Request",
                 result ? "Request sent successfully" : "Request failed"));
         }
@@ -51,7 +51,7 @@ namespace GameServices
         public async void SendRequestByName(string playerName)
         {
             var result = await query.SendRequestByName(playerName);
-
+            Command.Publish(new FriendRelationship());
             Command.Publish(new ShowMessage("Friend Request",
                 result ? "Request sent successfully" : "Request failed"));
         }
