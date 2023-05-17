@@ -49,6 +49,7 @@ namespace GameServices.CodeBlocks
                     else
                     {
                         Debug.Log("Signing in anonymously");
+                        AuthenticationService.Instance.ClearSessionToken();
                         await AuthenticationService.Instance.SignInAnonymouslyAsync();
                     }
                 }
