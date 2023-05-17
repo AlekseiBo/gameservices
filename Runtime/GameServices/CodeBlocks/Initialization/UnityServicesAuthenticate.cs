@@ -40,9 +40,15 @@ namespace GameServices.CodeBlocks
                 {
                     var idToken = GameData.Get<string>(Key.UnityToken);
                     if (idToken != "")
+                    {
+                        Debug.Log("Signing in with Open ID");
                         await AuthenticationService.Instance.SignInWithOpenIdConnectAsync(providerName, idToken);
+                    }
                     else
+                    {
+                        Debug.Log("Signing in anonymously");
                         await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                    }
                 }
                 catch (AuthenticationException e)
                 {
@@ -56,10 +62,15 @@ namespace GameServices.CodeBlocks
             }
         }
 
-        private void OnSignedIn()
+        private async void OnSignedIn()
         {
             AuthenticationService.Instance.SignedIn -= OnSignedIn;
-            Debug.Log($"Signed in with Unity Services: {AuthenticationService.Instance.PlayerId}");
+            var playerName = GameData.Get<string>(Key.PlayerName);
+            
+            if (AuthenticationService.Instance.PlayerName != playerName)
+                await AuthenticationService.Instance.UpdatePlayerNameAsync(playerName);
+
+            Debug.Log($"Signed in with Unity Services: {AuthenticationService.Instance.PlayerName} ({AuthenticationService.Instance.PlayerId})");
             Complete(true);
         }
     }
