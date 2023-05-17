@@ -21,7 +21,6 @@ namespace GameServices.CodeBlocks
                 {
                     var netState = GameData.Get<NetState>(Key.PlayerNetState);
                     var initOptions = new InitializationOptions()
-                        .With(e => e.SetProfile("EDITOR"), Application.isEditor)
                         .With(e => e.SetProfile("RELAY_SERVER"), netState == NetState.Dedicated);
 
                     await UnityServices.InitializeAsync(initOptions);
@@ -44,6 +43,7 @@ namespace GameServices.CodeBlocks
                     if (!anonymouslyOnly && idToken != "")
                     {
                         Debug.Log("Signing in with Open ID");
+                        AuthenticationService.Instance.ClearSessionToken();
                         await AuthenticationService.Instance.SignInWithOpenIdConnectAsync(providerName, idToken);
                     }
                     else
