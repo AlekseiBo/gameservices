@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Toolset;
 using Unity.Services.Friends;
+using Unity.Services.Friends.Options;
 using UnityEngine;
 
 namespace GameServices.CodeBlocks
@@ -15,7 +16,10 @@ namespace GameServices.CodeBlocks
 
         private async void InitializeFriendsService()
         {
-            await FriendsService.Instance.InitializeAsync();
+            var options = new InitializeOptions();
+            options.WithMemberProfile(true).WithEvents(true).WithMemberPresence(true);
+
+            await FriendsService.Instance.InitializeAsync(options);
 
             if (Services.All.Single<IFriendsProvider>() == null)
                 Services.All.RegisterSingle<IFriendsProvider>(new FriendsProvider());
