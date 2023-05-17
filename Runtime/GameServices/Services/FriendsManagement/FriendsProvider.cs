@@ -43,7 +43,7 @@ namespace GameServices
         public async void SendRequest(string playerId)
         {
             var result = await query.SendRequest(playerId);
-            Command.Publish(new FriendRelationship());
+            Command.Publish(new UpdateFriends());
             Command.Publish(new ShowMessage("Friend Request",
                 result ? "Request sent successfully" : "Request failed"));
         }
@@ -51,7 +51,7 @@ namespace GameServices
         public async void SendRequestByName(string playerName)
         {
             var result = await query.SendRequestByName(playerName);
-            Command.Publish(new FriendRelationship());
+            Command.Publish(new UpdateFriends());
             Command.Publish(new ShowMessage("Friend Request",
                 result ? "Request sent successfully" : "Request failed"));
         }
@@ -59,32 +59,44 @@ namespace GameServices
         public async void AcceptRequest(string playerId)
         {
             await query.AcceptRequest(playerId);
-            Command.Publish(new FriendRelationship());
+            Command.Publish(new UpdateFriends());
         }
 
         public async void DeclineRequest(string playerId)
         {
             await query.DeclineRequest(playerId);
-            Command.Publish(new FriendRelationship());
+            Command.Publish(new UpdateFriends());
         }
 
         public async void Delete(string playerId)
         {
             await query.Delete(playerId);
-            Command.Publish(new FriendRelationship());
+            Command.Publish(new UpdateFriends());
         }
 
-        public async void DeleteIncomingRequest(string playerId) =>
+        public async void DeleteIncomingRequest(string playerId)
+        {
             await query.DeleteIncomingRequest(playerId);
+            Command.Publish(new UpdateFriends());
+        }
 
-        public async void DeleteOutgoingRequest(string playerId) =>
+        public async void DeleteOutgoingRequest(string playerId)
+        {
             await query.DeleteOutgoingRequest(playerId);
+            Command.Publish(new UpdateFriends());
+        }
 
-        public async void Block(string playerId) =>
+        public async void Block(string playerId)
+        {
             await query.Block(playerId);
+            Command.Publish(new UpdateFriends());
+        }
 
-        public async void Unblock(string playerId) =>
+        public async void Unblock(string playerId)
+        {
             await query.Unblock(playerId);
+            Command.Publish(new UpdateFriends());
+        }
 
         public async void SetPresence(PresenceAvailabilityOptions availability, FriendActivity activity) =>
             await query.SetPresence(availability, activity);
