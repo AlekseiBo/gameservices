@@ -48,6 +48,14 @@ namespace GameServices
                 result ? "Request sent successfully" : "Request failed"));
         }
 
+        public async void SendRequestByName(string playerName)
+        {
+            var result = await query.SendRequestByName(playerName);
+
+            Command.Publish(new ShowMessage("Friend Request",
+                result ? "Request sent successfully" : "Request failed"));
+        }
+
         public async void AcceptRequest(string playerId) =>
             await query.AcceptRequest(playerId);
 

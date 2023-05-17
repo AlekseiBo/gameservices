@@ -11,6 +11,7 @@ namespace GameServices
         IReadOnlyList<Relationship> GetOutgoingRequests();
         IReadOnlyList<Relationship> GetBlockedPlayers();
         void SendRequest(string playerId);
+        void SendRequestByName(string playerName);
         void AcceptRequest(string playerId);
         void DeclineRequest(string playerId);
         void Delete(string playerId);
