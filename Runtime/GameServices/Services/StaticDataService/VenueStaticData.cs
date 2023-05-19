@@ -10,6 +10,7 @@ namespace GameServices
         public AssetReferenceScene AssetReference;
         public GameObject NetworkManager;
         public Sprite Icon;
+        public bool ShowInMenu;
         public AvatarGroup AvatarGroup;
         public NetState NetState;
         [TextArea(2, 5)] public string Description;
