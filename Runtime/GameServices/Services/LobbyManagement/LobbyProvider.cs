@@ -204,7 +204,7 @@ namespace GameServices
             // Command.Publish(presence);
 
             var activity = new FriendActivity { Venue = Venue, Status = "Joined" };
-            Services.All.Single<IFriendsProvider>().SetPresence(PresenceAvailabilityOptions.ONLINE, activity);
+            await Services.All.Single<IFriendsProvider>().SetPresence(PresenceAvailabilityOptions.ONLINE);
         }
 
         private void LogServerData()
