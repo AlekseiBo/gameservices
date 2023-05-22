@@ -17,7 +17,9 @@ namespace GameServices.CodeBlocks
         private async void InitializeFriendsService()
         {
             var options = new InitializeOptions();
-            options.WithMemberProfile(true).WithEvents(true).WithMemberPresence(true);
+            options.WithMemberProfile(true);
+            options.WithMemberPresence(true);
+            options.WithEvents(true);
 
             await FriendsService.Instance.InitializeAsync(options);
 

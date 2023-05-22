@@ -4,6 +4,7 @@ using Toolset;
 using Unity.Services.Friends;
 using Unity.Services.Friends.Models;
 using Unity.Services.Friends.Notifications;
+using UnityEngine;
 
 namespace GameServices
 {
@@ -131,7 +132,9 @@ namespace GameServices
                 Relationship = obj.Relationship
             });
 
-        private void OnPresenceUpdated(IPresenceUpdatedEvent obj) =>
+        private void OnPresenceUpdated(IPresenceUpdatedEvent obj)
+        {
+            Debug.Log("Presence updated event");
             Command.Publish(new FriendPresence
             {
                 Id = obj.ID,
@@ -139,5 +142,6 @@ namespace GameServices
                 LastSeen = obj.Presence.LastSeen,
                 Activity = obj.Presence.GetActivity<FriendActivity>()
             });
+        }
     }
 }
