@@ -65,7 +65,7 @@ namespace GameServices
             foreach (var canvas in container)
             {
                 if (canvas.Value == null) continue;
-                if (canvas.Value.Additive && !distinct) continue;
+                if (!canvas.Value.Additive && !distinct) continue;
                 canvas.Value.HideCanvas();
             }
         }
