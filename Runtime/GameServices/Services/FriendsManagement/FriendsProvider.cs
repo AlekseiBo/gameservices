@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Toolset;
 using Unity.Services.Friends;
 using Unity.Services.Friends.Models;
@@ -99,13 +100,13 @@ namespace GameServices
             Command.Publish(new UpdateFriends());
         }
 
-        public async void SetPresence(PresenceAvailabilityOptions availability, FriendActivity activity) =>
+        public async Task SetPresence(PresenceAvailabilityOptions availability, FriendActivity activity) =>
             await query.SetPresence(availability, activity);
 
-        public async void SetPresence(PresenceAvailabilityOptions availability) =>
+        public async Task SetPresence(PresenceAvailabilityOptions availability) =>
             await query.SetPresence(availability);
 
-        public async void SetPresence(FriendActivity activity) =>
+        public async Task SetPresence(FriendActivity activity) =>
             await query.SetPresence(activity);
 
         public async void SendMessage<T>(string playerId, T message) where T : new() =>

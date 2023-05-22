@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Toolset;
 using Unity.Services.Friends.Models;
 
@@ -19,9 +20,9 @@ namespace GameServices
         void DeleteOutgoingRequest(string playerId);
         void Block(string playerId);
         void Unblock(string playerId);
-        void SetPresence(PresenceAvailabilityOptions availability, FriendActivity activity);
-        void SetPresence(PresenceAvailabilityOptions availability);
-        void SetPresence(FriendActivity activity);
+        Task SetPresence(PresenceAvailabilityOptions availability, FriendActivity activity);
+        Task SetPresence(PresenceAvailabilityOptions availability);
+        Task SetPresence(FriendActivity activity);
         void SendMessage<T>(string playerId, T message) where T : new();
     }
 }
