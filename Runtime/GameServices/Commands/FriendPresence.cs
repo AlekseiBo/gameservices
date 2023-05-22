@@ -1,4 +1,5 @@
-﻿using Toolset;
+﻿using System;
+using Toolset;
 using Unity.Services.Friends.Models;
 
 namespace GameServices
@@ -6,7 +7,8 @@ namespace GameServices
     public class FriendPresence : IMediatorCommand
     {
         public string Id;
-        public Presence Presence;
+        public PresenceAvailabilityOptions Availability;
+        public DateTime LastSeen;
         public FriendActivity Activity;
     }
 }

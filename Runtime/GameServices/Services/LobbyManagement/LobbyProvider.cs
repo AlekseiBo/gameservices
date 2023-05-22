@@ -4,6 +4,7 @@ using Toolset;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
+using Unity.Services.Friends.Models;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 
@@ -191,6 +192,19 @@ namespace GameServices
             if (joinedLobby == null) return;
 
             joinedLobby.Players.ForEach(p => Debug.Log($"PlayerId: {p.Id}, Allocation: {p.AllocationId}"));
+
+            // var presence = new FriendPresence
+            // {
+            //     Id = playerId,
+            //     Availability = PresenceAvailabilityOptions.ONLINE,
+            //     LastSeen = DateTime.Now,
+            //     Activity = new FriendActivity { Venue = Venue, Status = "Joined" }
+            // };
+            //
+            // Command.Publish(presence);
+
+            var activity = new FriendActivity { Venue = Venue, Status = "Joined" };
+            Services.All.Single<IFriendsProvider>().SetPresence(PresenceAvailabilityOptions.ONLINE, activity);
         }
 
         private void LogServerData()

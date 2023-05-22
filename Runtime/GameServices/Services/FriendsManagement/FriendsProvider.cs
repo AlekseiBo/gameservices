@@ -135,7 +135,8 @@ namespace GameServices
             Command.Publish(new FriendPresence
             {
                 Id = obj.ID,
-                Presence = obj.Presence,
+                Availability = obj.Presence.Availability,
+                LastSeen = obj.Presence.LastSeen,
                 Activity = obj.Presence.GetActivity<FriendActivity>()
             });
     }
