@@ -112,6 +112,9 @@ namespace GameServices
         public async void SendMessage<T>(string playerId, T message) where T : new() =>
             await query.Message(playerId, message);
 
+        public async Task RefreshRelationships() =>
+            await query.ForceRelationshipsRefresh();
+
         private void OnMessageReceived(IMessageReceivedEvent messageEvent) =>
             Command.Publish(new FriendMessage
             {

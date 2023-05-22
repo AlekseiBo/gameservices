@@ -24,5 +24,6 @@ namespace GameServices
         Task SetPresence(PresenceAvailabilityOptions availability);
         Task SetPresence(FriendActivity activity);
         void SendMessage<T>(string playerId, T message) where T : new();
+        Task RefreshRelationships();
     }
 }

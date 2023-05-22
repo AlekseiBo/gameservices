@@ -191,5 +191,19 @@ namespace GameServices
                 Debug.LogError(e);
             }
         }
+
+        public async Task ForceRelationshipsRefresh()
+        {
+            try
+            {
+                await FriendsService.Instance.ForceRelationshipsRefreshAsync();
+                Debug.Log($"Relationships updated");
+            }
+            catch (RelationshipsServiceException e)
+            {
+                Debug.Log($"Failed to update relationships");
+                Debug.LogError(e);
+            }
+        }
     }
 }
