@@ -20,6 +20,7 @@ namespace GameServices
         public FriendsProvider()
         {
             query = new FriendsQuery();
+            FriendConversations = new();
             FriendsService.Instance.MessageReceived += OnMessageReceived;
             FriendsService.Instance.RelationshipAdded += OnRelationshipAdded;
             FriendsService.Instance.RelationshipDeleted += OnRelationshipDeleted;
