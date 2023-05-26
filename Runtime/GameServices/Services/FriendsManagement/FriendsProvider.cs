@@ -11,6 +11,10 @@ namespace GameServices
 {
     public class FriendsProvider : IFriendsProvider, IDisposable
     {
+        public const string CON_SEP = ";;";
+        public const string MES_SEP = "::";
+        public Dictionary<string, string> FriendConversations { get; }
+
         private readonly FriendsQuery query;
 
         public FriendsProvider()
@@ -115,12 +119,61 @@ namespace GameServices
         public async Task RefreshRelationships() =>
             await query.ForceRelationshipsRefresh();
 
-        private void OnMessageReceived(IMessageReceivedEvent messageEvent) =>
+
+        public void LoadConversations()
+        {
+            FriendConversations.Clear();
+
+            var friends = PlayerPrefs.GetString("Friends", "");
+            foreach (var friendId in friends.Split(CON_SEP))
+            {
+                foreach (var message in PlayerPrefs.GetString(friendId, "").Split(CON_SEP))
+                {
+                    var messagePair = message.Split(MES_SEP);
+                    if (messagePair.Length == 2)
+                    {
+                        FriendConversations[friendId] = message;
+                    }
+                }
+            }
+        }
+
+        public void AddMessageToConversation(string playerId, string message, bool incoming)
+        {
+            var safeMessage = message.Replace(MES_SEP, ":").Replace(CON_SEP, ";");
+            var code = incoming ? "0" : "1";
+            var text = $"{code}{MES_SEP}{safeMessage}{CON_SEP}";
+            FriendConversations[playerId] = FriendConversations.TryGetValue(playerId, out var conversationText)
+                ? text + conversationText
+                : text;
+
+            SaveConversations();
+        }
+
+        private void SaveConversations()
+        {
+            var conversationList = "";
+            foreach (var item in FriendConversations)
+            {
+                PlayerPrefs.SetString(item.Key, item.Value);
+                conversationList += $"{item.Key}{CON_SEP}";
+            }
+
+            PlayerPrefs.SetString("Friends", conversationList);
+            PlayerPrefs.Save();
+        }
+
+        private void OnMessageReceived(IMessageReceivedEvent messageEvent)
+        {
+            var message = messageEvent.GetMessageAs<FriendMessageText>();
+            AddMessageToConversation(messageEvent.UserId, message.Text, true);
+
             Command.Publish(new FriendMessage
             {
                 Id = messageEvent.UserId,
                 Message = messageEvent.GetMessageAs<FriendMessageText>()
             });
+        }
 
         private void OnRelationshipAdded(IRelationshipAddedEvent obj) =>
             Command.Publish(new FriendRelationship
