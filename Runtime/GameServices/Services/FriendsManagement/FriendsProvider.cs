@@ -129,12 +129,13 @@ namespace GameServices
             var friends = PlayerPrefs.GetString("Friends", "");
             foreach (var friendId in friends.Split(CON_SEP))
             {
+                FriendConversations[friendId] = "";
                 foreach (var message in PlayerPrefs.GetString(friendId, "").Split(CON_SEP))
                 {
                     var messagePair = message.Split(MES_SEP);
                     if (messagePair.Length == 2)
                     {
-                        FriendConversations[friendId] += $"{CON_SEP}{message}";
+                        FriendConversations[friendId] += $"{message}{CON_SEP}";
                     }
                 }
             }
