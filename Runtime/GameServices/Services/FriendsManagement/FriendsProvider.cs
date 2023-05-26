@@ -21,6 +21,7 @@ namespace GameServices
         {
             query = new FriendsQuery();
             FriendConversations = new();
+            LoadConversations();
             FriendsService.Instance.MessageReceived += OnMessageReceived;
             FriendsService.Instance.RelationshipAdded += OnRelationshipAdded;
             FriendsService.Instance.RelationshipDeleted += OnRelationshipDeleted;
@@ -133,7 +134,7 @@ namespace GameServices
                     var messagePair = message.Split(MES_SEP);
                     if (messagePair.Length == 2)
                     {
-                        FriendConversations[friendId] = message;
+                        FriendConversations[friendId] += $"{CON_SEP}{message}";
                     }
                 }
             }
