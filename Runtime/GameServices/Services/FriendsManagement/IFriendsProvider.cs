@@ -7,6 +7,7 @@ namespace GameServices
 {
     public interface IFriendsProvider : IService
     {
+        Dictionary<string, string> FriendConversations { get; }
         IReadOnlyList<Relationship> GetFriendsList();
         IReadOnlyList<Relationship> GetIncomingRequests();
         IReadOnlyList<Relationship> GetOutgoingRequests();
