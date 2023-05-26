@@ -28,5 +28,6 @@ namespace GameServices
         Task RefreshRelationships();
         void AddMessageToConversation(string playerId, string message, bool incoming);
         void LoadConversations();
+        void DeleteConversation(string playerId);
     }
 }

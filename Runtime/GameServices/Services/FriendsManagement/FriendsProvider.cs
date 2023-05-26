@@ -141,6 +141,15 @@ namespace GameServices
             }
         }
 
+        public void DeleteConversation(string playerId)
+        {
+            if (FriendConversations.ContainsKey(playerId))
+                FriendConversations.Remove(playerId);
+
+            PlayerPrefs.DeleteKey(playerId);
+            SaveConversations();
+        }
+
         public void AddMessageToConversation(string playerId, string message, bool incoming)
         {
             var safeMessage = message.Replace(MES_SEP, ":").Replace(CON_SEP, ";");
