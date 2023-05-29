@@ -193,17 +193,6 @@ namespace GameServices
 
             joinedLobby.Players.ForEach(p => Debug.Log($"PlayerId: {p.Id}, Allocation: {p.AllocationId}"));
 
-            // var presence = new FriendPresence
-            // {
-            //     Id = playerId,
-            //     Availability = PresenceAvailabilityOptions.ONLINE,
-            //     LastSeen = DateTime.Now,
-            //     Activity = new FriendActivity { Venue = Venue, Status = "Joined" }
-            // };
-            //
-            // Command.Publish(presence);
-
-            var activity = new FriendActivity { Venue = Venue, Status = "Joined" };
             await Services.All.Single<IFriendsProvider>().SetPresence(PresenceAvailabilityOptions.ONLINE);
         }
 

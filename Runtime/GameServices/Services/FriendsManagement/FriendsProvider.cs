@@ -26,6 +26,21 @@ namespace GameServices
             FriendsService.Instance.RelationshipAdded += OnRelationshipAdded;
             FriendsService.Instance.RelationshipDeleted += OnRelationshipDeleted;
             FriendsService.Instance.PresenceUpdated += OnPresenceUpdated;
+
+            GameData.Subscribe<string>(Key.CurrentLobbyCode, OnLobbyCodeSet);
+        }
+
+        private void OnLobbyCodeSet<T>(DataEntry<T> dataEntry)
+        {
+            var codeEntry = dataEntry as DataEntry<string>;
+
+            var activity = new FriendActivity
+            {
+                Venue = GameData.Get<string>(Key.CurrentVenue),
+                Code = codeEntry.Value
+            };
+
+            Services.All.Single<IFriendsProvider>().SetPresence(activity);
         }
 
         public void Dispose()
@@ -34,6 +49,8 @@ namespace GameServices
             FriendsService.Instance.RelationshipAdded -= OnRelationshipAdded;
             FriendsService.Instance.RelationshipDeleted -= OnRelationshipDeleted;
             FriendsService.Instance.PresenceUpdated -= OnPresenceUpdated;
+
+            GameData.RemoveSubscriber<string>(Key.CurrentLobbyCode, OnLobbyCodeSet);
         }
 
         public IReadOnlyList<Relationship> GetFriendsList() =>
