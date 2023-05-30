@@ -33,13 +33,11 @@ namespace GameServices
         private void OnLobbyCodeSet<T>(DataEntry<T> dataEntry)
         {
             var codeEntry = dataEntry as DataEntry<string>;
-
-            var venue = "";
-            venue = GameData.Get<string>(Key.CurrentVenue);
+            var venue = GameData.Get<string>(Key.CurrentVenue);
 
             var activity = new FriendActivity
             {
-                Venue = venue,
+                Venue = string.IsNullOrEmpty(venue) ? "Lobby" : venue,
                 Code = codeEntry.Value
             };
 
