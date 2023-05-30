@@ -34,9 +34,12 @@ namespace GameServices
         {
             var codeEntry = dataEntry as DataEntry<string>;
 
+            var venue = "";
+            venue = GameData.Get<string>(Key.CurrentVenue);
+
             var activity = new FriendActivity
             {
-                Venue = GameData.Get<string>(Key.CurrentVenue),
+                Venue = venue,
                 Code = codeEntry.Value
             };
 
