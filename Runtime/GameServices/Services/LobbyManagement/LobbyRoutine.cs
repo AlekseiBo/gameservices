@@ -28,15 +28,15 @@ namespace GameServices
             currentLobby = lobby;
             playersList = "";
             heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat());
-            updatePlayersCoroutine = CoroutineRunner.Start(RunUpdatePlayers());
             lobbyActivityCoroutine = CoroutineRunner.Start(RunActivityCheck());
+            //updatePlayersCoroutine = CoroutineRunner.Start(RunUpdatePlayers());
         }
 
         public void Stop()
         {
             if (heartbeatCoroutine != null) CoroutineRunner.Stop(heartbeatCoroutine);
-            if (updatePlayersCoroutine != null) CoroutineRunner.Stop(updatePlayersCoroutine);
             if (lobbyActivityCoroutine != null) CoroutineRunner.Stop(lobbyActivityCoroutine);
+            //if (updatePlayersCoroutine != null) CoroutineRunner.Stop(updatePlayersCoroutine);
             currentLobby = null;
         }
 
