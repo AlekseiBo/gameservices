@@ -12,7 +12,7 @@ namespace GameServices.CodeBlocks
         {
             assets = Services.All.Single<IAssetProvider>();
             var scene = GameData.Get<string>(Key.CurrentVenue);
-            var unloaded = await assets.UnloadScene(scene);
+            var unloaded = string.IsNullOrEmpty(scene) || await assets.UnloadScene(scene);
             Complete(unloaded);
         }
     }

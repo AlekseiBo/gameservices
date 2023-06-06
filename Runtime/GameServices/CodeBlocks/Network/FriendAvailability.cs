@@ -11,7 +11,8 @@ namespace GameServices.CodeBlocks
 
         protected override async void Execute()
         {
-            await Services.All.Single<IFriendsProvider>().SetPresence(availability);
+            var friendsProvider = Services.All.Single<IFriendsProvider>();
+            if (friendsProvider != null) await friendsProvider.SetPresence(availability);
             Complete(true);
         }
     }

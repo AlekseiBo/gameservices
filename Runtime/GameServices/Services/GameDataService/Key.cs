@@ -12,5 +12,6 @@
         RequestedLobbyCode,
         Token,
         UnityToken,
+        TeamColor
     }
 }

@@ -18,6 +18,5 @@ namespace GameServices
         Task LeaveConnectedLobby();
         Task UpdateVenue(string venue);
         Task<Lobby> QueryPlayerOnline(string friendId);
-        Task<Dictionary<string, int>> QueryPlayersOnline();
     }
 }

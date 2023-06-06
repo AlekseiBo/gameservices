@@ -29,14 +29,12 @@ namespace GameServices
             playersList = "";
             heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat());
             lobbyActivityCoroutine = CoroutineRunner.Start(RunActivityCheck());
-            //updatePlayersCoroutine = CoroutineRunner.Start(RunUpdatePlayers());
         }
 
         public void Stop()
         {
             if (heartbeatCoroutine != null) CoroutineRunner.Stop(heartbeatCoroutine);
             if (lobbyActivityCoroutine != null) CoroutineRunner.Stop(lobbyActivityCoroutine);
-            //if (updatePlayersCoroutine != null) CoroutineRunner.Stop(updatePlayersCoroutine);
             currentLobby = null;
         }
 
@@ -47,16 +45,6 @@ namespace GameServices
                 yield return Utilities.WaitFor(HEARTBEAT_TIMEOUT);
                 SendHeartbeat();
                 while (heartbeatInProgress) yield return null;
-            }
-        }
-
-        private IEnumerator RunUpdatePlayers()
-        {
-            while (currentLobby != null)
-            {
-                yield return Utilities.WaitFor(UPDATE_PLAYERS_TIMEOUT);
-                UpdatePlayersList();
-                while (updatePlayersInProgress) yield return null;
             }
         }
 
@@ -87,34 +75,6 @@ namespace GameServices
             }
 
             heartbeatInProgress = false;
-        }
-
-        private async void UpdatePlayersList()
-        {
-            updatePlayersInProgress = true;
-
-            try
-            {
-                currentLobby = await LobbyService.Instance.GetLobbyAsync(currentLobby.Id);
-                var newList = currentLobby.Players.Aggregate("",
-                    (current, player) => current + $"{player.Id[..8]} ");
-
-                if (playersList != newList)
-                {
-                    playersList = newList;
-                    var lobbySplit = currentLobby.Name.Split(' ');
-                    var newLobbyName = $"{lobbySplit[0]} {playersList}";
-                    var options = new UpdateLobbyOptions { Name = newLobbyName };
-                    currentLobby = await LobbyService.Instance.UpdateLobbyAsync(currentLobby.Id, options);
-                    Debug.Log($"Lobby name changed: {currentLobby.Name}");
-                }
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log($"Update Players Routine: {e.Message}");
-            }
-
-            updatePlayersInProgress = false;
         }
 
         private async void CheckLobbyActivity()

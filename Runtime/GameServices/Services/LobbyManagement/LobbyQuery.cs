@@ -48,10 +48,8 @@ namespace GameServices
             }
         }
 
-        public async Task<QueryResponse> ByFriend(string friendId)
+        public async Task<QueryResponse> ByOwner(string friendId)
         {
-            friendId = friendId[..8];
-
             try
             {
                 var queryLobbiesOptions = new QueryLobbiesOptions
