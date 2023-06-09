@@ -3,6 +3,7 @@ using UnityEngine;
 using Toolset;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using Unity.Services.Vivox;
 
 namespace GameServices.CodeBlocks
 {
@@ -13,6 +14,10 @@ namespace GameServices.CodeBlocks
         [SerializeField] private bool anonymouslyOnly;
         [SerializeField] private bool clearToken;
         [SerializeField] private string providerName = "oidc-advokate";
+        [Space] [SerializeField] private string vivoxServer;
+        [SerializeField] private string vivoxDomain;
+        [SerializeField] private string vivoxIssuer;
+        [SerializeField] private string vivoxKey;
 
         protected override async void Execute()
         {
@@ -24,6 +29,9 @@ namespace GameServices.CodeBlocks
                     var initOptions = new InitializationOptions()
                         .With(e => e.SetProfile("RELAY_SERVER"), netState == NetState.Dedicated);
 
+                    if (CheckVivoxCredentials())
+                        initOptions.SetVivoxCredentials(vivoxServer, vivoxDomain, vivoxIssuer, vivoxKey);
+                    
                     await UnityServices.InitializeAsync(initOptions);
                 }
                 catch (Exception e)
@@ -71,15 +79,20 @@ namespace GameServices.CodeBlocks
             AuthenticationService.Instance.SignedIn -= OnSignedIn;
             var playerName = GameData.Get<string>(Key.PlayerName);
 
-            var authServiceNameBase = string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName) ?
-                "" :
-                AuthenticationService.Instance.PlayerName.Split('#')[0];
+            var authServiceNameBase = string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName)
+                ? ""
+                : AuthenticationService.Instance.PlayerName.Split('#')[0];
 
             if (authServiceNameBase != playerName)
                 await AuthenticationService.Instance.UpdatePlayerNameAsync(playerName);
 
-            Debug.Log($"Signed in with Unity Services: {AuthenticationService.Instance.PlayerName} ({AuthenticationService.Instance.PlayerId})");
+            Debug.Log(
+                $"Signed in with Unity Services: {AuthenticationService.Instance.PlayerName} ({AuthenticationService.Instance.PlayerId})");
             Complete(true);
         }
+
+        private bool CheckVivoxCredentials() =>
+            !(string.IsNullOrEmpty(vivoxKey) && string.IsNullOrEmpty(vivoxIssuer) &&
+              string.IsNullOrEmpty(vivoxDomain) && string.IsNullOrEmpty(vivoxServer));
     }
 }
