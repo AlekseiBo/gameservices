@@ -8,11 +8,11 @@ namespace GameServices
     {
         protected Button button;
 
-        protected void Awake() => button = GetComponent<Button>();
+        protected virtual void Awake() => button = GetComponent<Button>();
 
-        protected void Start() => button.onClick.AddListener(OnClick);
+        protected virtual void Start() => button.onClick.AddListener(OnClick);
 
-        protected void OnDestroy() => button.onClick.RemoveListener(OnClick);
+        protected virtual void OnDestroy() => button.onClick.RemoveListener(OnClick);
 
         protected abstract void OnClick();
     }

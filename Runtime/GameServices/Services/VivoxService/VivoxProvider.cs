@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Toolset;
 using Unity.Services.Vivox;
 using UnityEngine;
 using VivoxUnity;
@@ -8,9 +9,6 @@ namespace GameServices
 {
     public class VivoxProvider : IVivoxProvider, IDisposable
     {
-        public delegate void ChannelTextMessageChangedHandler(IChannelTextMessage channelTextMessage);
-        public event ChannelTextMessageChangedHandler OnTextMessageReceived;
-
         public LoginState LoginState { get; private set; }
 
         private Account account;
@@ -24,7 +22,8 @@ namespace GameServices
             Login();
         }
 
-        public void JoinChannel(string channelName, ChannelType channelType, ChatCapability chatCapability, bool transmissionSwitch = true, Channel3DProperties properties = null)
+        public void JoinChannel(string channelName, ChannelType channelType, ChatCapability chatCapability,
+            bool transmissionSwitch = true, Channel3DProperties properties = null)
         {
             if (LoginState == LoginState.LoggedIn)
             {
@@ -33,22 +32,24 @@ namespace GameServices
                 IChannelSession channelSession = loginSession.GetChannelSession(channel);
                 channelSession.PropertyChanged += OnChannelPropertyChanged;
                 channelSession.MessageLog.AfterItemAdded += OnMessageLogReceived;
-                channelSession.BeginConnect(chatCapability != ChatCapability.TextOnly, chatCapability != ChatCapability.AudioOnly, transmissionSwitch, channelSession.GetConnectToken(), ar =>
-                {
-                    try
+                channelSession.BeginConnect(chatCapability != ChatCapability.TextOnly,
+                    chatCapability != ChatCapability.AudioOnly, transmissionSwitch, channelSession.GetConnectToken(),
+                    ar =>
                     {
-                        channelSession.EndConnect(ar);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Log($"Could not connect to voice channel: {e.Message}");
-                        channelSession.PropertyChanged -= OnChannelPropertyChanged;
-                        channelSession.MessageLog.AfterItemAdded -= OnMessageLogReceived;
-                        return;
-                    }
+                        try
+                        {
+                            channelSession.EndConnect(ar);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.Log($"Could not connect to voice channel: {e.Message}");
+                            channelSession.PropertyChanged -= OnChannelPropertyChanged;
+                            channelSession.MessageLog.AfterItemAdded -= OnMessageLogReceived;
+                            return;
+                        }
 
-                    currentChannel = channel;
-                });
+                        currentChannel = channel;
+                    });
             }
             else
             {
@@ -66,7 +67,8 @@ namespace GameServices
             }
         }
 
-        public void SendTextMessage(string messageToSend, ChannelId channel = null, string applicationStanzaNamespace = null, string applicationStanzaBody = null)
+        public void SendTextMessage(string messageToSend, ChannelId channel = null,
+            string applicationStanzaNamespace = null, string applicationStanzaBody = null)
         {
             if (string.IsNullOrEmpty(messageToSend)) return;
             if (ChannelId.IsNullOrEmpty(channel)) channel = currentChannel;
@@ -155,7 +157,8 @@ namespace GameServices
         {
             var channelSession = (IChannelSession)sender;
 
-            if ((propertyChangedEventArgs.PropertyName == "AudioState" || propertyChangedEventArgs.PropertyName == "TextState") &&
+            if ((propertyChangedEventArgs.PropertyName == "AudioState" ||
+                 propertyChangedEventArgs.PropertyName == "TextState") &&
                 channelSession.AudioState == ConnectionState.Disconnected &&
                 channelSession.TextState == ConnectionState.Disconnected)
             {
@@ -169,11 +172,7 @@ namespace GameServices
             }
         }
 
-        private void OnMessageLogReceived(object sender, QueueItemAddedEventArgs<IChannelTextMessage> textMessage)
-        {
-            IChannelTextMessage channelTextMessage = textMessage.Value;
-            Debug.Log(channelTextMessage.Message);
-            OnTextMessageReceived?.Invoke(channelTextMessage);
-        }
+        private void OnMessageLogReceived(object sender, QueueItemAddedEventArgs<IChannelTextMessage> textMessage) =>
+            Command.Publish(new AddChatMessage(textMessage.Value));
     }
 }
