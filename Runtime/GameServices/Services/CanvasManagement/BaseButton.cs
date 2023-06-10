@@ -6,13 +6,13 @@ namespace GameServices
     [RequireComponent(typeof(Button))]
     public abstract class BaseButton : MonoBehaviour
     {
-        private Button button;
+        protected Button button;
 
-        private void Awake() => button = GetComponent<Button>();
+        protected void Awake() => button = GetComponent<Button>();
 
-        private void Start() => button.onClick.AddListener(OnClick);
+        protected void Start() => button.onClick.AddListener(OnClick);
 
-        private void OnDestroy() => button.onClick.RemoveListener(OnClick);
+        protected void OnDestroy() => button.onClick.RemoveListener(OnClick);
 
         protected abstract void OnClick();
     }
