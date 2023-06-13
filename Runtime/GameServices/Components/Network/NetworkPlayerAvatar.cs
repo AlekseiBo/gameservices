@@ -17,6 +17,10 @@ namespace GameServices
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
+        private readonly NetworkVariable<int> playerHat = new (-1,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+
         private readonly NetworkVariable<int> playerTop = new (-1,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
@@ -56,6 +60,7 @@ namespace GameServices
             playerPrefab.OnValueChanged += OnPrefabChanged;
 
             playerHair.OnValueChanged += OnHairChanged;
+            playerHat.OnValueChanged += OnHatChanged;
             playerTop.OnValueChanged += OnTopChanged;
             playerBottom.OnValueChanged += OnBottomChanged;
             playerShoes.OnValueChanged += OnShoesChanged;
@@ -70,6 +75,7 @@ namespace GameServices
                 playerPrefab.Value = avatars.GetAvatarName(OnOwnerPrefabChanged);
 
                 playerHair.Value = avatars.GetPart(Avatar.Hair, OnOwnerHairChanged);
+                playerHat.Value = avatars.GetPart(Avatar.Hat, OnOwnerHatChanged);
                 playerTop.Value = avatars.GetPart(Avatar.Top, OnOwnerTopChanged);
                 playerBottom.Value = avatars.GetPart(Avatar.Bottom, OnOwnerBottomChanged);
                 playerShoes.Value = avatars.GetPart(Avatar.Shoes, OnOwnerShoesChanged);
@@ -90,6 +96,7 @@ namespace GameServices
             avatars.RemoveSubscriber(Avatar.Prefab, OnOwnerPrefabChanged);
 
             avatars.RemoveSubscriber(Avatar.Hair, OnOwnerHairChanged);
+            avatars.RemoveSubscriber(Avatar.Hat, OnOwnerHatChanged);
             avatars.RemoveSubscriber(Avatar.Top, OnOwnerTopChanged);
             avatars.RemoveSubscriber(Avatar.Bottom, OnOwnerBottomChanged);
             avatars.RemoveSubscriber(Avatar.Shoes, OnOwnerShoesChanged);
@@ -102,6 +109,7 @@ namespace GameServices
             playerPrefab.OnValueChanged -= OnPrefabChanged;
 
             playerHair.OnValueChanged -= OnHairChanged;
+            playerHat.OnValueChanged -= OnHatChanged;
             playerTop.OnValueChanged -= OnTopChanged;
             playerBottom.OnValueChanged -= OnBottomChanged;
             playerShoes.OnValueChanged -= OnShoesChanged;
@@ -116,6 +124,7 @@ namespace GameServices
         private void OnOwnerPrefabChanged(DataEntry<string> prefab) => playerPrefab.Value = prefab.Value;
 
         private void OnOwnerHairChanged(DataEntry<int> part) => playerHair.Value = part.Value;
+        private void OnOwnerHatChanged(DataEntry<int> part) => playerHat.Value = part.Value;
         private void OnOwnerTopChanged(DataEntry<int> part) => playerTop.Value = part.Value;
         private void OnOwnerBottomChanged(DataEntry<int> part) => playerBottom.Value = part.Value;
         private void OnOwnerShoesChanged(DataEntry<int> part) => playerShoes.Value = part.Value;
@@ -126,6 +135,7 @@ namespace GameServices
         private void OnOwnerOutfitColorChanged(DataEntry<int> part) => outfitColor.Value = part.Value;
 
         private void OnHairChanged(int previous, int current) => controller.UpdateHair(current);
+        private void OnHatChanged(int previous, int current) => controller.UpdateHat(current);
         private void OnTopChanged(int previous, int current) => controller.UpdateTop(current);
         private void OnBottomChanged(int previous, int current) => controller.UpdateBottom(current);
         private void OnShoesChanged(int previous, int current) => controller.UpdateShoes(current);
@@ -161,6 +171,7 @@ namespace GameServices
 
 
             controller.UpdateHair(playerHair.Value);
+            controller.UpdateHat(playerHat.Value);
             controller.UpdateTop(playerTop.Value);
             controller.UpdateBottom(playerBottom.Value);
             controller.UpdateShoes(playerShoes.Value);

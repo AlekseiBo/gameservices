@@ -18,8 +18,15 @@ namespace GameServices
 
         public VivoxProvider()
         {
-            VivoxService.Instance.Initialize();
-            Login();
+            try
+            {
+                VivoxService.Instance.Initialize();
+                Login();
+            }
+            catch (VivoxApiException e)
+            {
+                Debug.Log(e.Message);
+            }
         }
 
         public void JoinChannel(string channelName, ChannelType channelType, ChatCapability chatCapability,

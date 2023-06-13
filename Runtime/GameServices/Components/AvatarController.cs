@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GameServices
@@ -9,8 +10,11 @@ namespace GameServices
         public UnityEngine.Avatar AnimatorAvatar;
         public AvatarGroup Group;
         [Space]
-        [SerializeField] private List<GameObject> hairList;
-        [SerializeField] private List<Sprite> hairIcons;
+        [SerializeField] private List<AvatarItem> hairList;
+        [SerializeField] private List<RendererMaterial> hairMesh;
+        [SerializeField] private List<Color> hairColors;
+        [Space]
+        [SerializeField] private List<AvatarItem> hatList;
         [Space]
         [SerializeField] private List<GameObject> topList;
         [SerializeField] private List<Sprite> topIcons;
@@ -24,24 +28,21 @@ namespace GameServices
         [SerializeField] private List<RendererMaterial> skinMesh;
         [SerializeField] private List<Color> skinColors;
         [Space]
-        [SerializeField] private List<RendererMaterial> hairMesh;
-        [SerializeField] private List<Color> hairColors;
-        [Space]
         [SerializeField] private List<RendererMaterial> eyeMesh;
         [SerializeField] private List<Color> eyeColors;
         [Space]
         [SerializeField] private List<RendererMaterial> outfitMesh;
         [SerializeField] private List<Color> outfitColors;
 
-        public List<Sprite> HairIcons => hairIcons;
-
+        public List<Sprite> HairIcons => hairList.ConvertAll(i => i.Icon);
+        public List<Sprite> HatIcons => hatList.ConvertAll(i => i.Icon);
         public List<Color> SkinColors => skinColors;
         public List<Color> HairColors => hairColors;
         public List<Color> EyeColors => eyeColors;
         public List<Color> OutfitColors => outfitColors;
 
-
         public void UpdateHair(int hair) => UpdatePart(hair, hairList);
+        public void UpdateHat(int hat) => UpdatePart(hat, hatList);
         public void UpdateTop(int top) => UpdatePart(top, topList);
         public void UpdateBottom(int bottom) => UpdatePart(bottom, bottomList);
         public void UpdateShoes(int shoes) => UpdatePart(shoes, shoesList);
@@ -59,6 +60,15 @@ namespace GameServices
             if (list.Count > color)
                 foreach (var mesh in meshes)
                     mesh.SetMaterialColor(list[color]);
+        }
+
+        private void UpdatePart(int index, List<AvatarItem> list)
+        {
+            if (index < 0) return;
+            for (var i = 0; i < list.Count; i++)
+            {
+                list[i].Activate(i == index);
+            }
         }
 
         private void UpdatePart(int index, List<GameObject> list)

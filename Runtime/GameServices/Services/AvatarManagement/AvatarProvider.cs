@@ -26,7 +26,7 @@ namespace GameServices
 
         public void SetAvatar(string prefabName)
         {
-            AvatarData.Set<string>(Avatar.Prefab, prefabName);
+            AvatarData.Set(Avatar.Prefab, prefabName);
         }
 
         public void SaveAvatarData()
