@@ -94,6 +94,11 @@ namespace GameServices
             });
         }
 
+        public void MuteSelf(bool active)
+        {
+            loginSession?.SetTransmissionMode(active ? TransmissionMode.None : TransmissionMode.All);
+        }
+
         public void Dispose()
         {
             if (loginSession != null && LoginState != LoginState.LoggedOut && LoginState != LoginState.LoggingOut)
