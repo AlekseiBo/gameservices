@@ -33,6 +33,8 @@ namespace GameServices
 
         public List<Sprite> HairIcons => hairList.ConvertAll(i => i.Icon);
         public List<Sprite> HatIcons => hatList.ConvertAll(i => i.Icon);
+        public List<Sprite> TopIcons => topList.ConvertAll(i => i.Icon);
+        public List<Sprite> ShoesIcons => shoesList.ConvertAll(i => i.Icon);
         public List<Color> SkinColors => skinColors;
         public List<Color> HairColors => hairColors;
         public List<Color> EyeColors => eyeColors;
