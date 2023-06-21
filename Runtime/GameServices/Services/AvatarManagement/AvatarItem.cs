@@ -13,7 +13,7 @@ namespace GameServices
 
         public void Activate(bool activate = true)
         {
-            ExcludeList.ForEach(o => o.SetActive(false));
+            if (activate) ExcludeList.ForEach(o => o.SetActive(false));
             ObjectList.ForEach(o => o.SetActive(activate));
         }
     }

@@ -17,13 +17,10 @@ namespace GameServices
         [SerializeField] private List<AvatarItem> hatList;
         [Space]
         [SerializeField] private List<AvatarItem> topList;
-        [SerializeField] private List<Sprite> topIcons;
         [Space]
         [SerializeField] private List<AvatarItem> bottomList;
-        [SerializeField] private List<Sprite> bottomIcons;
         [Space]
         [SerializeField] private List<AvatarItem> shoesList;
-        [SerializeField] private List<Sprite> shoesIcons;
         [Space]
         [SerializeField] private List<RendererMaterial> skinMesh;
         [SerializeField] private List<Color> skinColors;
