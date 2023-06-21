@@ -8,11 +8,11 @@ namespace GameServices
     public class FriendActivity
     {
         [Preserve]
-        [DataMember(Name = "venue", IsRequired = true, EmitDefaultValue = true)]
+        [DataMember(Name = "venue", IsRequired = false, EmitDefaultValue = true)]
         public string Venue { get; set; }
 
         [Preserve]
-        [DataMember(Name = "code", IsRequired = true, EmitDefaultValue = true)]
+        [DataMember(Name = "code", IsRequired = false, EmitDefaultValue = true)]
         public string Code { get; set; }
     }
 }
