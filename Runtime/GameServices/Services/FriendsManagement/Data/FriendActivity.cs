@@ -12,7 +12,7 @@ namespace GameServices
         public string Venue { get; set; }
 
         [Preserve]
-        [DataMember(Name = "code", IsRequired = true, EmitDefaultValue = true)]
+        [DataMember(Name = "code", IsRequired = false, EmitDefaultValue = true)]
         public string Code { get; set; }
     }
 }
