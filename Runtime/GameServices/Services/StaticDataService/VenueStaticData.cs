@@ -12,7 +12,6 @@ namespace GameServices
         public Sprite Icon;
         public bool ShowInMenu;
         public bool MoveUp;
-        public bool MoveDown;
         public AvatarGroup AvatarGroup;
         public NetState NetState;
         [TextArea(2, 5)] public string Description;
