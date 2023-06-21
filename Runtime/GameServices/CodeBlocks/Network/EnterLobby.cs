@@ -7,6 +7,7 @@ namespace GameServices.CodeBlocks
     [CreateAssetMenu(fileName = "Enter Lobby", menuName = "Code Blocks/Network/Enter Lobby", order = 0)]
     public class EnterLobby : CodeBlock
     {
+        public bool clientsAlwaysPrivate;
         private ILobbyProvider lobby;
 
         protected override void Execute()
@@ -19,7 +20,7 @@ namespace GameServices.CodeBlocks
             switch (GameData.Get<NetState>(Key.PlayerNetState))
             {
                 case NetState.Private:
-                    CreateLobby(true, true);
+                    CreateLobby(false, true);
                     break;
                 case NetState.Guest:
                     JoinWithCode();
@@ -28,7 +29,7 @@ namespace GameServices.CodeBlocks
                     JoinWithVenue();
                     break;
                 case NetState.Host:
-                    CreateLobby(false, false);
+                    CreateLobby(false, clientsAlwaysPrivate);
                     break;
                 case NetState.Dedicated:
                     CreateLobby(true, false);
@@ -59,7 +60,7 @@ namespace GameServices.CodeBlocks
             else
             {
                 GameData.Set(Key.PlayerNetState, NetState.Host);
-                CreateLobby(false, false);
+                CreateLobby(false, clientsAlwaysPrivate);
             }
         }
 

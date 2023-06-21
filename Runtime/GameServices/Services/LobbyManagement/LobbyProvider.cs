@@ -193,38 +193,8 @@ namespace GameServices
             output += $"Relay Server Code: {RelayCode}\n";
             output += $"Created Time: {hostedLobby.Created}\n";
 
-            Command.Publish(new ShowMessage("Server Data", "<align=\"left\">" + output));
+            //Command.Publish(new ShowMessage("Server Data", "<align=\"left\">" + output));
             Debug.Log(output);
         }
-
-        // private async void RestartLobby()
-        // {
-        //     Debug.Log($"Restarting the lobby");
-        //
-        //     var progress = Services.All.Single<IProgressProvider>();
-        //     await progress.SaveProgress();
-        //
-        //     var relayProvider = Services.All.Single<IRelayProvider>();
-        //     relayProvider.StopServer();
-        //
-        //     await LeaveConnectedLobby();
-        //
-        //     var asServer = GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated;
-        //     var owner = asServer ? "RELAY" : "PLAYER";
-        //     var venue = GameData.Get<string>(Key.CurrentVenue);
-        //     var lobbyName = $"{owner} {venue}";
-        //     var maxPlayers = GameData.Get<int>(Key.LobbyMaxPlayers);
-        //     var lobbyData = new CreateLobbyData(lobbyName, maxPlayers, false);
-        //     await CreateLobby(lobbyData);
-        //
-        //     var assets = Services.All.Single<IAssetProvider>();
-        //     await assets.LoadScene(GameData.Get<string>(Key.CurrentVenue));
-        //
-        //     progress.LoadProgress();
-        //
-        //     await relayProvider.CreateServer(maxPlayers - 1, !asServer);
-        //
-        //     Command.Publish(new LogMessage(LogType.Log, "Lobby restarted due to activity timer"));
-        // }
     }
 }
