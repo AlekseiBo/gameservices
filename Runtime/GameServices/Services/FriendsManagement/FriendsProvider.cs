@@ -196,13 +196,24 @@ namespace GameServices
         private void OnMessageReceived(IMessageReceivedEvent messageEvent)
         {
             var message = messageEvent.GetMessageAs<FriendMessageText>();
-            AddMessageToConversation(messageEvent.UserId, message.Text, true);
 
-            Command.Publish(new FriendMessage
+            if (message != null)
             {
-                Id = messageEvent.UserId,
-                Message = messageEvent.GetMessageAs<FriendMessageText>()
-            });
+                AddMessageToConversation(messageEvent.UserId, message.Text, true);
+
+                Command.Publish(new FriendMessage
+                {
+                    Id = messageEvent.UserId,
+                    Message = message
+                });
+            }
+
+            var invitation = messageEvent.GetMessageAs<FriendMessageInvite>();
+
+            if (invitation != null)
+            {
+                Command.Publish(new ShowDialog("Invitation", $"Would you like to join {invitation.JoinCode}"));
+            }
         }
 
         private void OnRelationshipAdded(IRelationshipAddedEvent obj) =>
