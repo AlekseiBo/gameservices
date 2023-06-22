@@ -231,8 +231,9 @@ namespace GameServices
                     Command.Publish(new ShowDialog(
                         "Invitation",
                         $"You are invited to join a friend. Would you like to accept it?",
-                        "",
-                        () => JoinFriendVenue(invitation.JoinCode)));
+                        "Yes",
+                        () => JoinFriendVenue(invitation.JoinCode),
+                        "No"));
                 }
             }
             catch
