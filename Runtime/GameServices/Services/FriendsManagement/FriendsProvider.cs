@@ -180,6 +180,17 @@ namespace GameServices
             SaveConversations();
         }
 
+        public void JoinFriendVenue(string joinCode)
+        {
+            GameData.Set(Key.RequestedLobbyCode, joinCode);
+            GameData.Set(Key.PlayerNetState, NetState.Guest);
+
+            if (string.IsNullOrEmpty(GameData.Get<string>(Key.CurrentVenue)))
+                Command.Publish(new ConnectToLobby());
+            else
+                Command.Publish(new UpdateVenue(VenueAction.Exit, ""));
+        }
+
         private void SaveConversations()
         {
             var conversationList = "";
@@ -195,24 +206,37 @@ namespace GameServices
 
         private void OnMessageReceived(IMessageReceivedEvent messageEvent)
         {
-            var message = messageEvent.GetMessageAs<FriendMessageText>();
-
-            if (message != null)
+            try
             {
-                AddMessageToConversation(messageEvent.UserId, message.Text, true);
-
-                Command.Publish(new FriendMessage
+                var message = messageEvent.GetMessageAs<FriendMessageText>();
+                if (!string.IsNullOrEmpty(message.Text))
                 {
-                    Id = messageEvent.UserId,
-                    Message = message
-                });
+                    AddMessageToConversation(messageEvent.UserId, message.Text, true);
+                    Command.Publish(new FriendMessage
+                    {
+                        Id = messageEvent.UserId,
+                        Message = message
+                    });
+                }
+            }
+            catch
+            {
             }
 
-            var invitation = messageEvent.GetMessageAs<FriendMessageInvite>();
-
-            if (invitation != null)
+            try
             {
-                Command.Publish(new ShowDialog("Invitation", $"Would you like to join {invitation.JoinCode}"));
+                var invitation = messageEvent.GetMessageAs<FriendMessageInvite>();
+                if (!string.IsNullOrEmpty(invitation.JoinCode))
+                {
+                    Command.Publish(new ShowDialog(
+                        "Invitation",
+                        $"You are invited to join a friend. Would you like to accept it?",
+                        "",
+                        () => JoinFriendVenue(invitation.JoinCode)));
+                }
+            }
+            catch
+            {
             }
         }
 

@@ -29,5 +29,6 @@ namespace GameServices
         void AddMessageToConversation(string playerId, string message, bool incoming);
         void LoadConversations();
         void DeleteConversation(string playerId);
+        void JoinFriendVenue(string joinCode);
     }
 }
