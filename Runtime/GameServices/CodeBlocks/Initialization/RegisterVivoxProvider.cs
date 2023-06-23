@@ -16,6 +16,12 @@ namespace GameServices.CodeBlocks
                 return;
             }
 
+            if (Application.platform == RuntimePlatform.LinuxServer)
+            {
+                Complete(true);
+                return;
+            }
+
             if (Services.All.Single<IVivoxProvider>() == null)
                 Services.All.RegisterSingle<IVivoxProvider>(new VivoxProvider());
 
