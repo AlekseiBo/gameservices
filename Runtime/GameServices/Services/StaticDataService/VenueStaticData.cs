@@ -8,6 +8,7 @@ namespace GameServices
         public string Name;
         public string Address;
         public AssetReferenceScene AssetReference;
+        public Material Skybox;
         public GameObject NetworkManager;
         public Sprite Icon;
         public bool ShowInMenu;

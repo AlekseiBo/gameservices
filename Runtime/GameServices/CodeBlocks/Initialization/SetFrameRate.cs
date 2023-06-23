@@ -7,6 +7,7 @@ namespace GameServices.CodeBlocks
     public class SetFrameRate : CodeBlock
     {
         [SerializeField] private int frameRate = 60;
+
         protected override void Execute()
         {
             Application.targetFrameRate = frameRate;

@@ -24,9 +24,11 @@ namespace GameServices.CodeBlocks
             if (!string.IsNullOrEmpty(newVenue))
             {
                 var sceneInstance = await assets.LoadScene(newVenue, LoadSceneMode.Additive);
-                Command.Publish(new ShowVenueCanvas());
+                var venueData = Services.All.Single<IStaticDataService>().ForVenue(newVenue);
+                if (venueData.Skybox != null) RenderSettings.skybox = venueData.Skybox;
                 GameData.Set(Key.CurrentVenue, newVenue);
                 GameData.Set(Key.RequestedVenue, "");
+                Command.Publish(new ShowVenueCanvas());
                 Complete(true);
                 return;
             }
