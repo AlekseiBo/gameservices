@@ -11,7 +11,7 @@ namespace GameServices
 
         protected virtual void Awake()
         {
-            if (GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated)
+            if (GameData.isInitialized && GameData.Get<NetState>(Key.PlayerNetState) == NetState.Dedicated)
             {
                 Destroy(gameObject);
                 return;
