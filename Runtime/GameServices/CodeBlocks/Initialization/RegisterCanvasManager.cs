@@ -9,7 +9,6 @@ namespace GameServices.CodeBlocks
     public class RegisterCanvasManager : CodeBlock
     {
         [SerializeField] private AssetReferenceGameObject prefab;
-        [SerializeField] private string failMessage = "Failed to update app content. Please try again.";
 
         protected override async void Execute()
         {
@@ -21,7 +20,8 @@ namespace GameServices.CodeBlocks
 
                 if (canvasContainer == null)
                 {
-                    OnFail();
+                    Application.Quit();
+                    Complete(false);
                     return;
                 }
 
@@ -32,12 +32,6 @@ namespace GameServices.CodeBlocks
             }
             
             Complete(true);
-        }
-
-        private void OnFail()
-        {
-            Complete(false);
-            Command.Publish(new ShowMessage("Error", failMessage, Application.Quit));
         }
     }
 }
