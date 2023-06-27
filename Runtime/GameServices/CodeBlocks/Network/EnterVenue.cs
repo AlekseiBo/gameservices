@@ -81,12 +81,18 @@ namespace GameServices.CodeBlocks
             {
                 var joinedLobby = await lobbyProvider.JoinLobbyByVenue(venue, attempt);
                 if (joinedLobby != null)
+                {
                     JoinRelayServer();
+                }
                 else
+                {
+                    GameData.Set(Key.PlayerNetState, NetState.Host);
                     CreateRelayServer(true);
+                }
             }
             else
             {
+                GameData.Set(Key.PlayerNetState, NetState.Host);
                 CreateRelayServer(true);
             }
         }
