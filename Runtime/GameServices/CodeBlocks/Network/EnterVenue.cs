@@ -86,15 +86,20 @@ namespace GameServices.CodeBlocks
                 }
                 else
                 {
-                    GameData.Set(Key.PlayerNetState, NetState.Host);
-                    CreateRelayServer(true);
+                    ReconnectVenueAsHost(venue);
                 }
             }
             else
             {
-                GameData.Set(Key.PlayerNetState, NetState.Host);
-                CreateRelayServer(true);
+                ReconnectVenueAsHost(venue);
             }
+        }
+
+        private void ReconnectVenueAsHost(string venue)
+        {
+            GameData.Set(Key.PlayerNetState, NetState.Host);
+            Command.Publish(new UpdateVenue(VenueAction.Exit, venue));
+            Complete(false);
         }
     }
 }
