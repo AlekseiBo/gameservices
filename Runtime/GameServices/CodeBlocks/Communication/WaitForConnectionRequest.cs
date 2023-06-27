@@ -9,6 +9,8 @@ namespace GameServices.CodeBlocks
     {
         protected override void Execute()
         {
+            Command.RemoveSubscriber<ConnectToLobby>(Requested);
+
             var requestedVenue = GameData.Get<string>(Key.RequestedVenue);
             if (!string.IsNullOrEmpty(requestedVenue))
             {
