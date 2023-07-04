@@ -8,7 +8,7 @@ namespace GameServices.CodeBlocks
         order = 0)]
     public class ReadCommandLine : CodeBlock
     {
-        private const string RELAY_SERVER = "relay-server";
+        private const string DEDICATED_SERVER = "dedicated-server";
         private const string FRAME_RATE = "fps";
         private const string MAX_PLAYERS = "max-players";
         private const string VENUE_ADDRESS = "address";
@@ -24,7 +24,7 @@ namespace GameServices.CodeBlocks
         private void SetGameDataEntries()
         {
 #if !UNITY_EDITOR
-            if (CommandLineArgument(RELAY_SERVER))
+            if (CommandLineArgument(DEDICATED_SERVER))
                 GameData.Set(Key.PlayerNetState, NetState.Dedicated);
 
             var address = CommandLineValue(VENUE_ADDRESS);

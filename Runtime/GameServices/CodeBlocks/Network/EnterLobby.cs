@@ -66,7 +66,7 @@ namespace GameServices.CodeBlocks
 
         private async void CreateLobby(bool asServer, bool isPrivate)
         {
-            var owner = asServer ? "RELAY" : "PLAYER";
+            var owner = asServer ? "SERVER" : "PLAYER";
             var venue = GameData.Get<string>(Key.RequestedVenue);
             var lobbyName = $"{owner} ";
             var maxPlayers = GameData.Get<int>(Key.LobbyMaxPlayers);

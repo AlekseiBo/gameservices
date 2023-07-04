@@ -10,6 +10,7 @@ namespace GameServices
         public AssetReferenceScene AssetReference;
         public Material Skybox;
         public GameObject NetworkManager;
+        public GameObject ServerManager;
         public Sprite Icon;
         public bool ShowInMenu;
         public bool MoveUp;

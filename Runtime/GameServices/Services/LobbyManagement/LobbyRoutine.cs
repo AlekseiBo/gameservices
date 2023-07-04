@@ -28,7 +28,7 @@ namespace GameServices
             currentLobby = lobby;
             playersList = "";
             heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat());
-            lobbyActivityCoroutine = CoroutineRunner.Start(RunActivityCheck());
+            //lobbyActivityCoroutine = CoroutineRunner.Start(RunActivityCheck());
         }
 
         public void Stop()

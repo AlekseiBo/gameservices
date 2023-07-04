@@ -8,6 +8,7 @@ namespace GameServices
     public interface ILobbyProvider : IService
     {
         string RelayCode => "";
+        string ServerAddress => "";
         string LobbyCode => "";
         string Venue => "";
         Lobby JoinedLobby { get; }

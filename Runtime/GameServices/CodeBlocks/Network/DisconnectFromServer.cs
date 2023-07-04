@@ -12,6 +12,7 @@ namespace GameServices.CodeBlocks
         {
             await Services.All.Single<ILobbyProvider>().LeaveConnectedLobby();
             Services.All.Single<IRelayProvider>().StopServer();
+            Services.All.Single<IServerProvider>().StopServer();
             if (restartGame) Command.Publish(new RunGame());
             Complete(true);
         }

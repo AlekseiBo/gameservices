@@ -15,13 +15,14 @@ namespace GameServices.CodeBlocks
 
         private IStaticDataService staticData;
         private ILobbyProvider lobbyProvider;
+        private IServerProvider serverProvider;
         private IRelayProvider relayProvider;
         private int attemptCounter;
 
         protected override void Execute()
         {
-
             lobbyProvider = Services.All.Single<ILobbyProvider>();
+            serverProvider = Services.All.Single<IServerProvider>();
             relayProvider = Services.All.Single<IRelayProvider>();
             attemptCounter = 1;
 
@@ -31,21 +32,32 @@ namespace GameServices.CodeBlocks
                     CreateRelayServer(true);
                     break;
                 case NetState.Guest:
-                    JoinRelayServer();
+                    JoinServer();
                     break;
                 case NetState.Client:
-                    JoinRelayServer();
+                    JoinServer();
                     break;
                 case NetState.Host:
                     CreateRelayServer(true);
                     break;
                 case NetState.Dedicated:
-                    CreateRelayServer(false);
+                    CreateDedicatedServer();
                     break;
                 case NetState.Offline:
                     Complete(true);
                     break;
             }
+        }
+
+        private void CreateDedicatedServer()
+        {
+            var connected = serverProvider.CreateServer();
+
+            Instantiate(networkTracker)
+                .With(t => t.name = "Network Tracker")
+                .With(t => t.GetComponent<NetworkObject>().Spawn());
+
+            Complete(connected);
         }
 
         private async void CreateRelayServer(bool asPlayer)
@@ -60,11 +72,21 @@ namespace GameServices.CodeBlocks
             Complete(connected);
         }
 
-        private async void JoinRelayServer()
+        private async void JoinServer()
         {
             GameData.Set(Key.CurrentLobbyCode, lobbyProvider.LobbyCode);
-            var relayCode = lobbyProvider.RelayCode;
-            var connected = await relayProvider.JoinServer(relayCode);
+            var connected = false;
+
+            if (lobbyProvider.JoinedLobby.Name.Contains("SERVER"))
+            {
+                var address = lobbyProvider.ServerAddress.Split(':');
+                connected = serverProvider.JoinServer(address[0], address[1]);
+            }
+            else
+            {
+                var relayCode = lobbyProvider.RelayCode;
+                connected = await relayProvider.JoinServer(relayCode);
+            }
 
             if (connected)
                 Complete(true);
@@ -82,7 +104,7 @@ namespace GameServices.CodeBlocks
                 var joinedLobby = await lobbyProvider.JoinLobbyByVenue(venue, attempt);
                 if (joinedLobby != null)
                 {
-                    JoinRelayServer();
+                    JoinServer();
                 }
                 else
                 {

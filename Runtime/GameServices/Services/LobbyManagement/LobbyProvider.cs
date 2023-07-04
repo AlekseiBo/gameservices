@@ -12,12 +12,14 @@ namespace GameServices
 {
     public class LobbyProvider : ILobbyProvider, IDisposable
     {
+        private const string SERVER_ADDRESS = "SERVER_ADDRESS";
         private const string LOBBY_CODE = "LOBBY_CODE";
         private const string RELAY_CODE = "RELAY_CODE";
         private const string VENUE = "VENUE";
 
         public string LobbyCode => joinedLobby?.LobbyCode;
         public string RelayCode => joinedLobby?.Data.GetValueOrDefault(RELAY_CODE).Value;
+        public string ServerAddress => joinedLobby?.Data.GetValueOrDefault(SERVER_ADDRESS).Value;
         public string Venue => joinedLobby?.Data.GetValueOrDefault(VENUE).Value;
         public Lobby JoinedLobby => joinedLobby;
 
@@ -37,6 +39,7 @@ namespace GameServices
             request = new LobbyRequest();
 
             Command.Subscribe<AllocateRelayServer>(OnRelayServerAllocated);
+            Command.Subscribe<AllocateDedicatedServer>(OnDedicatedServerAllocated);
             Command.Subscribe<UpdatePlayerAllocation>(OnPlayerAllocated);
         }
 
@@ -44,6 +47,7 @@ namespace GameServices
         {
             routine.Stop();
             Command.RemoveSubscriber<AllocateRelayServer>(OnRelayServerAllocated);
+            Command.RemoveSubscriber<AllocateDedicatedServer>(OnDedicatedServerAllocated);
             Command.RemoveSubscriber<UpdatePlayerAllocation>(OnPlayerAllocated);
         }
 
@@ -136,6 +140,37 @@ namespace GameServices
             return null;
         }
 
+        private async void OnDedicatedServerAllocated(AllocateDedicatedServer server)
+        {
+            Debug.Log($"Updating dedicated server address");
+
+            var venue = GameData.Get<string>(Key.CurrentVenue);
+            var serverAddress = $"{server.IP4address}:{server.Port}";
+            var lobbyOptions = new UpdateLobbyOptions
+            {
+                IsPrivate = hostedLobbyIsPrivate,
+                Data = new Dictionary<string, DataObject>
+                {
+                    { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue, DataObject.IndexOptions.S1) },
+                    { LOBBY_CODE, new DataObject(DataObject.VisibilityOptions.Public, LobbyCode) },
+                    { SERVER_ADDRESS, new DataObject(DataObject.VisibilityOptions.Member, serverAddress) },
+                    { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, "") }
+                }
+            };
+
+            hostedLobby = await request.UpdateLobby(hostedLobby.Id, lobbyOptions);
+            if (hostedLobby == null)
+            {
+                Command.Publish(new UpdateVenue(VenueAction.Exit, GameData.Get<string>(Key.CurrentVenue)));
+                return;
+            }
+
+            joinedLobby = hostedLobby;
+
+            GameData.Set(Key.CurrentLobbyCode, hostedLobby.LobbyCode);
+            LogServerData();
+        }
+
         private async void OnRelayServerAllocated(AllocateRelayServer server)
         {
             Debug.Log($"Updating relay server join code");
@@ -148,6 +183,7 @@ namespace GameServices
                 {
                     { VENUE, new DataObject(DataObject.VisibilityOptions.Public, venue, DataObject.IndexOptions.S1) },
                     { LOBBY_CODE, new DataObject(DataObject.VisibilityOptions.Public, LobbyCode) },
+                    { SERVER_ADDRESS, new DataObject(DataObject.VisibilityOptions.Member, "") },
                     { RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, server.JoinCode) }
                 }
             };
@@ -191,6 +227,7 @@ namespace GameServices
             output += $"Is Private: {hostedLobby.IsPrivate}\n";
             output += $"Is Locked: {hostedLobby.IsLocked}\n";
             output += $"Relay Server Code: {RelayCode}\n";
+            output += $"Dedicated Server Address: {ServerAddress}\n";
             output += $"Created Time: {hostedLobby.Created}\n";
 
             //Command.Publish(new ShowMessage("Server Data", "<align=\"left\">" + output));
