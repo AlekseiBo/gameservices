@@ -1,7 +1,9 @@
 ﻿using Toolset;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+#if !UNITY_IOS && !UNITY_ANDROID
 using Unity.Services.Multiplay;
+#endif
 using UnityEngine;
 
 namespace GameServices
@@ -10,12 +12,14 @@ namespace GameServices
     {
         public bool CreateServer()
         {
+#if !UNITY_IOS && !UNITY_ANDROID
             var serverConfig = MultiplayService.Instance.ServerConfig;
             var network = CreateNetworkManager();
             network.GetComponent<UnityTransport>().SetConnectionData("0.0.0.0", serverConfig.Port, "0.0.0.0");
             var started = network.StartServer();
             if (!started) return false;
             Command.Publish(new AllocateDedicatedServer(serverConfig.IpAddress, serverConfig.Port.ToString()));
+#endif
             return true;
         }
 
