@@ -10,21 +10,17 @@ namespace GameServices
     internal class LobbyRoutine
     {
         private const float HEARTBEAT_TIMEOUT = 10f;
-        private const float UPDATE_PLAYERS_TIMEOUT = 5f;
 
         private Coroutine heartbeatCoroutine;
 
         private bool heartbeatInProgress;
         private bool lobbyActivityInProgress;
-        private bool updatePlayersInProgress;
 
         private Lobby currentLobby;
-        private string playersList;
 
         public void Start(Lobby lobby)
         {
             currentLobby = lobby;
-            playersList = "";
             heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat());
         }
 
