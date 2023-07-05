@@ -16,6 +16,8 @@ namespace GameServices
 
         private void OnDestroy() => RemoveSubscribers();
 
+        private void OnApplicationQuit() => onExit.Run();
+
         private void TriggerActivated(ActivatePlayerTrigger trigger)
         {
             if (trigger.Player.IsOwnedByServer && trigger.Player.IsLocalPlayer)

@@ -13,8 +13,6 @@ namespace GameServices
         private const float UPDATE_PLAYERS_TIMEOUT = 5f;
 
         private Coroutine heartbeatCoroutine;
-        private Coroutine lobbyActivityCoroutine;
-        private Coroutine updatePlayersCoroutine;
 
         private bool heartbeatInProgress;
         private bool lobbyActivityInProgress;
@@ -28,13 +26,11 @@ namespace GameServices
             currentLobby = lobby;
             playersList = "";
             heartbeatCoroutine = CoroutineRunner.Start(RunHeartbeat());
-            //lobbyActivityCoroutine = CoroutineRunner.Start(RunActivityCheck());
         }
 
         public void Stop()
         {
             if (heartbeatCoroutine != null) CoroutineRunner.Stop(heartbeatCoroutine);
-            if (lobbyActivityCoroutine != null) CoroutineRunner.Stop(lobbyActivityCoroutine);
             currentLobby = null;
         }
 
