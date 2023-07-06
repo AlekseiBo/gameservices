@@ -9,6 +9,7 @@ namespace GameServices.CodeBlocks
     public class RegisterCanvasManager : CodeBlock
     {
         [SerializeField] private AssetReferenceGameObject prefab;
+        [SerializeField] private GameObject errorMessage;
 
         protected override async void Execute()
         {
@@ -20,7 +21,7 @@ namespace GameServices.CodeBlocks
 
                 if (canvasContainer == null)
                 {
-                    Application.Quit();
+                    Instantiate(errorMessage);
                     Complete(false);
                     return;
                 }
