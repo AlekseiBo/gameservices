@@ -18,7 +18,7 @@ namespace GameServices
         private ILoginSession loginSession;
         private ChannelId currentChannel;
         private Coroutine positionalCoroutine;
-        private float positionUpdateTimeout;
+        private const float POSITION_UPDATE = 0.2f;
 
         public VivoxProvider()
         {
@@ -111,6 +111,8 @@ namespace GameServices
 
         public void Dispose()
         {
+            if (positionalCoroutine != null) CoroutineRunner.Stop(positionalCoroutine);
+
             if (loginSession != null && LoginState != LoginState.LoggedOut && LoginState != LoginState.LoggingOut)
             {
                 loginSession.PropertyChanged -= OnLoginSessionPropertyChanged;
@@ -185,6 +187,9 @@ namespace GameServices
                 channelSession.TextState == ConnectionState.Disconnected)
             {
                 Debug.Log($"Unsubscribing from: {channelSession.Key.Name}");
+
+                if (positionalCoroutine != null) CoroutineRunner.Stop(positionalCoroutine);
+
                 channelSession.PropertyChanged -= OnChannelPropertyChanged;
                 channelSession.MessageLog.AfterItemAdded -= OnMessageLogReceived;
                 currentChannel = null;
@@ -199,12 +204,21 @@ namespace GameServices
 
         private IEnumerator RunPositionalUpdate(IChannelSession channelSession)
         {
-            var player = GetPlayerCharacter();
+            Transform player = null;
 
-            while (channelSession != null && player != null)
+            while (player == null)
             {
-                channelSession.Set3DPosition(player.position, player.position, player.forward, player.forward);
-                yield return Utilities.WaitFor(positionUpdateTimeout);
+                player = GetPlayerCharacter();
+                yield return Utilities.WaitFor(POSITION_UPDATE);
+            }
+
+            while (player != null && channelSession != null)
+            {
+
+                if (channelSession.AudioState == ConnectionState.Connected)
+                    channelSession.Set3DPosition(player.position, player.position, player.forward, player.forward);
+
+                yield return Utilities.WaitFor(POSITION_UPDATE);
             }
         }
 
