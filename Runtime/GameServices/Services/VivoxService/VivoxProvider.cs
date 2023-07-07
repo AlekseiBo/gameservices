@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.ComponentModel;
 using Toolset;
+using Unity.Netcode;
 using Unity.Services.Vivox;
 using UnityEngine;
 using VivoxUnity;
@@ -15,6 +17,8 @@ namespace GameServices
         private Client client => VivoxService.Instance.Client;
         private ILoginSession loginSession;
         private ChannelId currentChannel;
+        private Coroutine positionalCoroutine;
+        private float positionUpdateTimeout;
 
         public VivoxProvider()
         {
@@ -50,12 +54,16 @@ namespace GameServices
                         catch (Exception e)
                         {
                             Debug.Log($"Could not connect to voice channel: {e.Message}");
+                            if (positionalCoroutine != null) CoroutineRunner.Stop(positionalCoroutine);
                             channelSession.PropertyChanged -= OnChannelPropertyChanged;
                             channelSession.MessageLog.AfterItemAdded -= OnMessageLogReceived;
                             return;
                         }
 
                         currentChannel = channel;
+
+                        if (channel.Type == ChannelType.Positional)
+                            positionalCoroutine = CoroutineRunner.Start(RunPositionalUpdate(channelSession));
                     });
             }
             else
@@ -66,6 +74,8 @@ namespace GameServices
 
         public void DisconnectAllChannels()
         {
+            if (positionalCoroutine != null) CoroutineRunner.Stop(positionalCoroutine);
+
             if (!(loginSession?.ChannelSessions.Count > 0)) return;
 
             foreach (var channelSession in loginSession.ChannelSessions)
@@ -186,5 +196,28 @@ namespace GameServices
 
         private void OnMessageLogReceived(object sender, QueueItemAddedEventArgs<IChannelTextMessage> textMessage) =>
             Command.Publish(new AddChatMessage(textMessage.Value));
+
+        private IEnumerator RunPositionalUpdate(IChannelSession channelSession)
+        {
+            var player = GetPlayerCharacter();
+
+            while (channelSession != null && player != null)
+            {
+                channelSession.Set3DPosition(player.position, player.position, player.forward, player.forward);
+                yield return Utilities.WaitFor(positionUpdateTimeout);
+            }
+        }
+
+        private Transform GetPlayerCharacter()
+        {
+            foreach (var playerObject in GameObject.FindGameObjectsWithTag("Player"))
+            {
+                if (!playerObject.TryGetComponent<NetworkObject>(out var netObject)) continue;
+                if (netObject.IsLocalPlayer)
+                    return playerObject.transform;
+            }
+
+            return null;
+        }
     }
 }
