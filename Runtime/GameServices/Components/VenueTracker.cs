@@ -67,6 +67,7 @@ namespace GameServices
         private void VenueRequest(UpdateVenue venueData)
         {
             GameData.Set(Key.RequestedVenue, venueData.Venue);
+            Services.All.Single<ICanvasManager>().HideCanvas(new ShowVenueCanvas());
 
             switch (venueData.Action)
             {
