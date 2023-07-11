@@ -13,15 +13,21 @@ namespace GameServices
     {
         public LoginState LoginState { get; private set; }
 
+        private const float POSITION_UPDATE = 0.2f;
+
         private Account account;
         private Client client => VivoxService.Instance.Client;
         private ILoginSession loginSession;
         private ChannelId currentChannel;
         private Coroutine positionalCoroutine;
-        private const float POSITION_UPDATE = 0.2f;
+        private readonly string errorTitle;
+        private readonly string errorMessage;
 
-        public VivoxProvider()
+        public VivoxProvider(string errorTitle, string errorMessage)
         {
+            this.errorTitle = errorTitle;
+            this.errorMessage = errorMessage;
+
             try
             {
                 VivoxService.Instance.Initialize();
@@ -133,9 +139,8 @@ namespace GameServices
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(nameof(e));
                     loginSession.PropertyChanged -= OnLoginSessionPropertyChanged;
-                    return;
+                    ShowErrorDialog();
                 }
             });
         }
@@ -232,6 +237,17 @@ namespace GameServices
             }
 
             return null;
+        }
+
+        private void ShowErrorDialog()
+        {
+            Command.Publish(new ShowDialog(
+                errorTitle,
+                errorMessage,
+                "Retry",
+                Login,
+                "Close"
+                ));
         }
     }
 }

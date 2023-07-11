@@ -6,6 +6,8 @@ namespace GameServices.CodeBlocks
     [CreateAssetMenu(fileName = "Register Vivox Provider", menuName = "Code Blocks/Initialization/Register Vivox Provider", order = 0)]
     public class RegisterVivoxProvider : CodeBlock
     {
+        [SerializeField] private string errorTitle;
+        [SerializeField] private string errorMessage;
         [SerializeField] private bool excludeOSX = true;
 
         protected override void Execute()
@@ -23,7 +25,7 @@ namespace GameServices.CodeBlocks
             }
 
             if (Services.All.Single<IVivoxProvider>() == null)
-                Services.All.RegisterSingle<IVivoxProvider>(new VivoxProvider());
+                Services.All.RegisterSingle<IVivoxProvider>(new VivoxProvider(errorTitle, errorMessage));
 
             Complete(true);
         }
