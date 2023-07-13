@@ -174,8 +174,8 @@ namespace GameServices
                 case LoginState.LoggedOut:
                 {
                     Debug.Log("Logged out");
-                    ShowErrorDialog();
                     this.loginSession.PropertyChanged -= OnLoginSessionPropertyChanged;
+                    ShowErrorDialog();
                     break;
                 }
                 default:
