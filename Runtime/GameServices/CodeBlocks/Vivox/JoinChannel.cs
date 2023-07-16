@@ -10,6 +10,7 @@ namespace GameServices.CodeBlocks
     {
         [SerializeField] private ChannelType channelType;
         [SerializeField] private ChatCapability chatCapability;
+        [SerializeField] private bool autoMute;
 
         protected override void Execute()
         {
@@ -17,7 +18,7 @@ namespace GameServices.CodeBlocks
             if (provider != null)
             {
                 var channelName = Services.All.Single<ILobbyProvider>()?.JoinedLobby.Id;
-                provider.JoinChannel(channelName, channelType, chatCapability);
+                provider.JoinChannel(channelName, channelType, chatCapability, autoMute);
             }
 
             Complete(true);

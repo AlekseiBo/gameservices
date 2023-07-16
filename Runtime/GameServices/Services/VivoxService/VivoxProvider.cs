@@ -40,7 +40,7 @@ namespace GameServices
         }
 
         public void JoinChannel(string channelName, ChannelType channelType, ChatCapability chatCapability,
-            bool transmissionSwitch = true, Channel3DProperties properties = null)
+            bool autoMute = false, bool transmissionSwitch = true, Channel3DProperties properties = null)
         {
             if (LoginState == LoginState.LoggedIn)
             {
@@ -67,6 +67,8 @@ namespace GameServices
                         }
 
                         currentChannel = channel;
+
+                        if (autoMute) MuteSelf(true);
 
                         if (channel.Type == ChannelType.Positional)
                             positionalCoroutine = CoroutineRunner.Start(RunPositionalUpdate(channelSession));
@@ -113,6 +115,7 @@ namespace GameServices
         public void MuteSelf(bool active)
         {
             loginSession?.SetTransmissionMode(active ? TransmissionMode.None : TransmissionMode.All);
+            GameData.Set(Key.IsMuted, active);
         }
 
         public void Dispose()
