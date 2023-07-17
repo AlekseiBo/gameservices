@@ -23,6 +23,10 @@ namespace GameServices
         private readonly string errorTitle;
         private readonly string errorMessage;
 
+        private ChannelType channelType;
+        private ChatCapability chatCapability;
+        private bool autoMute;
+
         public VivoxProvider(string errorTitle, string errorMessage)
         {
             this.errorTitle = errorTitle;
@@ -42,6 +46,10 @@ namespace GameServices
         public void JoinChannel(string channelName, ChannelType channelType, ChatCapability chatCapability,
             bool autoMute = false, bool transmissionSwitch = true, Channel3DProperties properties = null)
         {
+            this.channelType = channelType;
+            this.chatCapability = this.chatCapability;
+            this.autoMute = autoMute;
+
             if (LoginState == LoginState.LoggedIn)
             {
                 Channel channel = new Channel(channelName, channelType, properties);
@@ -145,6 +153,10 @@ namespace GameServices
                     loginSession.PropertyChanged -= OnLoginSessionPropertyChanged;
                     ShowErrorDialog();
                 }
+
+                var channelName = Services.All.Single<ILobbyProvider>()?.JoinedLobby?.Id;
+                if (!string.IsNullOrEmpty(channelName))
+                    JoinChannel(channelName, channelType, chatCapability, autoMute);
             });
         }
 

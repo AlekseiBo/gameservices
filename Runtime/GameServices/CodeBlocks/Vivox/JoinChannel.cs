@@ -17,7 +17,7 @@ namespace GameServices.CodeBlocks
             var provider = Services.All.Single<IVivoxProvider>();
             if (provider != null)
             {
-                var channelName = Services.All.Single<ILobbyProvider>()?.JoinedLobby.Id;
+                var channelName = Services.All.Single<ILobbyProvider>()?.JoinedLobby?.Id;
                 provider.JoinChannel(channelName, channelType, chatCapability, autoMute);
             }
 
