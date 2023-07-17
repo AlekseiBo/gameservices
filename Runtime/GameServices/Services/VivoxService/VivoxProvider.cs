@@ -47,7 +47,7 @@ namespace GameServices
             bool autoMute = false, bool transmissionSwitch = true, Channel3DProperties properties = null)
         {
             this.channelType = channelType;
-            this.chatCapability = this.chatCapability;
+            this.chatCapability = chatCapability;
             this.autoMute = autoMute;
 
             if (LoginState == LoginState.LoggedIn)
