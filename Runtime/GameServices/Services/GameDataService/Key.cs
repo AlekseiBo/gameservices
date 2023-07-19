@@ -12,7 +12,7 @@
         RequestedLobbyCode,
         Token,
         UnityToken,
-        TeamColor,
+        HouseColor,
         IsMuted,
     }
 }
